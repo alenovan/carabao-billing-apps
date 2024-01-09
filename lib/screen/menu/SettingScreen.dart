@@ -83,7 +83,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 "Billiards Lamp Controls",
                 textAlign: TextAlign.center,
                 style:
-                    GoogleFonts.poppins(fontSize: 15.sp, color: Colors.black),
+                    GoogleFonts.plusJakartaSans(fontSize: 15.sp, color: Colors.black),
               ),
             ],
           ),
@@ -109,7 +109,7 @@ class _SettingScreenState extends State<SettingScreen> {
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Enter IP Address',
-                  labelStyle: GoogleFonts.poppins(
+                  labelStyle: GoogleFonts.plusJakartaSans(
                     fontSize: 12.sp,
                     color: Colors.grey,
                   ),
@@ -148,7 +148,7 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Text(
                 "Simpan",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 11.sp, color: ColorConstant.white),
               ),
             ),
@@ -183,7 +183,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       Text(
                         "Table List Control",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.bold,
                             fontSize: 11.sp,
                             color: ColorConstant.titletext),

@@ -54,7 +54,7 @@ class BottomSheetFeedback {
                     child: Text(
                       description,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 15.sp, fontWeight: FontWeight.w300),
                     ))
               ],
@@ -112,7 +112,7 @@ class BottomSheetFeedback {
                     child: Text(
                       description,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 17.sp, fontWeight: FontWeight.w300),
                     ))
               ],
@@ -170,7 +170,7 @@ class BottomSheetFeedback {
                     child: Text(
                       description,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 13.sp),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13.sp),
                     ))
               ],
             ),

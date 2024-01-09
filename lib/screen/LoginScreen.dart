@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       "Billiards Lamp Controls",
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 15.sp, color: Colors.black),
                     ),
                   ],
@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Username',
-                        labelStyle: GoogleFonts.poppins(
+                        labelStyle: GoogleFonts.plusJakartaSans(
                           fontSize: 12.sp,
                           color: Colors.grey,
                         ),
@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: GoogleFonts.poppins(
+                        labelStyle: GoogleFonts.plusJakartaSans(
                           fontSize: 12.sp,
                           color: Colors.grey,
                         ),
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Simpan",
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11.sp, color: ColorConstant.white),
                           ),
                         ),

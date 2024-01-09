@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       "Billiards Lamp Controls",
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 15.sp, color: Colors.black),
                     ),
                   ],

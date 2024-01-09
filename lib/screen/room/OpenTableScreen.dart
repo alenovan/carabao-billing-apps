@@ -45,7 +45,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                 child: Text(
                   "ON",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.bold,
                       fontSize: 11.sp,
                       color: ColorConstant.white),
@@ -75,7 +75,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                 child: Text(
                   "OFF",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.bold,
                       fontSize: 11.sp,
                       color: ColorConstant.white),

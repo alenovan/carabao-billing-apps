@@ -46,7 +46,7 @@ class LoadingDialog {
                           ),
                           Text(
                             "${message == null ? "loading" : message}",
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                                 color: Colors.white,
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600),

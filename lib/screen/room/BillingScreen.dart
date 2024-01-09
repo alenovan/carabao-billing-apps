@@ -95,7 +95,7 @@ class _BillingScreenState extends State<BillingScreen> {
                               Text(
                                 "Hours :",
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 10.sp,
                                     color: ColorConstant.subtext,
                                     fontWeight: FontWeight.bold),
@@ -103,7 +103,7 @@ class _BillingScreenState extends State<BillingScreen> {
                               Text(
                                 "${selected_time}",
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 15.sp,
                                     color: ColorConstant.titletext),
                               ),
@@ -137,7 +137,7 @@ class _BillingScreenState extends State<BillingScreen> {
                 child: Text(
                   "Start",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 11.sp, color: ColorConstant.white),
                 ),
               ),

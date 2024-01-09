@@ -41,7 +41,7 @@ class _MenuListControlState extends State<MenuListControl> {
               Text(
                 widget.name,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 11.sp, color: ColorConstant.titletext),
               ),
               Row(
@@ -65,7 +65,7 @@ class _MenuListControlState extends State<MenuListControl> {
                         child: Text(
                           "ON",
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 11.sp, color: Colors.white),
                         ),
                       ),
@@ -94,7 +94,7 @@ class _MenuListControlState extends State<MenuListControl> {
                           child: Text(
                             "OFF",
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11.sp, color: Colors.white),
                           ),
                         ),
@@ -112,7 +112,7 @@ class _MenuListControlState extends State<MenuListControl> {
                       child: Text(
                         "RESET",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 11.sp, color: Colors.white),
                       ),
                     ),

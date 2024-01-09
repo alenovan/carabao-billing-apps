@@ -55,7 +55,7 @@ class _RoomScreenState extends State<RoomScreen> {
                         child: Text(
                           "Billing",
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 11.sp,
                               color: _currentIndex == 0
                                   ? ColorConstant.white
@@ -91,7 +91,7 @@ class _RoomScreenState extends State<RoomScreen> {
                       child: Text(
                         "Open Table",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 11.sp,
                             color: _currentIndex == 1
                                 ? ColorConstant.white

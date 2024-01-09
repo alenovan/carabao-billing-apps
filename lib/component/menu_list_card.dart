@@ -72,7 +72,7 @@ class _MenuListCardState extends State<MenuListCard> {
                         Text(
                           widget.name ?? "",
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 14.sp,
                               color: ColorConstant.titletext,
                               fontWeight: FontWeight.bold),
@@ -83,7 +83,7 @@ class _MenuListCardState extends State<MenuListCard> {
                         Text(
                           "1 Hour - 40 Menit lagi selesai.",
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 10.sp, color: ColorConstant.subtext),
                         ),
                       ],
@@ -101,7 +101,7 @@ class _MenuListCardState extends State<MenuListCard> {
                       child: Text(
                         "Ready",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 11.sp, color: Colors.white),
                       ),
                     ),
@@ -117,7 +117,7 @@ class _MenuListCardState extends State<MenuListCard> {
                       child: Text(
                         "Not Ready",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 11.sp, color: Colors.white),
                       ),
                     ),
