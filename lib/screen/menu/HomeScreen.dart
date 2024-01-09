@@ -60,8 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ConstantData.ip = s.result.rooms![0].ip!;
                 ConstantData.key = s.result.rooms![0].secret!;
               });
-            } else if (s is ConfigsErrorState) {
-            }
+            } else if (s is ConfigsErrorState) {}
           },
           builder: (c, s) {
             return Container();
@@ -70,9 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -111,13 +107,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ListView.builder(
                 itemCount: NewestOrders?.length ?? 0,
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, i) {
                   var data = NewestOrders![i];
                   return MenuListCard(
                     status: data.statusRooms == 0 ? false : true,
                     name: data.name!,
+                    id_order: data.id.toString(),
                     code: data.code!,
+                    start: data.newestOrderStartTime!,
                     end: data.newestOrderEndTime!,
+                    id_meja: data.roomId.toString(),
+                    type: data.type.toString(),
                   );
                 },
               )

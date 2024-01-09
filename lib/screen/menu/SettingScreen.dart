@@ -1,4 +1,5 @@
 import 'package:boxicons/boxicons.dart';
+import 'package:carabaobillingapps/screen/LoginScreen.dart';
 import 'package:carabaobillingapps/service/bloc/configs/configs_bloc.dart';
 import 'package:carabaobillingapps/service/models/configs/RequestConfigsModels.dart';
 import 'package:carabaobillingapps/service/repository/ConfigRepository.dart';
@@ -192,6 +193,43 @@ class _SettingScreenState extends State<SettingScreen> {
                         Boxicons.bx_chevron_right,
                         color: ColorConstant.subtext,
                       )
+                    ],
+                  ),
+                ))),
+        InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            child: Container(
+                margin: EdgeInsets.all(20.w),
+                decoration: BoxDecoration(
+                  color: ColorConstant.off,
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 2.0,
+                      spreadRadius: 1.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.all(15.w),
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Logout",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11.sp,
+                            color: ColorConstant.white),
+                      ),
                     ],
                   ),
                 ))),

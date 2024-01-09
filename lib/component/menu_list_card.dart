@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/screen/room/RoomScreen.dart';
 import 'package:flutter/material.dart';
@@ -5,25 +7,70 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../constant/image_constant.dart';
+import '../helper/global_helper.dart';
 
 class MenuListCard extends StatefulWidget {
   final bool status;
   final String name;
+  final String id_meja;
+  final String? id_order;
   final String code;
-  final DateTime end;
+  final String end;
+  final String start;
+  final String type;
 
   const MenuListCard(
       {super.key,
       required this.status,
       required this.name,
       required this.end,
-      required this.code});
+      required this.code,
+      required this.id_meja,
+      required this.type,
+      required this.start,
+      this.id_order});
 
   @override
   State<MenuListCard> createState() => _MenuListCardState();
 }
 
 class _MenuListCardState extends State<MenuListCard> {
+  Duration _remainingTime = Duration(seconds: 0);
+  late DateTime? _startTime;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.type == "OPEN-BILLING" && widget.end != "No orders") {
+      // Calculate the remaining time for OPEN-BILLING
+      DateTime endTime = DateTime.parse(widget.end);
+      Duration difference = endTime.difference(DateTime.parse(widget.start));
+      _remainingTime = Duration(seconds: difference.inSeconds);
+
+      // Start a timer to update the countdown every second
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        if (_remainingTime!.inSeconds > 0) {
+          setState(() {
+            _remainingTime = _remainingTime! - Duration(seconds: 1);
+          });
+        } else {
+          // Countdown has reached zero, you may want to handle this case
+          timer.cancel();
+        }
+      });
+    } else if (widget.type == "OPEN-TABLE") {
+      // For OPEN-TABLE, use count-up behavior
+      _startTime = DateTime.parse(widget.start);
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        setState(() {
+          _remainingTime = DateTime.now().difference(_startTime!);
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -32,8 +79,11 @@ class _MenuListCardState extends State<MenuListCard> {
           context,
           MaterialPageRoute(
               builder: (context) => RoomScreen(
+                    id_order: widget.id_order,
+                    status: widget.status,
                     name: widget.name,
                     code: widget.code,
+                    id_meja: widget.id_meja,
                   )),
         );
       },
@@ -80,12 +130,48 @@ class _MenuListCardState extends State<MenuListCard> {
                         SizedBox(
                           height: 5,
                         ),
-                        Text(
-                          "1 Hour - 40 Menit lagi selesai.",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10.sp, color: ColorConstant.subtext),
-                        ),
+                        if (widget.type == "OPEN-BILLING" &&
+                            widget.end != "No orders" &&
+                            widget.status &&
+                            _remainingTime != null)
+                          Text(
+                            _remainingTime != null
+                                ? formatDuration(_remainingTime!) +
+                                    " Lagi Selesai"
+                                : "N/A",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10.sp,
+                              color: ColorConstant.subtext,
+                            ),
+                          ),
+                        if (widget.type == "OPEN-TABLE" &&
+                            widget.status &&
+                            _startTime != null &&
+                            _remainingTime != null)
+                          Text(
+                            _remainingTime != null
+                                ? (widget.type == "OPEN-TABLE"
+                                        ? "Open Table"
+                                        : "") +
+                                    " - " +
+                                    formatDuration(_remainingTime!)
+                                : "N/A",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10.sp,
+                              color: ColorConstant.subtext,
+                            ),
+                          ),
+                        if (!widget.status)
+                          Text(
+                            "Available",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10.sp,
+                              color: ColorConstant.subtext,
+                            ),
+                          ),
                       ],
                     )
                   ],

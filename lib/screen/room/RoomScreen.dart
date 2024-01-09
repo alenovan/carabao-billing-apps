@@ -8,8 +8,17 @@ import '../../constant/color_constant.dart';
 
 class RoomScreen extends StatefulWidget {
   final String name;
+  final String id_meja;
+  final String? id_order;
   final String code;
-  const RoomScreen({super.key, required this.name, required this.code});
+  final bool status;
+
+  const RoomScreen(
+      {super.key,
+      required this.name,
+      required this.code,
+      required this.id_meja,
+      required this.status, this.id_order});
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
@@ -111,7 +120,18 @@ class _RoomScreenState extends State<RoomScreen> {
                   _currentIndex = index;
                 });
               },
-              children: [BillingScreen(), OpenTableScreen(code: widget.code,)],
+              children: [
+                BillingScreen(
+                  id_meja: widget.id_meja,
+                  code: widget.code,
+                ),
+                OpenTableScreen(
+                  id_order: widget.id_order,
+                  id_meja: widget.id_meja,
+                  code: widget.code,
+                  status: widget.status,
+                )
+              ],
             ),
           )
         ],

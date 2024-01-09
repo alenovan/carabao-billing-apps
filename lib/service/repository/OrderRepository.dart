@@ -13,9 +13,15 @@ import '../../helper/global_helper.dart';
 abstract class OrderRepo {
   Future<ResponseListOrdersModels> getOrder();
 
-  Future<ResponseOrdersModels> order(RequestOrdersModels payload);
+  Future<ResponseOrdersModels> order_open_billing(RequestOrdersModels payload);
 
-  Future<ResponseStopOrdersModels> stop_order(RequestStopOrdersModels payload);
+  Future<ResponseStopOrdersModels> stop_order_open_billing(
+      RequestStopOrdersModels payload);
+
+  Future<ResponseOrdersModels> order_open_table(RequestOrdersModels payload);
+
+  Future<ResponseStopOrdersModels> stop_order_open_table(
+      RequestStopOrdersModels payload);
 }
 
 class OrderRepoRepositoryImpl implements OrderRepo {
@@ -35,10 +41,11 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   }
 
   @override
-  Future<ResponseOrdersModels> order(RequestOrdersModels payload) async {
+  Future<ResponseOrdersModels> order_open_billing(
+      RequestOrdersModels payload) async {
     // TODO: implement updateOrder
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.order),
+    var response = await http.post(Uri.parse(UrlConstant.order_open_billing),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseOrdersModels responses =
@@ -51,11 +58,45 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   }
 
   @override
-  Future<ResponseStopOrdersModels> stop_order(
+  Future<ResponseStopOrdersModels> stop_order_open_billing(
       RequestStopOrdersModels payload) async {
     // TODO: implement stop_order
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.stoporder),
+    var response = await http.post(Uri.parse(UrlConstant.order_stop_billing),
+        body: body, headers: await tokenHeader(true));
+    if (response.statusCode == 200) {
+      ResponseStopOrdersModels responses =
+          responseStopOrdersModelsFromJson(response.body);
+      return responses;
+    } else {
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
+    }
+  }
+
+  @override
+  Future<ResponseOrdersModels> order_open_table(
+      RequestOrdersModels payload) async {
+    // TODO: implement updateOrder
+    var body = jsonEncode(payload);
+    var response = await http.post(Uri.parse(UrlConstant.order_open_table),
+        body: body, headers: await tokenHeader(true));
+    if (response.statusCode == 200) {
+      ResponseOrdersModels responses =
+          responseOrdersModelsFromJson(response.body);
+      return responses;
+    } else {
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
+    }
+  }
+
+  @override
+  Future<ResponseStopOrdersModels> stop_order_open_table(
+      RequestStopOrdersModels payload) async {
+    // TODO: implement stop_order
+    var body = jsonEncode(payload);
+    var response = await http.post(Uri.parse(UrlConstant.order_stop_table),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseStopOrdersModels responses =

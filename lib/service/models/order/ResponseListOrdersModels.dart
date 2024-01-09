@@ -34,7 +34,10 @@ class NewestOrder {
   String? name;
   int? statusRooms;
   String? statusOrder;
-  DateTime? newestOrderEndTime;
+  String? type;
+  int? id;
+  String? newestOrderStartTime;
+  String? newestOrderEndTime;
 
   NewestOrder({
     this.roomId,
@@ -42,6 +45,9 @@ class NewestOrder {
     this.name,
     this.statusRooms,
     this.statusOrder,
+    this.type,
+    this.id,
+    this.newestOrderStartTime,
     this.newestOrderEndTime,
   });
 
@@ -51,7 +57,10 @@ class NewestOrder {
     name: json["name"],
     statusRooms: json["status_rooms"],
     statusOrder: json["status_order"],
-    newestOrderEndTime: json["newest_order_end_time"] == null ? null : DateTime.parse(json["newest_order_end_time"]),
+    type: json["type"],
+    id: json["id"],
+    newestOrderStartTime: json["newest_order_start_time"],
+    newestOrderEndTime: json["newest_order_end_time"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +69,9 @@ class NewestOrder {
     "name": name,
     "status_rooms": statusRooms,
     "status_order": statusOrder,
-    "newest_order_end_time": newestOrderEndTime?.toIso8601String(),
+    "type": type,
+    "id": id,
+    "newest_order_start_time": newestOrderStartTime,
+    "newest_order_end_time": newestOrderEndTime,
   };
 }

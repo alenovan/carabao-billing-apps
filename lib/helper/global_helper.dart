@@ -4,6 +4,7 @@ import 'package:carabaobillingapps/helper/shared_preference.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../constant/data_constant.dart';
+import '../service/repository/RoomsRepository.dart';
 
 void hideKeyboard(context) {
   FocusScope.of(context).requestFocus(FocusNode());
@@ -21,8 +22,8 @@ Future pushScreenAndWait(BuildContext context, Widget buildScreen) async {
   return;
 }
 
-Future pushScreenAndWaitReplace(BuildContext context,
-    Widget buildScreen) async {
+Future pushScreenAndWaitReplace(
+    BuildContext context, Widget buildScreen) async {
   await Navigator.pushReplacement(
       context, CupertinoPageRoute(builder: (context) => buildScreen));
   return;
@@ -39,4 +40,38 @@ Future<Map<String, String>> tokenHeader(bool contentType) async {
   }
 
   return headers;
+}
+
+void switchLamp(String code, bool status) async {
+  await RoomsRepoRepositoryImpl().openRooms(ConstantData.ip +
+      code +
+      (status ? "on" : "false") +
+      "?key=" +
+      ConstantData.key);
+}
+
+String formatDuration(Duration duration) {
+  int hours = duration.inHours;
+  int minutes = duration.inMinutes.remainder(60);
+  int seconds = duration.inSeconds.remainder(60);
+
+  String hoursString = hours > 0 ? '$hours Jam' : '';
+  String minutesString = minutes > 0 ? ' $minutes Menit' : '';
+  String secondsString = seconds > 0 ? ' $seconds Detik' : '';
+
+  return hoursString + minutesString + secondsString;
+}
+
+
+String _cleanAndCapitalize(String input) {
+  String cleanedType = input.replaceAll(RegExp(r'[^\w\s]'), ' '); // Replace symbols with spaces
+  cleanedType = cleanedType.toLowerCase().capitalize(); // Capitalize the first letter
+  return cleanedType;
+}
+
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
 }

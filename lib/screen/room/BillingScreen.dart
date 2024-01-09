@@ -1,20 +1,61 @@
 import 'package:boxicons/boxicons.dart';
+import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
+import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
+import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
+import '../../helper/BottomSheetFeedback.dart';
+import '../../helper/global_helper.dart';
+import '../../helper/navigation_utils.dart';
+import '../BottomNavigationScreen.dart';
 
 class BillingScreen extends StatefulWidget {
-  const BillingScreen({super.key});
+  final String id_meja;
+  final String code;
+
+  const BillingScreen({super.key, required this.id_meja, required this.code});
 
   @override
   State<BillingScreen> createState() => _BillingScreenState();
 }
 
 class _BillingScreenState extends State<BillingScreen> {
-  late String selected_time = "Choose Hourse";
+  late String selected_time = "Choose Hours";
   late int selected_time_nunber;
+
+  final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
+
+  Widget _consumerApi() {
+    return Column(
+      children: [
+        BlocConsumer<OrderBloc, OrderState>(
+          listener: (c, s) async {
+            if (s is OrdersLoadingState) {
+              LoadingDialog.show(c, "Mohon tunggu");
+            } else if (s is OrdersLoadedState) {
+              popScreen(context);
+              BottomSheetFeedback.showSuccess(
+                  context, "Selamat", s.result.message!);
+              switchLamp(widget.code, true);
+              NavigationUtils.navigateTo(
+                  context, const BottomNavigationScreen(), false);
+            } else if (s is OrdersErrorState) {
+              popScreen(c);
+              BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
+            }
+          },
+          builder: (c, s) {
+            return Container();
+          },
+        ),
+      ],
+    );
+  }
 
   @override
   void _showBottomSheet(BuildContext context) {
@@ -49,102 +90,114 @@ class _BillingScreenState extends State<BillingScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(
-            height: 50.w,
-          ),
-          InkWell(
-            onTap: () {
-              _showBottomSheet(context);
-            },
-            child: Container(
-              height: 70.w,
-              margin: EdgeInsets.only(left: 20.w, right: 20.w),
-              child: Container(
+      body: MultiBlocProvider(
+          providers: [
+            BlocProvider<OrderBloc>(
+              create: (BuildContext context) => _OrderBloc,
+            ),
+          ],
+          child: Column(
+            children: [
+              _consumerApi(),
+              SizedBox(
+                height: 50.w,
+              ),
+              InkWell(
+                onTap: () {
+                  _showBottomSheet(context);
+                },
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: ColorConstant.white,
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 2.0,
-                        spreadRadius: 1.0,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(15.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Boxicons.bx_alarm,
-                            color: ColorConstant.alarm,
+                  height: 70.w,
+                  margin: EdgeInsets.only(left: 20.w, right: 20.w),
+                  child: Container(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: ColorConstant.white,
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 2.0,
+                            spreadRadius: 1.0,
+                            offset: Offset(0, 2),
                           ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Hours :",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 10.sp,
-                                    color: ColorConstant.subtext,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "${selected_time}",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 15.sp,
-                                    color: ColorConstant.titletext),
-                              ),
-                            ],
-                          )
                         ],
                       ),
-                      Icon(
-                        Boxicons.bx_chevron_down,
+                      padding: EdgeInsets.all(15.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Boxicons.bx_alarm,
+                                color: ColorConstant.alarm,
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Hours :",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10.sp,
+                                        color: ColorConstant.subtext,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "${selected_time}",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 15.sp,
+                                        color: ColorConstant.titletext),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          Icon(
+                            Boxicons.bx_chevron_down,
+                            color: ColorConstant.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  _OrderBloc.add(ActOrderOpenBilling(
+                      payload: RequestOrdersModels(
+                          idRooms: widget.id_meja,
+                          duration: selected_time_nunber.toString())));
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
                         color: ColorConstant.primary,
                       ),
-                    ],
+                      color: ColorConstant.primary,
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  height: 50.w,
+                  margin: EdgeInsets.all(20.w),
+                  padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                  child: Center(
+                    child: Text(
+                      "Start",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11.sp, color: ColorConstant.white),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ColorConstant.primary,
-                  ),
-                  color: ColorConstant.primary,
-                  borderRadius: BorderRadius.all(Radius.circular(50))),
-              height: 50.w,
-              margin: EdgeInsets.all(20.w),
-              padding: EdgeInsets.only(left: 20.w, right: 20.w),
-              child: Center(
-                child: Text(
-                  "Start",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11.sp, color: ColorConstant.white),
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
+              )
+            ],
+          )),
     );
   }
 }

@@ -4,20 +4,41 @@ abstract class OrderEvent extends Equatable {
   const OrderEvent();
 }
 
-class ActOrder extends OrderEvent {
+class ActOrderOpenBilling extends OrderEvent {
   RequestOrdersModels payload;
 
-  ActOrder({required this.payload});
+  ActOrderOpenBilling({required this.payload});
 
   @override
   // TODO: implement props
   List<Object> get props => [payload];
 }
 
-class ActStopOrder extends OrderEvent {
+class ActStopOrderOpenBilling extends OrderEvent {
   RequestStopOrdersModels payload;
 
-  ActStopOrder({required this.payload});
+  ActStopOrderOpenBilling({required this.payload});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [payload];
+}
+
+
+class ActOrderOpenTable extends OrderEvent {
+  RequestOrdersModels payload;
+
+  ActOrderOpenTable({required this.payload});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [payload];
+}
+
+class ActStopOrderOpenTable extends OrderEvent {
+  RequestStopOrdersModels payload;
+
+  ActStopOrderOpenTable({required this.payload});
 
   @override
   // TODO: implement props

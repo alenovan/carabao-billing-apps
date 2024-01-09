@@ -15,24 +15,45 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   OrderBloc({required this.repository}) : super(OrdersInitial()) {
     on<OrderEvent>((event, emit) async {
-      if (event is ActOrder) {
+      if (event is ActOrderOpenBilling) {
         emit(OrdersLoadingState());
         try {
-          final result = await repository.order(event.payload);
+          final result = await repository.order_open_billing(event.payload);
           emit(OrdersLoadedState(result: result));
         } catch (e) {
           emit(OrdersErrorState(message: e.toString()));
         }
       }
-      if (event is ActStopOrder) {
+      if (event is ActStopOrderOpenBilling) {
         emit(OrdersLoadingState());
         try {
-          final result = await repository.stop_order(event.payload);
+          final result =
+              await repository.stop_order_open_billing(event.payload);
           emit(OrdersStopLoadedState(result: result));
         } catch (e) {
           emit(OrdersErrorState(message: e.toString()));
         }
       }
+
+      if (event is ActOrderOpenTable) {
+        emit(OrdersLoadingState());
+        try {
+          final result = await repository.order_open_table(event.payload);
+          emit(OrdersLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersErrorState(message: e.toString()));
+        }
+      }
+      if (event is ActStopOrderOpenTable) {
+        emit(OrdersLoadingState());
+        try {
+          final result = await repository.stop_order_open_table(event.payload);
+          emit(OrdersStopLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersErrorState(message: e.toString()));
+        }
+      }
+
       if (event is GetOrder) {
         emit(OrdersLoadingState());
         try {
