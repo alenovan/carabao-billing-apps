@@ -1,0 +1,98 @@
+import 'package:carabaobillingapps/constant/color_constant.dart';
+import 'package:carabaobillingapps/constant/image_constant.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'menu/HomeScreen.dart';
+import 'menu/SettingScreen.dart';
+
+class BottomNavigationScreen extends StatefulWidget {
+  const BottomNavigationScreen({super.key});
+
+  @override
+  State<BottomNavigationScreen> createState() => _BottomNavigationScreenState();
+}
+
+class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
+  int _currentIndex = 0;
+  PageController _pageController = PageController(initialPage: 0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ColorConstant.bg,
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(10.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8.0,
+              spreadRadius: 2.0,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Container(
+          height: 56.0,
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              InkWell(
+                onTap: () {
+                  _navigateToPage(0);
+                },
+                child: Image.asset(
+                  _currentIndex == 0
+                      ? ImageConstant.home_selected
+                      : ImageConstant.home,
+                  width: 45.w,
+                  height: 45.w,
+                ),
+              ),
+              VerticalDivider(
+                color: ColorConstant.dividermenu,
+                thickness: 1.0,
+                width: 20.0,
+              ),
+              InkWell(
+                onTap: () {
+                  _navigateToPage(1);
+                },
+                child: Image.asset(
+                  _currentIndex == 1
+                      ? ImageConstant.setting_selected
+                      : ImageConstant.setting,
+                  width: 45.w,
+                  height: 45.w,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        children: [
+          HomeScreen(),
+          SettingScreen()
+        ],
+      ),
+    );
+  }
+
+  void _navigateToPage(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+}
