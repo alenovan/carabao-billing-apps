@@ -45,7 +45,7 @@ Future<Map<String, String>> tokenHeader(bool contentType) async {
 void switchLamp(String code, bool status) async {
   await RoomsRepoRepositoryImpl().openRooms(ConstantData.ip +
       code +
-      (status ? "on" : "false") +
+      (status ? "on" : "off") +
       "?key=" +
       ConstantData.key);
 }

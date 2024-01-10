@@ -41,11 +41,18 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
           listener: (c, s) async {
             if (s is OrdersLoadingState) {
               LoadingDialog.show(c, "Mohon tunggu");
-            } else if (s is OrdersLoadedState || s is OrdersStopLoadedState) {
+            } else if (s is OrdersLoadedState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", "Selamat Berhasil");
               switchLamp(widget.code, true);
+              NavigationUtils.navigateTo(
+                  context, const BottomNavigationScreen(), false);
+            } else if (s is OrdersStopLoadedState) {
+              popScreen(context);
+              BottomSheetFeedback.showSuccess(
+                  context, "Selamat", "Selamat Berhasil");
+              switchLamp(widget.code, false);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersErrorState) {
@@ -108,9 +115,8 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                 GestureDetector(
                   onTap: () {
                     _OrderBloc.add(ActStopOrderOpenTable(
-                        payload:
-                            RequestStopOrdersModels(orderId: int.parse(
-                                widget.id_order.toString()))));
+                        payload: RequestStopOrdersModels(
+                            orderId: int.parse(widget.id_order.toString()))));
                   },
                   child: Container(
                     decoration: BoxDecoration(

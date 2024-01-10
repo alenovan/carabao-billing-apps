@@ -43,10 +43,19 @@ class _MenuListCardState extends State<MenuListCard> {
   void initState() {
     super.initState();
 
-    if (widget.type == "OPEN-BILLING" && widget.end != "No orders") {
+    if (widget.end != "No orders") {
+      setState(() {
+        DateTime endTime = DateTime.parse(widget.end);
+        Duration difference = endTime.difference(DateTime.parse(widget.start));
+        _remainingTime = Duration(seconds: difference.inSeconds);
+      });
+    }
+    if (widget.type == "OPEN-BILLING" &&
+        widget.end != "No orders" &&
+        widget.status) {
       // Calculate the remaining time for OPEN-BILLING
       DateTime endTime = DateTime.parse(widget.end);
-      Duration difference = endTime.difference(DateTime.parse(widget.start));
+      Duration difference = endTime.difference(DateTime.now());
       _remainingTime = Duration(seconds: difference.inSeconds);
 
       // Start a timer to update the countdown every second
@@ -62,7 +71,7 @@ class _MenuListCardState extends State<MenuListCard> {
           switchLamp(widget.code, false);
         }
       });
-    } else if (widget.type == "OPEN-TABLE") {
+    } else if (widget.type == "OPEN-TABLE" && widget.status) {
       // For OPEN-TABLE, use count-up behavior
       _startTime = DateTime.parse(widget.start);
       switchLamp(widget.code, true);
@@ -168,7 +177,9 @@ class _MenuListCardState extends State<MenuListCard> {
                           ),
                         if (!widget.status)
                           Text(
-                            "Available",
+                            widget.end == "No orders"
+                                ? "Available"
+                                : formatDuration(_remainingTime),
                             textAlign: TextAlign.center,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 10.sp,
@@ -179,7 +190,7 @@ class _MenuListCardState extends State<MenuListCard> {
                     )
                   ],
                 ),
-                if (widget.status)
+                if (!widget.status)
                   Container(
                     width: 55.w,
                     decoration: BoxDecoration(
@@ -195,7 +206,7 @@ class _MenuListCardState extends State<MenuListCard> {
                       ),
                     ),
                   ),
-                if (!widget.status)
+                if (widget.status)
                   Container(
                     width: 75.w,
                     decoration: BoxDecoration(
@@ -204,7 +215,7 @@ class _MenuListCardState extends State<MenuListCard> {
                     height: 30.w,
                     child: Center(
                       child: Text(
-                        "Not Ready",
+                        "In Use",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.plusJakartaSans(
                             fontSize: 11.sp, color: Colors.white),
