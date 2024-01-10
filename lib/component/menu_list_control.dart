@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../constant/color_constant.dart';
 import '../constant/data_constant.dart';
+import '../helper/global_helper.dart';
 import '../service/repository/RoomsRepository.dart';
+import 'loading_dialog.dart';
 
 class MenuListControl extends StatefulWidget {
   final String name;
@@ -48,12 +50,10 @@ class _MenuListControlState extends State<MenuListControl> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      await RoomsRepoRepositoryImpl().openRooms(
-                          ConstantData.ip +
-                              widget.code +
-                              "on" +
-                              "?key=" +
-                              ConstantData.key);
+                      LoadingDialog.show(context, "Mohon tunggu");
+                      switchLamp(widget.code, true);
+                      await Future.delayed(Duration(seconds: 2));
+                      popScreen(context);
                     },
                     child: Container(
                       width: 55.w,
@@ -76,12 +76,10 @@ class _MenuListControlState extends State<MenuListControl> {
                   ),
                   GestureDetector(
                       onTap: () async {
-                        await RoomsRepoRepositoryImpl().openRooms(
-                            ConstantData.ip +
-                                widget.code +
-                                "off" +
-                                "?key=" +
-                                ConstantData.key);
+                        LoadingDialog.show(context, "Mohon tunggu");
+                        switchLamp(widget.code, false);
+                        await Future.delayed(Duration(seconds: 2));
+                        popScreen(context);
                       },
                       child: Container(
                         width: 55.w,
@@ -102,21 +100,31 @@ class _MenuListControlState extends State<MenuListControl> {
                   SizedBox(
                     width: 5.w,
                   ),
-                  Container(
-                    width: 55.w,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.primary,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    height: 30.w,
-                    child: Center(
-                      child: Text(
-                        "RESET",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.sp, color: Colors.white),
-                      ),
-                    ),
-                  ),
+                  GestureDetector(
+                      onTap: () async {
+                        LoadingDialog.show(context, "Mohon tunggu");
+                        switchLamp(widget.code, true);
+                        await Future.delayed(Duration(seconds: 2));
+                        switchLamp(widget.code, false);
+                        await Future.delayed(Duration(seconds: 1));
+                        popScreen(context);
+                      },
+                      child: Container(
+                        width: 55.w,
+                        decoration: BoxDecoration(
+                            color: ColorConstant.primary,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        height: 30.w,
+                        child: Center(
+                          child: Text(
+                            "RESET",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11.sp, color: Colors.white),
+                          ),
+                        ),
+                      )),
                 ],
               )
             ],

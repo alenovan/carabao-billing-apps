@@ -1,5 +1,5 @@
 class UrlConstant {
-  static const base_url = "http://192.168.2.3:3000/";
+  static const base_url = "https://carabaocontroller.carabaobilliards.com";
   static const config = base_url + "configs";
   static const login = base_url + "logins";
 

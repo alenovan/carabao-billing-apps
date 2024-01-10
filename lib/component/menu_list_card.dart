@@ -52,17 +52,20 @@ class _MenuListCardState extends State<MenuListCard> {
       // Start a timer to update the countdown every second
       _timer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (_remainingTime!.inSeconds > 0) {
+          switchLamp(widget.code, true);
           setState(() {
             _remainingTime = _remainingTime! - Duration(seconds: 1);
           });
         } else {
           // Countdown has reached zero, you may want to handle this case
           timer.cancel();
+          switchLamp(widget.code, false);
         }
       });
     } else if (widget.type == "OPEN-TABLE") {
       // For OPEN-TABLE, use count-up behavior
       _startTime = DateTime.parse(widget.start);
+      switchLamp(widget.code, true);
       _timer = Timer.periodic(Duration(seconds: 1), (timer) {
         setState(() {
           _remainingTime = DateTime.now().difference(_startTime!);
