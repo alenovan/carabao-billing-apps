@@ -41,41 +41,41 @@ class _RoomScreenState extends State<RoomScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Expanded(
-                //   child: GestureDetector(
-                //     onTap: () {
-                //       _navigateToPage(0);
-                //     },
-                //     child: Container(
-                //       decoration: BoxDecoration(
-                //           border: Border.all(
-                //             color: _currentIndex == 0
-                //                 ? ColorConstant.primary
-                //                 : ColorConstant.subtext,
-                //           ),
-                //           color: _currentIndex == 0
-                //               ? ColorConstant.primary
-                //               : Colors.transparent,
-                //           borderRadius: BorderRadius.all(Radius.circular(50))),
-                //       height: 50.w,
-                //       padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                //       child: Center(
-                //         child: Text(
-                //           "Billing",
-                //           textAlign: TextAlign.center,
-                //           style: GoogleFonts.plusJakartaSans(
-                //               fontSize: 11.sp,
-                //               color: _currentIndex == 0
-                //                   ? ColorConstant.white
-                //                   : ColorConstant.subtext),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // SizedBox(
-                //   width: 10.w,
-                // ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _navigateToPage(0);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: _currentIndex == 0
+                                ? ColorConstant.primary
+                                : ColorConstant.subtext,
+                          ),
+                          color: _currentIndex == 0
+                              ? ColorConstant.primary
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      height: 50.w,
+                      padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                      child: Center(
+                        child: Text(
+                          "Billing",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11.sp,
+                              color: _currentIndex == 0
+                                  ? ColorConstant.white
+                                  : ColorConstant.subtext),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10.w,
+                ),
                 Expanded(
                     child: GestureDetector(
                   onTap: () {
