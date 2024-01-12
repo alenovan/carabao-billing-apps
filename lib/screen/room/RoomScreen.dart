@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../constant/color_constant.dart';
+import 'BillingScreen.dart';
 
 class RoomScreen extends StatefulWidget {
   final String name;
@@ -11,13 +12,16 @@ class RoomScreen extends StatefulWidget {
   final String? id_order;
   final String code;
   final bool status;
+  final String type;
 
   const RoomScreen(
       {super.key,
       required this.name,
       required this.code,
       required this.id_meja,
-      required this.status, this.id_order});
+      required this.status,
+      this.id_order,
+      required this.type});
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
@@ -41,73 +45,76 @@ class _RoomScreenState extends State<RoomScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: GestureDetector(
+                if (widget.type == "OPEN-BILLING" || widget.type == "null" || !widget.status)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        _navigateToPage(0);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: _currentIndex == 0
+                                  ? ColorConstant.primary
+                                  : ColorConstant.subtext,
+                            ),
+                            color: _currentIndex == 0
+                                ? ColorConstant.primary
+                                : Colors.transparent,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        height: 50.w,
+                        padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                        child: Center(
+                          child: Text(
+                            "Billing",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11.sp,
+                                color: _currentIndex == 0
+                                    ? ColorConstant.white
+                                    : ColorConstant.subtext),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  width: 10.w,
+                ),
+                if (widget.type == "OPEN-TABLE" || widget.type == "null" || !widget.status)
+                  Expanded(
+                      child: GestureDetector(
                     onTap: () {
-                      _navigateToPage(0);
+                      _navigateToPage(1);
                     },
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border.all(
-                            color: _currentIndex == 0
+                            color: _currentIndex == 1
                                 ? ColorConstant.primary
                                 : ColorConstant.subtext,
                           ),
-                          color: _currentIndex == 0
+                          color: _currentIndex == 1
                               ? ColorConstant.primary
                               : Colors.transparent,
                           borderRadius: BorderRadius.all(Radius.circular(50))),
                       height: 50.w,
+                      width: 100.w,
                       padding: EdgeInsets.only(left: 20.w, right: 20.w),
                       child: Center(
                         child: Text(
-                          "Billing",
+                          "Open Table",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.plusJakartaSans(
                               fontSize: 11.sp,
-                              color: _currentIndex == 0
+                              color: _currentIndex == 1
                                   ? ColorConstant.white
                                   : ColorConstant.subtext),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10.w,
-                ),
-                Expanded(
-                    child: GestureDetector(
-                  onTap: () {
-                    _navigateToPage(1);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _currentIndex == 1
-                              ? ColorConstant.primary
-                              : ColorConstant.subtext,
-                        ),
-                        color: _currentIndex == 1
-                            ? ColorConstant.primary
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    height: 50.w,
-                    width: 100.w,
-                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                    child: Center(
-                      child: Text(
-                        "Open Table",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.sp,
-                            color: _currentIndex == 1
-                                ? ColorConstant.white
-                                : ColorConstant.subtext),
-                      ),
-                    ),
-                  ),
-                ))
+                  ))
               ],
             ),
           ),
@@ -120,16 +127,20 @@ class _RoomScreenState extends State<RoomScreen> {
                 });
               },
               children: [
-                // BillingScreen(
-                //   id_meja: widget.id_meja,
-                //   code: widget.code,
-                // ),
-                OpenTableScreen(
-                  id_order: widget.id_order,
-                  id_meja: widget.id_meja,
-                  code: widget.code,
-                  status: widget.status,
-                )
+                if (widget.type == "OPEN-BILLING" || widget.type == "null" || !widget.status)
+                  BillingScreen(
+                    id_meja: widget.id_meja,
+                    code: widget.code,
+                    id_order: widget.id_order,
+                    status: widget.status,
+                  ),
+                if (widget.type == "OPEN-TABLE" || widget.type == "null" || !widget.status)
+                  OpenTableScreen(
+                    id_order: widget.id_order,
+                    id_meja: widget.id_meja,
+                    code: widget.code,
+                    status: widget.status,
+                  )
               ],
             ),
           )

@@ -1,16 +1,21 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/screen/room/RoomScreen.dart';
+import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
+import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../constant/image_constant.dart';
 import '../helper/global_helper.dart';
+import '../service/bloc/order/order_bloc.dart';
 
 class MenuListCard extends StatefulWidget {
-  final bool status;
+  late bool status;
   final String name;
   final String id_meja;
   final String? id_order;
@@ -19,7 +24,7 @@ class MenuListCard extends StatefulWidget {
   final String start;
   final String type;
 
-  const MenuListCard(
+  MenuListCard(
       {super.key,
       required this.status,
       required this.name,
@@ -38,6 +43,35 @@ class _MenuListCardState extends State<MenuListCard> {
   Duration _remainingTime = Duration(seconds: 0);
   late DateTime? _startTime;
   late Timer _timer;
+  final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
+
+  Widget _consumerApi() {
+    return Column(
+      children: [
+        BlocConsumer<OrderBloc, OrderState>(
+          listener: (c, s) async {
+            if (s is OrdersStopLoadedState) {
+              log("stopp");
+              setState(() {
+                widget.status = false;
+              });
+              switchLamp(widget.code, false);
+            }
+          },
+          builder: (c, s) {
+            return Container();
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _OrderBloc?.close();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -67,7 +101,9 @@ class _MenuListCardState extends State<MenuListCard> {
         } else {
           // Countdown has reached zero, you may want to handle this case
           timer.cancel();
-          switchLamp(widget.code, false);
+          _OrderBloc.add(ActStopOrderOpenBilling(
+              payload: RequestStopOrdersModels(
+                  orderId: int.parse(widget.id_order.toString()))));
         }
       });
     } else if (widget.type == "OPEN-TABLE" && widget.status) {
@@ -83,148 +119,174 @@ class _MenuListCardState extends State<MenuListCard> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RoomScreen(
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider<OrderBloc>(
+            create: (BuildContext context) => _OrderBloc,
+          ),
+        ],
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RoomScreen(
                     id_order: widget.id_order,
                     status: widget.status,
                     name: widget.name,
                     code: widget.code,
+                    type: widget.type,
                     id_meja: widget.id_meja,
                   )),
-        );
-      },
-      child: Container(
-        margin: EdgeInsets.all(8.w),
-        child: Container(
+            );
+          },
           child: Container(
-            decoration: BoxDecoration(
-              color: ColorConstant.white,
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 2.0,
-                  spreadRadius: 1.0,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            padding: EdgeInsets.all(15.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            margin: EdgeInsets.all(8.w),
+            child: Stack(
               children: [
-                Row(
-                  children: [
-                    Image.asset(
-                      ImageConstant.boxicons,
-                      width: 50.w,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.name ?? "",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14.sp,
-                              color: ColorConstant.titletext,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        if (widget.type == "OPEN-BILLING" &&
-                            widget.end != "No orders" &&
-                            widget.status &&
-                            _remainingTime != null)
-                          Text(
-                            _remainingTime != null
-                                ? formatDuration(_remainingTime!) +
-                                    " Lagi Selesai"
-                                : "N/A",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10.sp,
-                              color: ColorConstant.subtext,
-                            ),
-                          ),
-                        if (widget.type == "OPEN-TABLE" &&
-                            widget.status &&
-                            _startTime != null &&
-                            _remainingTime != null)
-                          Text(
-                            _remainingTime != null
-                                ? (widget.type == "OPEN-TABLE"
-                                        ? "Open Table"
-                                        : "") +
-                                    " - " +
-                                    formatDuration(_remainingTime!)
-                                : "N/A",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10.sp,
-                              color: ColorConstant.subtext,
-                            ),
-                          ),
-                        if (!widget.status)
-                          Text(
-                            widget.end == "No orders"
-                                ? "Available"
-                                : formatDuration(_remainingTime),
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10.sp,
-                              color: ColorConstant.subtext,
-                            ),
-                          ),
-                      ],
-                    )
-                  ],
-                ),
-                if (!widget.status)
-                  Container(
-                    width: 55.w,
+                _consumerApi(),
+                Container(
+                  child: Container(
                     decoration: BoxDecoration(
-                        color: ColorConstant.success,
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                    height: 30.w,
-                    child: Center(
-                      child: Text(
-                        "Ready",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.sp, color: Colors.white),
-                      ),
+                      color: ColorConstant.white,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 2.0,
+                          spreadRadius: 1.0,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.all(15.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Image.asset(
+                              ImageConstant.boxicons,
+                              width: 50.w,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.name ?? "",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14.sp,
+                                      color: ColorConstant.titletext,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                if (widget.type == "OPEN-BILLING" &&
+                                    !widget.status)
+                                  Text(
+                                    " OPEN-BILLING Waktu Sudah Habis",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10.sp,
+                                      color: ColorConstant.subtext,
+                                    ),
+                                  ),
+
+
+                                if (widget.type == "OPEN-BILLING" &&
+                                    widget.end != "No orders" &&
+                                    widget.status &&
+                                    _remainingTime != null)
+                                  Text(
+                                    _remainingTime != null && widget.status
+                                        ? formatDuration(_remainingTime!) +
+                                            " Lagi Habis"
+                                        : "N/A",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10.sp,
+                                      color: ColorConstant.subtext,
+                                    ),
+                                  ),
+                                if (widget.type == "OPEN-TABLE" &&
+                                    widget.status &&
+                                    _startTime != null &&
+                                    _remainingTime != null)
+                                  Text(
+                                    _remainingTime != null
+                                        ? (widget.type == "OPEN-TABLE"
+                                                ? "Open Table"
+                                                : "") +
+                                            " - " +
+                                            formatDuration(_remainingTime!)
+                                        : "N/A",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10.sp,
+                                      color: ColorConstant.subtext,
+                                    ),
+                                  ),
+                                if (!widget.status && widget.type == "OPEN-TABLE")
+                                  Text(
+                                    widget.end == "No orders"
+                                        ? "Available"
+                                        : formatDuration(_remainingTime),
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10.sp,
+                                      color: ColorConstant.subtext,
+                                    ),
+                                  ),
+                              ],
+                            )
+                          ],
+                        ),
+                        if (!widget.status)
+                          Container(
+                            width: 55.w,
+                            decoration: BoxDecoration(
+                                color: ColorConstant.success,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
+                            height: 30.w,
+                            child: Center(
+                              child: Text(
+                                "Ready",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11.sp, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        if (widget.status)
+                          Container(
+                            width: 75.w,
+                            decoration: BoxDecoration(
+                                color: ColorConstant.error,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
+                            height: 30.w,
+                            child: Center(
+                              child: Text(
+                                "In Use",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11.sp, color: Colors.white),
+                              ),
+                            ),
+                          )
+                      ],
                     ),
                   ),
-                if (widget.status)
-                  Container(
-                    width: 75.w,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.error,
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                    height: 30.w,
-                    child: Center(
-                      child: Text(
-                        "In Use",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.sp, color: Colors.white),
-                      ),
-                    ),
-                  )
+                )
               ],
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
