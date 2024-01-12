@@ -1,5 +1,5 @@
 class UrlConstant {
-  static const base_url = "https://carabaocontroller.carabaobilliards.com/";
+  static const base_url = "http://192.168.2.10:3000/";
   static const config = base_url + "configs";
   static const login = base_url + "logins";
 
@@ -8,8 +8,12 @@ class UrlConstant {
 
   static const order_stop_billing = base_url + "orders-stop-open-billing";
   static const order_stop_table = base_url + "orders-stop-open-table";
+  static const order_stop_table_bg = base_url + "orders-stop-open-bg-billing";
 
   // static const stoporder = base_url + "stop-order";
   static const newest_orders = base_url + "newest-orders";
+  static const newest_orders_bg = base_url + "newest-bg-orders";
   static const rooms = base_url + "rooms";
+
+
 }

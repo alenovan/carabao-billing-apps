@@ -1,9 +1,181 @@
-import 'package:carabaobillingapps/SplashScreen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:ui';
 
-void main() {
+import 'package:carabaobillingapps/SplashScreen.dart';
+import 'package:carabaobillingapps/constant/url_constant.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
+
+import 'helper/global_helper.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeService();
   runApp(const MyApp());
+}
+
+const notificationChannelId = 'my_foreground';
+
+// this will be used for notification id, So you can update your custom notification with this id.
+const notificationId = 888;
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  /// OPTIONAL, using custom notification channel id
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'my_foreground', // id
+    'MY FOREGROUND SERVICE', // title
+    description:
+        'This channel is used for important notifications.', // description
+    importance: Importance.low, // importance must be at low or higher level
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      iOS: DarwinInitializationSettings(),
+      android: AndroidInitializationSettings('ic_bg_service_small'),
+    ),
+  );
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      autoStart: true,
+      isForegroundMode: true,
+      notificationChannelId: 'my_foreground',
+      initialNotificationTitle: 'Carabao Service',
+      initialNotificationContent: 'Initializing',
+      foregroundServiceNotificationId: 888,
+    ),
+    iosConfiguration: IosConfiguration(
+      autoStart: true,
+    ),
+  );
+}
+
+bool stopBillingSuccess = false;
+
+Future<void> stopBilling(int orderId) async {
+  var apiUrl = UrlConstant.order_stop_table_bg;
+  var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
+
+  try {
+    print('Attempting to stop billing. Order ID: $orderId');
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'order_id': orderId,
+        'key': apiKey,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // Request was successful
+      print('Successfully stopped billing. Status code: ${response.statusCode}');
+      stopBillingSuccess = true;
+    } else {
+      // Request failed
+      stopBillingSuccess = false;
+      print('Failed to stop billing. Status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    // Exception occurred during the HTTP request
+    stopBillingSuccess = false;
+    print('Error during stopBilling request: $error');
+  }
+}
+
+@pragma('vm:entry-point')
+Future<void> onStart(ServiceInstance service) async {
+  // Only available for flutter 3.0.0 and later
+  DartPluginRegistrant.ensureInitialized();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  // bring to foreground
+  Timer.periodic(const Duration(seconds: 10), (timer) async {
+    if (service is AndroidServiceInstance) {
+      if (await service.isForegroundService()) {
+        // Fetch data from the API
+        var apiUrl = UrlConstant.newest_orders_bg;
+        var response = await http.get(Uri.parse(apiUrl));
+
+        if (response.statusCode == 200) {
+          // Parse JSON data
+          var data = json.decode(response.body);
+          var newestOrders = data['newestOrders'];
+
+          // Update notifications based on the received data
+          for (var order in newestOrders) {
+            // Extract room details
+            var roomId = order['room_id'];
+            var roomName = order['name'];
+            var statusOrder = order['status_order'] ?? 'No orders';
+            var endTimeString = order['newest_order_end_time'];
+
+            // Check if there is an end time specified
+            if (endTimeString != null && endTimeString != 'No orders') {
+              // Parse end time
+              var endTime = DateTime.parse(endTimeString);
+
+              // Calculate time difference
+              var timeDifference = endTime.difference(DateTime.now());
+
+              // Check if the end time has passed
+              if (timeDifference.isNegative) {
+                // Remove the notification for this room
+
+                // Hit endpoint to stop billing
+                var orderId = order['id'];
+                await stopBilling(orderId);
+
+                // Trigger switchLamp if the stopBilling request is successful
+                if (stopBillingSuccess) {
+                  switchLamp(order['code'], false);
+                  flutterLocalNotificationsPlugin.cancel(roomId);
+                }
+              } else {
+                // Display countdown in notification for rooms with end time
+                flutterLocalNotificationsPlugin.show(
+                  roomId, // Reusing the same notification id
+                  'Room $roomName',
+                  'Status: $statusOrder\nTime Left: ${timeDifference.inMinutes} minutes',
+                  const NotificationDetails(
+                    android: AndroidNotificationDetails(
+                      notificationChannelId,
+                      'MY FOREGROUND SERVICE',
+                      icon: 'ic_bg_service_small',
+                      ongoing: true,
+                    ),
+                  ),
+                );
+              }
+            }
+          }
+        } else {
+          print(
+              'Failed to fetch data from the API. Status code: ${response.statusCode}');
+        }
+      }
+    }
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -12,7 +184,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-      return ScreenUtilInit(
+    return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
@@ -32,11 +204,10 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child:  const SplashScreen(),
+      child: const SplashScreen(),
     );
   }
 }
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../component/menu_list_card.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
+import '../../helper/shared_preference.dart';
 import '../../service/bloc/configs/configs_bloc.dart';
 import '../../service/repository/ConfigRepository.dart';
 
@@ -52,14 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         BlocConsumer<ConfigsBloc, ConfigsState>(
-          listener: (c, s) {
+          listener: (c, s) async {
             if (s is ConfigsLoadingState) {
             } else if (s is ConfigsLoadedState) {
             } else if (s is ConfigsListLoadedState) {
-              setState(() {
-                ConstantData.ip = s.result.rooms![0].ip!;
-                ConstantData.key = s.result.rooms![0].secret!;
-              });
+              await addStringSf(ConstantData.ip, s.result.rooms![0].ip!);
+              await addStringSf(ConstantData.key, s.result.rooms![0].secret!);
             } else if (s is ConfigsErrorState) {}
           },
           builder: (c, s) {

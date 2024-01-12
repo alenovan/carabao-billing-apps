@@ -43,11 +43,10 @@ Future<Map<String, String>> tokenHeader(bool contentType) async {
 }
 
 void switchLamp(String code, bool status) async {
-  await RoomsRepoRepositoryImpl().openRooms(ConstantData.ip +
-      code +
-      (status ? "on" : "off") +
-      "?key=" +
-      ConstantData.key);
+  var ip = await getStringValuesSF(ConstantData.ip);
+  var key = await getStringValuesSF(ConstantData.key);
+  await RoomsRepoRepositoryImpl()
+      .openRooms(ip + code + (status ? "on" : "off") + "?key=" + key);
 }
 
 String formatDuration(Duration duration) {
@@ -62,13 +61,13 @@ String formatDuration(Duration duration) {
   return hoursString + minutesString + secondsString;
 }
 
-
 String _cleanAndCapitalize(String input) {
-  String cleanedType = input.replaceAll(RegExp(r'[^\w\s]'), ' '); // Replace symbols with spaces
-  cleanedType = cleanedType.toLowerCase().capitalize(); // Capitalize the first letter
+  String cleanedType =
+      input.replaceAll(RegExp(r'[^\w\s]'), ' '); // Replace symbols with spaces
+  cleanedType =
+      cleanedType.toLowerCase().capitalize(); // Capitalize the first letter
   return cleanedType;
 }
-
 
 extension StringExtension on String {
   String capitalize() {

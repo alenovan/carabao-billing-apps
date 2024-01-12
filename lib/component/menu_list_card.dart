@@ -51,11 +51,9 @@ class _MenuListCardState extends State<MenuListCard> {
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) async {
             if (s is OrdersStopLoadedState) {
-              log("stopp");
               setState(() {
                 widget.status = false;
               });
-              switchLamp(widget.code, false);
             }
           },
           builder: (c, s) {
