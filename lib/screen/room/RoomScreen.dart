@@ -1,4 +1,3 @@
-import 'package:carabaobillingapps/screen/room/BillingScreen.dart';
 import 'package:carabaobillingapps/screen/room/OpenTableScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,41 +41,41 @@ class _RoomScreenState extends State<RoomScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      _navigateToPage(0);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: _currentIndex == 0
-                                ? ColorConstant.primary
-                                : ColorConstant.subtext,
-                          ),
-                          color: _currentIndex == 0
-                              ? ColorConstant.primary
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
-                      height: 50.w,
-                      padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                      child: Center(
-                        child: Text(
-                          "Billing",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
-                              fontSize: 11.sp,
-                              color: _currentIndex == 0
-                                  ? ColorConstant.white
-                                  : ColorConstant.subtext),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10.w,
-                ),
+                // Expanded(
+                //   child: GestureDetector(
+                //     onTap: () {
+                //       _navigateToPage(0);
+                //     },
+                //     child: Container(
+                //       decoration: BoxDecoration(
+                //           border: Border.all(
+                //             color: _currentIndex == 0
+                //                 ? ColorConstant.primary
+                //                 : ColorConstant.subtext,
+                //           ),
+                //           color: _currentIndex == 0
+                //               ? ColorConstant.primary
+                //               : Colors.transparent,
+                //           borderRadius: BorderRadius.all(Radius.circular(50))),
+                //       height: 50.w,
+                //       padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                //       child: Center(
+                //         child: Text(
+                //           "Billing",
+                //           textAlign: TextAlign.center,
+                //           style: GoogleFonts.plusJakartaSans(
+                //               fontSize: 11.sp,
+                //               color: _currentIndex == 0
+                //                   ? ColorConstant.white
+                //                   : ColorConstant.subtext),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(
+                //   width: 10.w,
+                // ),
                 Expanded(
                     child: GestureDetector(
                   onTap: () {
@@ -121,10 +120,10 @@ class _RoomScreenState extends State<RoomScreen> {
                 });
               },
               children: [
-                BillingScreen(
-                  id_meja: widget.id_meja,
-                  code: widget.code,
-                ),
+                // BillingScreen(
+                //   id_meja: widget.id_meja,
+                //   code: widget.code,
+                // ),
                 OpenTableScreen(
                   id_order: widget.id_order,
                   id_meja: widget.id_meja,
