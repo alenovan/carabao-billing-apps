@@ -1,5 +1,7 @@
 class UrlConstant {
-  static const base_url = "http://192.168.2.10:3000/";
+  static const base_url_live = "https://carabaocontroller.carabaobilliards.com";
+  static const base_url_staging = "http://iot.godzillab.my.id/";
+  static const base_url = base_url_live;
   static const config = base_url + "configs";
   static const login = base_url + "logins";
 
@@ -14,6 +16,4 @@ class UrlConstant {
   static const newest_orders = base_url + "newest-orders";
   static const newest_orders_bg = base_url + "newest-bg-orders";
   static const rooms = base_url + "rooms";
-
-
 }
