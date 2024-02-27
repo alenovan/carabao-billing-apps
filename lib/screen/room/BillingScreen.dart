@@ -35,8 +35,42 @@ class BillingScreen extends StatefulWidget {
 class _BillingScreenState extends State<BillingScreen> {
   late String selected_time = "Choose Hours";
   late int selected_time_nunber;
-
+  final TextEditingController _nameController = TextEditingController();
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
+
+  void showNameInputDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Masukkan Nama'),
+          content: TextField(
+            controller: _nameController,
+            decoration: InputDecoration(hintText: 'Masukkan nama Pemesan'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Batalkab'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String enteredName = _nameController.text;
+                _OrderBloc.add(ActOrderOpenBilling(
+                    payload: RequestOrdersModels(
+                        idRooms: widget.id_meja,
+                        name: enteredName,
+                        duration: selected_time_nunber.toString())));
+              },
+              child: Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget _consumerApi() {
     return Column(
@@ -175,10 +209,7 @@ class _BillingScreenState extends State<BillingScreen> {
         ),
         GestureDetector(
           onTap: () {
-            _OrderBloc.add(ActOrderOpenBilling(
-                payload: RequestOrdersModels(
-                    idRooms: widget.id_meja,
-                    duration: selected_time_nunber.toString())));
+            showNameInputDialog(context);
           },
           child: Container(
             decoration: BoxDecoration(

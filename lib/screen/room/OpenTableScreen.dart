@@ -34,6 +34,40 @@ class OpenTableScreen extends StatefulWidget {
 class _OpenTableScreenState extends State<OpenTableScreen> {
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
 
+  final TextEditingController _nameController = TextEditingController();
+
+  void showNameInputDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Masukkan Nama'),
+          content: TextField(
+            controller: _nameController,
+            decoration: InputDecoration(hintText: 'Masukkan nama Pemesan'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Batalkab'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String enteredName = _nameController.text;
+                _OrderBloc.add(ActOrderOpenTable(
+                    payload: RequestOrdersModels(
+                        idRooms: widget.id_meja, name: enteredName)));
+              },
+              child: Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _consumerApi() {
     return Column(
       children: [
@@ -86,8 +120,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               if (!widget.status)
                 GestureDetector(
                   onTap: () async {
-                    _OrderBloc.add(ActOrderOpenTable(
-                        payload: RequestOrdersModels(idRooms: widget.id_meja)));
+                    showNameInputDialog(context);
                   },
                   child: Container(
                     decoration: BoxDecoration(
