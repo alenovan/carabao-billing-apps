@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:carabaobillingapps/service/models/order/RequestOrderSearch.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
+import 'package:carabaobillingapps/service/models/order/ResponseOrderHistoryModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseStopOrdersModels.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +24,8 @@ abstract class OrderRepo {
 
   Future<ResponseStopOrdersModels> stop_order_open_table(
       RequestStopOrdersModels payload);
+
+  Future<ResponseOrderHistoryModels> OrderHistory(RequestOrderSearch payload);
 }
 
 class OrderRepoRepositoryImpl implements OrderRepo {
@@ -101,6 +105,23 @@ class OrderRepoRepositoryImpl implements OrderRepo {
     if (response.statusCode == 200) {
       ResponseStopOrdersModels responses =
           responseStopOrdersModelsFromJson(response.body);
+      return responses;
+    } else {
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
+    }
+  }
+
+  @override
+  Future<ResponseOrderHistoryModels> OrderHistory(
+      RequestOrderSearch payload) async {
+    // TODO: implement OrderHistory
+    var body = jsonEncode(payload);
+    var response = await http.post(Uri.parse(UrlConstant.history_orders),
+        body: body, headers: await tokenHeader(true));
+    if (response.statusCode == 200) {
+      ResponseOrderHistoryModels responses =
+          responseOrderHistoryModelsFromJson(response.body);
       return responses;
     } else {
       var responses = jsonDecode(response.body);

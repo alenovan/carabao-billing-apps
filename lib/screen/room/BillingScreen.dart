@@ -20,13 +20,14 @@ class BillingScreen extends StatefulWidget {
   final String code;
   final bool status;
   final String? id_order;
-
+  final String ip;
+  final String keys;
   const BillingScreen(
       {super.key,
       required this.id_meja,
       required this.code,
       required this.status,
-      this.id_order});
+      this.id_order, required this.ip, required this.keys});
 
   @override
   State<BillingScreen> createState() => _BillingScreenState();
@@ -83,14 +84,22 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-              switchLamp(widget.code, true);
+              switchLamp(
+                  ip: widget.ip,
+                  key: widget.keys,
+                  code: widget.code,
+                  status: true);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersStopLoadedState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-              switchLamp(widget.code, false);
+              switchLamp(
+                  ip: widget.ip,
+                  key: widget.keys,
+                  code: widget.code,
+                  status: false);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersErrorState) {

@@ -19,13 +19,17 @@ class OpenTableScreen extends StatefulWidget {
   final String id_meja;
   final bool status;
   final String? id_order;
+  final String ip;
+  final String keys;
 
   const OpenTableScreen(
       {super.key,
       required this.code,
       required this.id_meja,
       required this.status,
-      this.id_order});
+      this.id_order,
+      required this.ip,
+      required this.keys});
 
   @override
   State<OpenTableScreen> createState() => _OpenTableScreenState();
@@ -79,14 +83,22 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", "Selamat Berhasil");
-              switchLamp(widget.code, true);
+              switchLamp(
+                  ip: widget.ip,
+                  key: widget.keys,
+                  code: widget.code,
+                  status: true);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersStopLoadedState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", "Selamat Berhasil");
-              switchLamp(widget.code, false);
+              switchLamp(
+                  ip: widget.ip,
+                  key: widget.keys,
+                  code: widget.code,
+                  status: false);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersErrorState) {

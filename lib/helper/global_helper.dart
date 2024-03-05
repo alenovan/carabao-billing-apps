@@ -42,9 +42,11 @@ Future<Map<String, String>> tokenHeader(bool contentType) async {
   return headers;
 }
 
-void switchLamp(String code, bool status) async {
-  var ip = await getStringValuesSF(ConstantData.ip);
-  var key = await getStringValuesSF(ConstantData.key);
+void switchLamp(
+    {required String ip,
+    required String key,
+    required String code,
+    required bool status}) async {
   await RoomsRepoRepositoryImpl()
       .openRooms(ip + code + (status ? "on" : "off") + "?key=" + key);
 }

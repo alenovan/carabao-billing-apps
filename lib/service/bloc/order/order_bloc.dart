@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:carabaobillingapps/service/models/order/RequestOrderSearch.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
@@ -6,6 +7,8 @@ import 'package:carabaobillingapps/service/models/order/ResponseOrdersModels.dar
 import 'package:carabaobillingapps/service/models/order/ResponseStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../models/order/ResponseOrderHistoryModels.dart';
 
 part 'order_event.dart';
 part 'order_state.dart';
@@ -59,6 +62,16 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         try {
           final result = await repository.getOrder();
           emit(OrdersListLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersErrorState(message: e.toString()));
+        }
+      }
+
+      if (event is ActOrderHistory) {
+        emit(OrdersLoadingState());
+        try {
+          final result = await repository.OrderHistory(event.payload);
+          emit(OrdersHistoryLoadedState(result: result));
         } catch (e) {
           emit(OrdersErrorState(message: e.toString()));
         }

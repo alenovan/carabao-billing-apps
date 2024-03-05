@@ -55,3 +55,15 @@ class OrdersErrorState extends OrderState {
   // TODO: implement props
   List<Object> get props => [message];
 }
+
+
+class OrdersHistoryLoadedState extends OrderState {
+  ResponseOrderHistoryModels result;
+
+  OrdersHistoryLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+

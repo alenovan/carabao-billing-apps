@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/screen/room/RoomScreen.dart';
@@ -23,6 +22,8 @@ class MenuListCard extends StatefulWidget {
   final String end;
   final String start;
   final String type;
+  final String ip;
+  final String keys;
 
   MenuListCard(
       {super.key,
@@ -33,7 +34,9 @@ class MenuListCard extends StatefulWidget {
       required this.id_meja,
       required this.type,
       required this.start,
-      this.id_order});
+      this.id_order,
+      required this.ip,
+      required this.keys});
 
   @override
   State<MenuListCard> createState() => _MenuListCardState();
@@ -129,13 +132,15 @@ class _MenuListCardState extends State<MenuListCard> {
               context,
               MaterialPageRoute(
                   builder: (context) => RoomScreen(
-                    id_order: widget.id_order,
-                    status: widget.status,
-                    name: widget.name,
-                    code: widget.code,
-                    type: widget.type,
-                    id_meja: widget.id_meja,
-                  )),
+                        id_order: widget.id_order,
+                        status: widget.status,
+                        name: widget.name,
+                        code: widget.code,
+                        type: widget.type,
+                        id_meja: widget.id_meja,
+                        ip: widget.ip,
+                        keys: widget.keys,
+                      )),
             );
           },
           child: Container(
@@ -194,8 +199,6 @@ class _MenuListCardState extends State<MenuListCard> {
                                       color: ColorConstant.subtext,
                                     ),
                                   ),
-
-
                                 if (widget.type == "OPEN-BILLING" &&
                                     widget.end != "No orders" &&
                                     widget.status &&
@@ -229,7 +232,8 @@ class _MenuListCardState extends State<MenuListCard> {
                                       color: ColorConstant.subtext,
                                     ),
                                   ),
-                                if (!widget.status && widget.type == "OPEN-TABLE")
+                                if (!widget.status &&
+                                    widget.type == "OPEN-TABLE")
                                   Text(
                                     widget.end == "No orders"
                                         ? "Available"

@@ -87,7 +87,8 @@ Future<void> stopBilling(int orderId) async {
 
     if (response.statusCode == 200) {
       // Request was successful
-      print('Successfully stopped billing. Status code: ${response.statusCode}');
+      print(
+          'Successfully stopped billing. Status code: ${response.statusCode}');
       stopBillingSuccess = true;
     } else {
       // Request failed
@@ -148,7 +149,11 @@ Future<void> onStart(ServiceInstance service) async {
 
                 // Trigger switchLamp if the stopBilling request is successful
                 if (stopBillingSuccess) {
-                  switchLamp(order['code'], false);
+                  switchLamp(
+                      ip: order['ip'],
+                      key: order['secret'],
+                      code: order['code'],
+                      status: false);
                   flutterLocalNotificationsPlugin.cancel(roomId);
                 }
               } else {

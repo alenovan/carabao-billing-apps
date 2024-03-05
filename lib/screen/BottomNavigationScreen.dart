@@ -3,6 +3,7 @@ import 'package:carabaobillingapps/constant/image_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'menu/HistoryScreen.dart';
 import 'menu/HomeScreen.dart';
 import 'menu/SettingScreen.dart';
 
@@ -63,6 +64,23 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                 },
                 child: Image.asset(
                   _currentIndex == 1
+                      ? ImageConstant.home_selected
+                      : ImageConstant.home,
+                  width: 45.w,
+                  height: 45.w,
+                ),
+              ),
+              VerticalDivider(
+                color: ColorConstant.dividermenu,
+                thickness: 1.0,
+                width: 20.0,
+              ),
+              InkWell(
+                onTap: () {
+                  _navigateToPage(2);
+                },
+                child: Image.asset(
+                  _currentIndex == 2
                       ? ImageConstant.setting_selected
                       : ImageConstant.setting,
                   width: 45.w,
@@ -82,6 +100,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         },
         children: [
           HomeScreen(),
+          HistoryScreen(),
           SettingScreen()
         ],
       ),

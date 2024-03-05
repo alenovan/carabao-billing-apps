@@ -13,6 +13,8 @@ class RoomScreen extends StatefulWidget {
   final String code;
   final bool status;
   final String type;
+  final String ip;
+  final String keys;
 
   const RoomScreen(
       {super.key,
@@ -21,7 +23,9 @@ class RoomScreen extends StatefulWidget {
       required this.id_meja,
       required this.status,
       this.id_order,
-      required this.type});
+      required this.type,
+      required this.ip,
+      required this.keys});
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
@@ -45,7 +49,9 @@ class _RoomScreenState extends State<RoomScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.type == "OPEN-BILLING" || widget.type == "null" || !widget.status)
+                if (widget.type == "OPEN-BILLING" ||
+                    widget.type == "null" ||
+                    !widget.status)
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
@@ -82,7 +88,9 @@ class _RoomScreenState extends State<RoomScreen> {
                 SizedBox(
                   width: 10.w,
                 ),
-                if (widget.type == "OPEN-TABLE" || widget.type == "null" || !widget.status)
+                if (widget.type == "OPEN-TABLE" ||
+                    widget.type == "null" ||
+                    !widget.status)
                   Expanded(
                       child: GestureDetector(
                     onTap: () {
@@ -127,19 +135,27 @@ class _RoomScreenState extends State<RoomScreen> {
                 });
               },
               children: [
-                if (widget.type == "OPEN-BILLING" || widget.type == "null" || !widget.status)
+                if (widget.type == "OPEN-BILLING" ||
+                    widget.type == "null" ||
+                    !widget.status)
                   BillingScreen(
                     id_meja: widget.id_meja,
                     code: widget.code,
                     id_order: widget.id_order,
                     status: widget.status,
+                    ip: widget.ip,
+                    keys: widget.keys,
                   ),
-                if (widget.type == "OPEN-TABLE" || widget.type == "null" || !widget.status)
+                if (widget.type == "OPEN-TABLE" ||
+                    widget.type == "null" ||
+                    !widget.status)
                   OpenTableScreen(
                     id_order: widget.id_order,
                     id_meja: widget.id_meja,
                     code: widget.code,
                     status: widget.status,
+                    ip: widget.ip,
+                    keys: widget.keys,
                   )
               ],
             ),

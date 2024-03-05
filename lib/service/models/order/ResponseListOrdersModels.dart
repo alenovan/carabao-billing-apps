@@ -36,6 +36,8 @@ class NewestOrder {
   String? statusOrder;
   String? type;
   int? id;
+  String? ip;
+  String? secret;
   String? newestOrderStartTime;
   String? newestOrderEndTime;
 
@@ -47,6 +49,8 @@ class NewestOrder {
     this.statusOrder,
     this.type,
     this.id,
+    this.ip,
+    this.secret,
     this.newestOrderStartTime,
     this.newestOrderEndTime,
   });
@@ -59,6 +63,8 @@ class NewestOrder {
     statusOrder: json["status_order"],
     type: json["type"],
     id: json["id"],
+    ip: json["ip"],
+    secret: json["secret"],
     newestOrderStartTime: json["newest_order_start_time"],
     newestOrderEndTime: json["newest_order_end_time"],
   );
@@ -71,6 +77,8 @@ class NewestOrder {
     "status_order": statusOrder,
     "type": type,
     "id": id,
+    "ip": ip,
+    "secret": secret,
     "newest_order_start_time": newestOrderStartTime,
     "newest_order_end_time": newestOrderEndTime,
   };

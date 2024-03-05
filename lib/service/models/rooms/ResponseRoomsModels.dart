@@ -35,6 +35,12 @@ class Room {
   dynamic createdAt;
   dynamic updateAt;
   int? status;
+  int? idPanels;
+  int? roomsAvailable;
+  String? position;
+  String? ip;
+  int? isActive;
+  String? secret;
 
   Room({
     this.id,
@@ -43,6 +49,12 @@ class Room {
     this.createdAt,
     this.updateAt,
     this.status,
+    this.idPanels,
+    this.roomsAvailable,
+    this.position,
+    this.ip,
+    this.isActive,
+    this.secret,
   });
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
@@ -52,6 +64,12 @@ class Room {
     createdAt: json["created_at"],
     updateAt: json["update_at"],
     status: json["status"],
+    idPanels: json["id_panels"],
+    roomsAvailable: json["rooms_available"],
+    position: json["position"],
+    ip: json["ip"],
+    isActive: json["is_active"],
+    secret: json["secret"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -61,5 +79,11 @@ class Room {
     "created_at": createdAt,
     "update_at": updateAt,
     "status": status,
+    "id_panels": idPanels,
+    "rooms_available": roomsAvailable,
+    "position": position,
+    "ip": ip,
+    "is_active": isActive,
+    "secret": secret,
   };
 }

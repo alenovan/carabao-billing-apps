@@ -118,6 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     end: data.newestOrderEndTime!,
                     id_meja: data.roomId.toString(),
                     type: data.type.toString(),
+                    ip: data.ip!,
+                    keys: data.secret!,
                   );
                 },
               )

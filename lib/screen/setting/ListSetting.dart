@@ -6,6 +6,7 @@ import '../../constant/color_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
+import '../../service/models/rooms/ResponseRoomsModels.dart';
 import '../../service/repository/RoomsRepository.dart';
 
 class ListSetting extends StatefulWidget {
@@ -70,8 +71,13 @@ class _ListSettingState extends State<ListSetting> {
                   itemCount: meja?.length ?? 0,
                   shrinkWrap: true,
                   itemBuilder: (context, i) {
-                    var data = meja[i];
-                    return MenuListControl(name: data.name,code: data.code,);
+                    var data = meja[i] as Room;
+                    return MenuListControl(
+                      name: data.name!,
+                      code: data.code!,
+                      ip: data.ip!,
+                      keys: data.secret!,
+                    );
                   },
                 )
               ],

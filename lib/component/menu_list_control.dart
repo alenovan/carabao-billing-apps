@@ -9,8 +9,15 @@ import 'loading_dialog.dart';
 class MenuListControl extends StatefulWidget {
   final String name;
   final String code;
+  final String ip;
+  final String keys;
 
-  const MenuListControl({super.key, required this.name, required this.code});
+  const MenuListControl(
+      {super.key,
+      required this.name,
+      required this.code,
+      required this.ip,
+      required this.keys});
 
   @override
   State<MenuListControl> createState() => _MenuListControlState();
@@ -49,7 +56,11 @@ class _MenuListControlState extends State<MenuListControl> {
                   GestureDetector(
                     onTap: () async {
                       LoadingDialog.show(context, "Mohon tunggu");
-                      switchLamp(widget.code, true);
+                      switchLamp(
+                          ip: widget.ip,
+                          key: widget.keys,
+                          code: widget.code,
+                          status: true);
                       await Future.delayed(Duration(seconds: 2));
                       popScreen(context);
                     },
@@ -75,7 +86,11 @@ class _MenuListControlState extends State<MenuListControl> {
                   GestureDetector(
                       onTap: () async {
                         LoadingDialog.show(context, "Mohon tunggu");
-                        switchLamp(widget.code, false);
+                        switchLamp(
+                            ip: widget.ip,
+                            key: widget.keys,
+                            code: widget.code,
+                            status: false);
                         await Future.delayed(Duration(seconds: 2));
                         popScreen(context);
                       },
@@ -101,9 +116,17 @@ class _MenuListControlState extends State<MenuListControl> {
                   GestureDetector(
                       onTap: () async {
                         LoadingDialog.show(context, "Mohon tunggu");
-                        switchLamp(widget.code, true);
+                        switchLamp(
+                            ip: widget.ip,
+                            key: widget.keys,
+                            code: widget.code,
+                            status: true);
                         await Future.delayed(Duration(seconds: 2));
-                        switchLamp(widget.code, false);
+                        switchLamp(
+                            ip: widget.ip,
+                            key: widget.keys,
+                            code: widget.code,
+                            status: false);
                         await Future.delayed(Duration(seconds: 1));
                         popScreen(context);
                       },
