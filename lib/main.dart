@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:carabaobillingapps/SplashScreen.dart';
@@ -11,11 +12,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 
+import 'constant/data_constant.dart';
 import 'helper/global_helper.dart';
-
+import 'helper/shared_preference.dart';
+bool enableFetch = true;
+Timer? fetchTimer;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeService();
+
   runApp(const MyApp());
 }
 
@@ -108,78 +112,96 @@ Future<void> onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
 
-  // bring to foreground
-  Timer.periodic(const Duration(seconds: 10), (timer) async {
-    if (service is AndroidServiceInstance) {
-      if (await service.isForegroundService()) {
-        // Fetch data from the API
-        var apiUrl = UrlConstant.newest_orders_bg;
-        var response = await http.get(Uri.parse(apiUrl));
+ // Set initial value to true to allow fetching data
 
-        if (response.statusCode == 200) {
-          // Parse JSON data
-          var data = json.decode(response.body);
-          var newestOrders = data['newestOrders'];
+  // Start a periodic timer to execute the fetch logic
+  fetchTimer = Timer.periodic(const Duration(seconds: 70), (timer) async {
+    print("Service alenovan $enableFetch");
+      // Only execute the fetch logic if enableFetch is true
+      if (service is AndroidServiceInstance) {
+        if (await service.isForegroundService()) {
+          try {
+            // Fetch data from the API
+            var apiUrl = UrlConstant.newest_orders_bg;
+            var response = await http.get(Uri.parse(apiUrl),
+                headers: await tokenHeader(true));
 
-          // Update notifications based on the received data
-          for (var order in newestOrders) {
-            // Extract room details
-            var roomId = order['room_id'];
-            var roomName = order['name'];
-            var statusOrder = order['status_order'] ?? 'No orders';
-            var endTimeString = order['newest_order_end_time'];
+            if (response.statusCode == 200) {
+              // Parse JSON data
+              var data = json.decode(response.body);
+              var newestOrders = data['newestOrders'];
 
-            // Check if there is an end time specified
-            if (endTimeString != null && endTimeString != 'No orders') {
-              // Parse end time
-              var endTime = DateTime.parse(endTimeString);
+              // Update notifications based on the received data
+              for (var order in newestOrders) {
+                // Extract room details
+                var roomId = order['room_id'];
+                var roomName = order['name'];
+                var statusOrder = order['status_order'] ?? 'No orders';
+                var endTimeString = order['newest_order_end_time'];
 
-              // Calculate time difference
-              var timeDifference = endTime.difference(DateTime.now());
+                // Check if there is an end time specified
+                if (endTimeString != null && endTimeString != 'No orders') {
+                  // Parse end time
+                  var endTime = DateTime.parse(endTimeString);
 
-              // Check if the end time has passed
-              if (timeDifference.isNegative) {
-                // Remove the notification for this room
+                  // Calculate time difference
+                  var timeDifference = endTime.difference(DateTime.now());
 
-                // Hit endpoint to stop billing
-                var orderId = order['id'];
-                await stopBilling(orderId);
+                  // Check if the end time has passed
+                  if (timeDifference.isNegative) {
+                    // Remove the notification for this room
 
-                // Trigger switchLamp if the stopBilling request is successful
-                if (stopBillingSuccess) {
-                  switchLamp(
-                      ip: order['ip'],
-                      key: order['secret'],
-                      code: order['code'],
-                      status: false);
-                  flutterLocalNotificationsPlugin.cancel(roomId);
+                    // Hit endpoint to stop billing
+                    var orderId = order['id'];
+                    await stopBilling(orderId);
+
+                    // Trigger switchLamp if the stopBilling request is successful
+                    if (stopBillingSuccess) {
+                      switchLamp(
+                          ip: order['ip'],
+                          key: order['secret'],
+                          code: order['code'],
+                          status: false);
+                      flutterLocalNotificationsPlugin.cancel(roomId);
+                    }
+                  } else {
+                    // Display countdown in notification for rooms with end time
+                    flutterLocalNotificationsPlugin.show(
+                      roomId, // Reusing the same notification id
+                      'Room $roomName',
+                      'Status: $statusOrder\nTime Left: ${timeDifference.inMinutes} minutes',
+                      const NotificationDetails(
+                        android: AndroidNotificationDetails(
+                          notificationChannelId,
+                          'MY FOREGROUND SERVICE',
+                          icon: 'ic_bg_service_small',
+                          ongoing: true,
+                        ),
+                      ),
+                    );
+                  }
                 }
-              } else {
-                // Display countdown in notification for rooms with end time
-                flutterLocalNotificationsPlugin.show(
-                  roomId, // Reusing the same notification id
-                  'Room $roomName',
-                  'Status: $statusOrder\nTime Left: ${timeDifference.inMinutes} minutes',
-                  const NotificationDetails(
-                    android: AndroidNotificationDetails(
-                      notificationChannelId,
-                      'MY FOREGROUND SERVICE',
-                      icon: 'ic_bg_service_small',
-                      ongoing: true,
-                    ),
-                  ),
-                );
               }
+            } else {
+              enableFetch = false;
+              // fetchTimer?.cancel();
+              print(
+                  'Failed to fetch data from the API. Status code: ${response.statusCode}');
             }
+          } catch (e) {
+            enableFetch = false;
+            print('Error fetching data: $e');
+          } finally {
+            // Set enableFetch to false to prevent further fetch attempts
           }
-        } else {
-          print(
-              'Failed to fetch data from the API. Status code: ${response.statusCode}');
         }
       }
-    }
+    // } else {
+    //   // If enableFetch is false, log that fetch is disabled
+    //   print('Fetching data is disabled');
+    // }
   });
 }
 

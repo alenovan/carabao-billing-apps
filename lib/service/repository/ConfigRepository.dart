@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:carabaobillingapps/service/models/configs/RequestConfigsModels.dart';
 import 'package:carabaobillingapps/service/models/configs/ResponseConfigsModels.dart';
@@ -12,6 +13,8 @@ abstract class ConfigRepo {
   Future<ResponseListConfigModels> getConfig();
 
   Future<ResponseConfigsModels> updateConfig(RequestConfigsModels payload);
+
+  Future<dynamic> logout();
 }
 
 class ConfigRepoRepositoryImpl implements ConfigRepo {
@@ -41,6 +44,20 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
       ResponseConfigsModels responses =
           responseConfigsModelsFromJson(response.body);
       return responses;
+    } else {
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
+    }
+  }
+
+  @override
+  Future logout() async {
+    var body = jsonEncode({});
+    var response = await http.post(Uri.parse(UrlConstant.logout),
+        body: body, headers: await tokenHeader(true));
+    if (response.statusCode == 200) {
+      log(response.body);
+      return true;
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");

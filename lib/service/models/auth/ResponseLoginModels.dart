@@ -12,22 +12,26 @@ class ResponseLoginModels {
   bool? success;
   String? message;
   String? token;
+  int? timer;
 
   ResponseLoginModels({
     this.success,
     this.message,
     this.token,
+    this.timer,
   });
 
   factory ResponseLoginModels.fromJson(Map<String, dynamic> json) => ResponseLoginModels(
     success: json["success"],
     message: json["message"],
     token: json["token"],
+    timer: json["timer"],
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
     "message": message,
     "token": token,
+    "timer": timer,
   };
 }

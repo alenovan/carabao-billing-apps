@@ -3,15 +3,21 @@ import 'package:carabaobillingapps/screen/LoginScreen.dart';
 import 'package:carabaobillingapps/service/bloc/configs/configs_bloc.dart';
 import 'package:carabaobillingapps/service/repository/ConfigRepository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
+import '../../constant/data_constant.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
+import '../../helper/shared_preference.dart';
+import '../../main.dart';
 import '../setting/ListSetting.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -196,7 +202,11 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 ))),
         InkWell(
-            onTap: () {
+            onTap: () async{
+              await ConfigRepoRepositoryImpl().logout();
+              await initializeService();
+              fetchTimer?.cancel();
+              FlutterBackgroundService().invoke('stopService');
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),

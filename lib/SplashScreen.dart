@@ -26,7 +26,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void navigateToNextScreen() async {
     var token = await getStringValuesSF(ConstantData.token);
-    log("alenovan"+token.toString());
     if (token.toString().length>4) {
       Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacement(

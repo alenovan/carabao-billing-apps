@@ -4,6 +4,7 @@ class UrlConstant {
   static const base_url = base_url_staging;
   static const config = base_url + "configs";
   static const login = base_url + "logins";
+  static const logout = base_url + "logout";
 
   static const order_open_billing = base_url + "orders-open-billing";
   static const order_open_table = base_url + "orders-open-table";

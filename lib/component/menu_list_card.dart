@@ -9,8 +9,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../constant/data_constant.dart';
 import '../constant/image_constant.dart';
+import '../helper/BottomSheetFeedback.dart';
 import '../helper/global_helper.dart';
+import '../helper/shared_preference.dart';
 import '../service/bloc/order/order_bloc.dart';
 
 class MenuListCard extends StatefulWidget {
@@ -127,21 +130,27 @@ class _MenuListCardState extends State<MenuListCard> {
           ),
         ],
         child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => RoomScreen(
-                        id_order: widget.id_order,
-                        status: widget.status,
-                        name: widget.name,
-                        code: widget.code,
-                        type: widget.type,
-                        id_meja: widget.id_meja,
-                        ip: widget.ip,
-                        keys: widget.keys,
-                      )),
-            );
+          onTap: () async {
+            var timer = await getStringValuesSF(ConstantData.is_timer);
+            if (timer == "1") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RoomScreen(
+                          id_order: widget.id_order,
+                          status: widget.status,
+                          name: widget.name,
+                          code: widget.code,
+                          type: widget.type,
+                          id_meja: widget.id_meja,
+                          ip: widget.ip,
+                          keys: widget.keys,
+                        )),
+              );
+            } else {
+              BottomSheetFeedback.showError(context, "Mohon Maaf",
+                  "Akun anda tidak di izinkan untuk menjalankan biliing");
+            }
           },
           child: Container(
             margin: EdgeInsets.all(8.w),

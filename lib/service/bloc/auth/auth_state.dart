@@ -33,3 +33,4 @@ class AuthErrorState extends AuthState {
   // TODO: implement props
   List<Object> get props => [message];
 }
+

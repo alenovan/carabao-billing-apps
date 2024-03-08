@@ -113,46 +113,45 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ],
                   ),
                 ),
-
-
-
-                ListView.builder(
-                  itemCount: order?.length ?? 0,
-                  shrinkWrap: true,
-                  itemBuilder: (context, i) {
-                    var data = order[i] as MatchedOrder;
-                    DateTime endTime = DateTime.parse(data.endTime.toString());
-                    Duration difference = endTime.difference(DateTime.parse(data.startTime.toString()));
-                    var _remainingTime = Duration(seconds: difference.inSeconds);
-                    return Container(
-                      margin: EdgeInsets.only(
-                          left: 20.w, right: 20.w, bottom: 10.w),
-                      decoration: BoxDecoration(
-                        color: ColorConstant.white,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 2.0,
-                            spreadRadius: 1.0,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      padding: EdgeInsets.all(15.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ItemListHistory(title: "Nama",value: data.ordersName.toString(),),
-                          ItemListHistory(title: "Meja",value: data.name.toString(),),
-                          ItemListHistory(title: "Waktu Mulai",value: data.startTime.toString(),),
-                          ItemListHistory(title: "Waktu Selesai",value: data.endTime.toString(),),
-                          ItemListHistory(title: "Total Selesai",value: formatDuration(_remainingTime!),)
-                        ],
-                      ),
-                    );
-                  },
-                )
+                Expanded(
+                  child:  ListView.builder(
+                    itemCount: order?.length ?? 0,
+                    shrinkWrap: true,
+                    itemBuilder: (context, i) {
+                      var data = order[i] as MatchedOrder;
+                      DateTime endTime = DateTime.parse(data.endTime.toString());
+                      Duration difference = endTime.difference(DateTime.parse(data.startTime.toString()));
+                      var _remainingTime = Duration(seconds: difference.inSeconds);
+                      return Container(
+                        margin: EdgeInsets.only(
+                            left: 20.w, right: 20.w, bottom: 10.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.white,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ItemListHistory(title: "Nama",value: data.ordersName.toString(),),
+                            ItemListHistory(title: "Meja",value: data.name.toString(),),
+                            ItemListHistory(title: "Waktu Mulai",value: data.startTime.toString(),),
+                            ItemListHistory(title: "Waktu Selesai",value: data.endTime.toString(),),
+                            ItemListHistory(title: "Total Selesai",value: formatDuration(_remainingTime!),)
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           )),

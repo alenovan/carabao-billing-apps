@@ -3,6 +3,9 @@ import 'package:carabaobillingapps/constant/image_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../constant/data_constant.dart';
+import '../helper/shared_preference.dart';
+import '../main.dart';
 import 'menu/HistoryScreen.dart';
 import 'menu/HomeScreen.dart';
 import 'menu/SettingScreen.dart';
@@ -17,6 +20,20 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    inapp();
+  }
+
+  void inapp() async {
+    var timer = await getStringValuesSF(ConstantData.is_timer);
+    if (timer == "1") {
+      await initializeService();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,11 +115,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             _currentIndex = index;
           });
         },
-        children: [
-          HomeScreen(),
-          HistoryScreen(),
-          SettingScreen()
-        ],
+        children: [HomeScreen(), HistoryScreen(), SettingScreen()],
       ),
     );
   }
