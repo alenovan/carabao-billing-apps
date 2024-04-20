@@ -5,18 +5,14 @@ import 'package:carabaobillingapps/service/repository/ConfigRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
-import '../../constant/data_constant.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
-import '../../helper/shared_preference.dart';
 import '../../main.dart';
 import '../setting/ListSetting.dart';
 
@@ -43,9 +39,13 @@ class _SettingScreenState extends State<SettingScreen> {
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message.toString());
             } else if (s is ConfigsListLoadedState) {
-              setState(() {
-                ipdController.text = s.result.rooms![0].ip.toString() ?? "";
-              });
+              try{
+                setState(() {
+                  ipdController.text = s.result.rooms![0].ip.toString() ?? "";
+                });
+              }catch(e){
+
+              }
             } else if (s is ConfigsErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);

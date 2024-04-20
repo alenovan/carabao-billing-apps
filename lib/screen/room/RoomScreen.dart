@@ -49,61 +49,22 @@ class _RoomScreenState extends State<RoomScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.type == "OPEN-BILLING" ||
-                    widget.type == "null" ||
-                    !widget.status)
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        _navigateToPage(0);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _currentIndex == 0
-                                  ? ColorConstant.primary
-                                  : ColorConstant.subtext,
-                            ),
-                            color: _currentIndex == 0
-                                ? ColorConstant.primary
-                                : Colors.transparent,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50))),
-                        height: 50.w,
-                        padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                        child: Center(
-                          child: Text(
-                            "Billing",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11.sp,
-                                color: _currentIndex == 0
-                                    ? ColorConstant.white
-                                    : ColorConstant.subtext),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                SizedBox(
-                  width: 10.w,
-                ),
                 if (widget.type == "OPEN-TABLE" ||
                     widget.type == "null" ||
                     !widget.status)
                   Expanded(
                       child: GestureDetector(
                     onTap: () {
-                      _navigateToPage(1);
+                      _navigateToPage(0);
                     },
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border.all(
-                            color: _currentIndex == 1
+                            color: _currentIndex == 0
                                 ? ColorConstant.primary
                                 : ColorConstant.subtext,
                           ),
-                          color: _currentIndex == 1
+                          color: _currentIndex == 0
                               ? ColorConstant.primary
                               : Colors.transparent,
                           borderRadius: BorderRadius.all(Radius.circular(50))),
@@ -116,13 +77,52 @@ class _RoomScreenState extends State<RoomScreen> {
                           textAlign: TextAlign.center,
                           style: GoogleFonts.plusJakartaSans(
                               fontSize: 11.sp,
-                              color: _currentIndex == 1
+                              color: _currentIndex == 0
                                   ? ColorConstant.white
                                   : ColorConstant.subtext),
                         ),
                       ),
                     ),
-                  ))
+                  )),
+                SizedBox(
+                  width: 10.w,
+                ),
+                if (widget.type == "OPEN-BILLING" ||
+                    widget.type == "null" ||
+                    !widget.status)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        _navigateToPage(1);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: _currentIndex == 1
+                                  ? ColorConstant.primary
+                                  : ColorConstant.subtext,
+                            ),
+                            color: _currentIndex == 1
+                                ? ColorConstant.primary
+                                : Colors.transparent,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        height: 50.w,
+                        padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                        child: Center(
+                          child: Text(
+                            "Billing",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11.sp,
+                                color: _currentIndex == 1
+                                    ? ColorConstant.white
+                                    : ColorConstant.subtext),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -135,6 +135,17 @@ class _RoomScreenState extends State<RoomScreen> {
                 });
               },
               children: [
+                if (widget.type == "OPEN-TABLE" ||
+                    widget.type == "null" ||
+                    !widget.status)
+                  OpenTableScreen(
+                    id_order: widget.id_order,
+                    id_meja: widget.id_meja,
+                    code: widget.code,
+                    status: widget.status,
+                    ip: widget.ip,
+                    keys: widget.keys,
+                  ),
                 if (widget.type == "OPEN-BILLING" ||
                     widget.type == "null" ||
                     !widget.status)
@@ -146,17 +157,6 @@ class _RoomScreenState extends State<RoomScreen> {
                     ip: widget.ip,
                     keys: widget.keys,
                   ),
-                if (widget.type == "OPEN-TABLE" ||
-                    widget.type == "null" ||
-                    !widget.status)
-                  OpenTableScreen(
-                    id_order: widget.id_order,
-                    id_meja: widget.id_meja,
-                    code: widget.code,
-                    status: widget.status,
-                    ip: widget.ip,
-                    keys: widget.keys,
-                  )
               ],
             ),
           )

@@ -81,8 +81,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                 },
                 child: Image.asset(
                   _currentIndex == 1
-                      ? ImageConstant.home_selected
-                      : ImageConstant.home,
+                      ? ImageConstant.history
+                      : ImageConstant.history_selected,
                   width: 45.w,
                   height: 45.w,
                 ),

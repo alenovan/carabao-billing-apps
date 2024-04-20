@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';

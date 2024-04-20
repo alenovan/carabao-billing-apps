@@ -1,7 +1,7 @@
 class UrlConstant {
-  static const base_url_live = "https://carabaocontroller.carabaobilliards.com/";
+  static const base_url_live = "http://billingsystem9033-api.carabaobilliards.com/";
   static const base_url_staging = "http://192.168.2.11:3000/";
-  static const base_url = base_url_staging;
+  static const base_url = base_url_live;
   static const config = base_url + "configs";
   static const login = base_url + "logins";
   static const logout = base_url + "logout";

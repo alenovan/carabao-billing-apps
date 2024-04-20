@@ -89,6 +89,8 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseOrdersModels responses =
           responseOrdersModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -106,6 +108,8 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseStopOrdersModels responses =
           responseStopOrdersModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -123,6 +127,8 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseOrderHistoryModels responses =
           responseOrderHistoryModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");

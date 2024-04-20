@@ -27,6 +27,8 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
       ResponseListConfigModels responses =
           responseListConfigModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -44,6 +46,8 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
       ResponseConfigsModels responses =
           responseConfigsModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");

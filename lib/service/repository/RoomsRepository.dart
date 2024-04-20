@@ -22,6 +22,8 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
       ResponseRoomsModels responses =
           responseRoomsModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");

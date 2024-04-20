@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../component/menu_list_card.dart';
+import '../../component/shimmerx.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/shared_preference.dart';
@@ -25,13 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
   final _ConfigsBloc = ConfigsBloc(repository: ConfigRepoRepositoryImpl());
   late List<NewestOrder>? NewestOrders = [];
+  late bool loading = true;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _OrderBloc.add(GetOrder());
-    _ConfigsBloc.add(GetConfig());
+    // _ConfigsBloc.add(GetConfig());
   }
 
   Widget _consumerApi() {
@@ -43,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
             } else if (s is OrdersListLoadedState) {
               setState(() {
                 NewestOrders = s.result.newestOrders;
+                loading = false;
               });
             } else if (s is OrdersErrorState) {
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -57,8 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
             if (s is ConfigsLoadingState) {
             } else if (s is ConfigsLoadedState) {
             } else if (s is ConfigsListLoadedState) {
-              await addStringSf(ConstantData.ip, s.result.rooms![0].ip!);
-              await addStringSf(ConstantData.key, s.result.rooms![0].secret!);
+              try{
+                await addStringSf(ConstantData.ip, s.result.rooms![0].ip!);
+                await addStringSf(ConstantData.key, s.result.rooms![0].secret!);
+              }catch(e){
+
+              }
             } else if (s is ConfigsErrorState) {}
           },
           builder: (c, s) {
@@ -103,26 +110,40 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: 15.w,
               ),
-              ListView.builder(
-                itemCount: NewestOrders?.length ?? 0,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, i) {
-                  var data = NewestOrders![i];
-                  return MenuListCard(
-                    status: data.statusRooms == 0 ? false : true,
-                    name: data.name!,
-                    id_order: data.id.toString(),
-                    code: data.code!,
-                    start: data.newestOrderStartTime!,
-                    end: data.newestOrderEndTime!,
-                    id_meja: data.roomId.toString(),
-                    type: data.type.toString(),
-                    ip: data.ip!,
-                    keys: data.secret!,
-                  );
-                },
-              )
+              if (loading)
+                ListView.builder(
+                  itemCount: 10,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, i) {
+                    return Container(
+                      margin: EdgeInsets.all(8.w),
+                      height: 80.w,
+                      child: Shimmerx(),
+                    );
+                  },
+                ),
+              if (!loading)
+                ListView.builder(
+                  itemCount: NewestOrders?.length ?? 0,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, i) {
+                    var data = NewestOrders![i];
+                    return MenuListCard(
+                      status: data.statusRooms == 0 ? false : true,
+                      name: data.name!,
+                      id_order: data.id.toString(),
+                      code: data.code!,
+                      start: data.newestOrderStartTime!,
+                      end: data.newestOrderEndTime!,
+                      id_meja: data.roomId.toString(),
+                      type: data.type.toString(),
+                      ip: data.ip!,
+                      keys: data.secret!,
+                    );
+                  },
+                )
             ],
           )),
     );

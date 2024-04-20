@@ -8,7 +8,6 @@ import '../../../constant/data_constant.dart';
 import '../../../helper/shared_preference.dart';
 
 part 'auth_event.dart';
-
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
