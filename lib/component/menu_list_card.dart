@@ -14,6 +14,7 @@ import '../constant/image_constant.dart';
 import '../helper/BottomSheetFeedback.dart';
 import '../helper/global_helper.dart';
 import '../helper/shared_preference.dart';
+import '../main.dart';
 import '../service/bloc/order/order_bloc.dart';
 
 class MenuListCard extends StatefulWidget {
@@ -50,7 +51,7 @@ class _MenuListCardState extends State<MenuListCard> {
   late DateTime? _startTime;
   late Timer _timer;
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
-
+  var statusLocal = false;
   Widget _consumerApi() {
     return Column(
       children: [
@@ -59,7 +60,13 @@ class _MenuListCardState extends State<MenuListCard> {
             if (s is OrdersStopLoadedState) {
               setState(() {
                 widget.status = false;
+                statusLocal = false;
               });
+              switchLamp(
+                  ip: widget.ip,
+                  key: widget.keys,
+                  code: widget.code,
+                  status: false);
             }
           },
           builder: (c, s) {
@@ -80,7 +87,7 @@ class _MenuListCardState extends State<MenuListCard> {
   @override
   void initState() {
     super.initState();
-
+    statusLocal = widget.status;
     if (widget.end != "No orders") {
       setState(() {
         DateTime endTime = DateTime.parse(widget.end);
@@ -257,7 +264,7 @@ class _MenuListCardState extends State<MenuListCard> {
                             )
                           ],
                         ),
-                        if (!widget.status)
+                        if (!statusLocal)
                           Container(
                             width: 55.w,
                             decoration: BoxDecoration(
@@ -274,7 +281,7 @@ class _MenuListCardState extends State<MenuListCard> {
                               ),
                             ),
                           ),
-                        if (widget.status)
+                        if (statusLocal)
                           Container(
                             width: 75.w,
                             decoration: BoxDecoration(
