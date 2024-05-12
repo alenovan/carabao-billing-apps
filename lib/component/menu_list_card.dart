@@ -14,7 +14,6 @@ import '../constant/image_constant.dart';
 import '../helper/BottomSheetFeedback.dart';
 import '../helper/global_helper.dart';
 import '../helper/shared_preference.dart';
-import '../main.dart';
 import '../service/bloc/order/order_bloc.dart';
 
 class MenuListCard extends StatefulWidget {
@@ -28,6 +27,7 @@ class MenuListCard extends StatefulWidget {
   final String type;
   final String ip;
   final String keys;
+  final Function() onUpdate;
 
   MenuListCard(
       {super.key,
@@ -40,7 +40,7 @@ class MenuListCard extends StatefulWidget {
       required this.start,
       this.id_order,
       required this.ip,
-      required this.keys});
+      required this.keys, required this.onUpdate});
 
   @override
   State<MenuListCard> createState() => _MenuListCardState();
@@ -110,6 +110,7 @@ class _MenuListCardState extends State<MenuListCard> {
             _remainingTime = _remainingTime! - Duration(seconds: 1);
           });
         } else {
+          widget.onUpdate();
           // Countdown has reached zero, you may want to handle this case
           timer.cancel();
           _OrderBloc.add(ActStopOrderOpenBilling(

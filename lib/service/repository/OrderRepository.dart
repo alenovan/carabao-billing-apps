@@ -11,11 +11,14 @@ import 'package:http/http.dart' as http;
 
 import '../../constant/url_constant.dart';
 import '../../helper/global_helper.dart';
+import '../models/order/ResponseOrdersBgModels.dart';
+import '../models/order/ResponseOrdersOpenBillingModels.dart';
 
 abstract class OrderRepo {
   Future<ResponseListOrdersModels> getOrder();
+  Future<ResponseOrdersBgModels> getOrderBg();
 
-  Future<ResponseOrdersModels> order_open_billing(RequestOrdersModels payload);
+  Future<ResponseOrdersOpenBillingModels> order_open_billing(RequestOrdersModels payload);
 
   Future<ResponseStopOrdersModels> stop_order_open_billing(
       RequestStopOrdersModels payload);
@@ -45,15 +48,31 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   }
 
   @override
-  Future<ResponseOrdersModels> order_open_billing(
+  Future<ResponseOrdersBgModels> getOrderBg() async {
+    // TODO: implement getOrder
+    var response = await http.get(Uri.parse(UrlConstant.newest_orders_bg),
+        headers: await tokenHeader(true));
+    if (response.statusCode == 200) {
+      ResponseOrdersBgModels responses =
+      responseOrdersBgModelsFromJson(response.body);
+      return responses;
+    } else {
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
+    }
+  }
+
+
+  @override
+  Future<ResponseOrdersOpenBillingModels> order_open_billing(
       RequestOrdersModels payload) async {
     // TODO: implement updateOrder
     var body = jsonEncode(payload);
     var response = await http.post(Uri.parse(UrlConstant.order_open_billing),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
-      ResponseOrdersModels responses =
-          responseOrdersModelsFromJson(response.body);
+      ResponseOrdersOpenBillingModels responses =
+      responseOrdersOpenBillingModelsFromJson(response.body);
       return responses;
     } else {
       var responses = jsonDecode(response.body);

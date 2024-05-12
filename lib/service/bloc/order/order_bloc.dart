@@ -9,6 +9,8 @@ import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../models/order/ResponseOrderHistoryModels.dart';
+import '../../models/order/ResponseOrdersBgModels.dart';
+import '../../models/order/ResponseOrdersOpenBillingModels.dart';
 
 part 'order_event.dart';
 part 'order_state.dart';
@@ -22,7 +24,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         emit(OrdersLoadingState());
         try {
           final result = await repository.order_open_billing(event.payload);
-          emit(OrdersLoadedState(result: result));
+          emit(OrdersLoadedOpenBillingState(result: result));
         } catch (e) {
           emit(OrdersErrorState(message: e.toString()));
         }
@@ -66,6 +68,15 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           emit(OrdersErrorState(message: e.toString()));
         }
       }
+
+      if (event is GetOrderBg) {
+        try {
+          final result = await repository.getOrderBg();
+          emit(OrdersListBgLoadedState(result: result));
+        } catch (e) {
+        }
+      }
+
 
       if (event is ActOrderHistory) {
         emit(OrdersLoadingState());

@@ -3,29 +3,28 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:carabaobillingapps/SplashScreen.dart';
-import 'package:carabaobillingapps/constant/url_constant.dart';
+import 'package:carabaobillingapps/helper/global_helper.dart';
+import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'helper/global_helper.dart';
+import 'constant/url_constant.dart';
 
+late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 bool enableFetch = true;
 Timer? fetchTimer;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await initializeService();
   runApp(const MyApp());
 }
-
-const notificationChannelId = 'my_foreground';
-
-// this will be used for notification id, So you can update your custom notification with this id.
-const notificationId = 888;
 
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
@@ -69,8 +68,6 @@ Future<void> initializeService() async {
   );
 }
 
-bool stopBillingSuccess = false;
-
 Future<void> stopBilling(int orderId, ip, secret, code) async {
   var apiUrl = UrlConstant.order_stop_table_bg;
   var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
@@ -92,18 +89,28 @@ Future<void> stopBilling(int orderId, ip, secret, code) async {
       // Request was successful
       print(
           'Successfully stopped billing. Status code: ${response.statusCode}');
-      stopBillingSuccess = true;
       switchLamp(ip: ip, key: secret, code: code, status: false);
     } else {
-      // Request failed
-      stopBillingSuccess = false;
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
+    await removeOrderFromPrefs(orderId.toString());
   } catch (error) {
-    // Exception occurred during the HTTP request
-    stopBillingSuccess = false;
     print('Error during stopBilling request: $error');
   }
+}
+
+Future<void> initPrefs() async {
+  List<Map<String, dynamic>> _orders = [];
+  SharedPreferences? _prefs = await SharedPreferences.getInstance();
+// Load orders from SharedPreferences
+  final String? ordersJson = _prefs!.getString('orders');
+  if (ordersJson != null) {
+    _orders = List<Map<String, dynamic>>.from(json.decode(ordersJson));
+  }
+  final List<Map<String, dynamic>> startOrders =
+      _orders.where((order) => order['status_order'] == 'START').toList();
+  // print(startOrders);
+  startOrders.forEach((order) => startCountdown(order));
 }
 
 @pragma('vm:entry-point')
@@ -111,91 +118,91 @@ Future<void> onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later
   DartPluginRegistrant.ensureInitialized();
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
   // Set initial value to true to allow fetching data
 
   // Start a periodic timer to execute the fetch logic
-  fetchTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+  fetchTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
     // Only execute the fetch logic if enableFetch is true
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
         try {
-          // Fetch data from the API
-          var apiUrl = UrlConstant.newest_orders_bg;
-          var response = await http.get(Uri.parse(apiUrl),
-              headers: await tokenHeader(true));
-
-          if (response.statusCode == 200) {
-            // Parse JSON data
-            var data = json.decode(response.body);
-            var newestOrders = data['newestOrders'];
-
-            // Update notifications based on the received data
-            for (var order in newestOrders) {
-              // Extract room details
-              var roomId = order['room_id'];
-              var roomName = order['name'];
-              var statusOrder = order['status_order'] ?? 'No orders';
-              var endTimeString = order['newest_order_end_time'];
-
-              // Check if there is an end time specified
-              if (endTimeString != null && endTimeString != 'No orders') {
-                // Parse end time
-                var endTime = DateTime.parse(endTimeString);
-
-                // Calculate time difference
-                var timeDifference = endTime.difference(DateTime.now());
-
-                // Check if the end time has passed
-                if (timeDifference.isNegative) {
-                  // Remove the notification for this room
-
-                  // Hit endpoint to stop billing
-                  var orderId = order['id'];
-                  await stopBilling(
-                      orderId, order['ip'], order['secret'], order['code']);
-
-                  flutterLocalNotificationsPlugin.cancel(roomId);
-                } else {
-                  // Display countdown in notification for rooms with end time
-                  flutterLocalNotificationsPlugin.show(
-                    roomId, // Reusing the same notification id
-                    'Room $roomName',
-                    'Status: $statusOrder\nTime Left: ${timeDifference.inMinutes} minutes',
-                    const NotificationDetails(
-                      android: AndroidNotificationDetails(
-                        notificationChannelId,
-                        'MY FOREGROUND SERVICE',
-                        icon: 'ic_bg_service_small',
-                        ongoing: true,
-                      ),
-                    ),
-                  );
-                }
-              }
-            }
-          } else {
-            enableFetch = false;
-            // fetchTimer?.cancel();
-            print(
-                'Failed to fetch data from the API. Status code: ${response.statusCode}');
-          }
-        } catch (e) {
-          enableFetch = false;
-          print('Error fetching data: $e');
-        } finally {
-          // Set enableFetch to false to prevent further fetch attempts
-        }
+          await initPrefs();
+        } catch (e) {}
       }
     }
-    // } else {
-    //   // If enableFetch is false, log that fetch is disabled
-    //   print('Fetching data is disabled');
-    // }
   });
 }
+
+void startCountdown(Map<String, dynamic> order) {
+  late CountdownTimer _countdownTimer;
+  final DateTime endTime = DateTime.parse(order['newest_order_end_time']);
+  final String orderId = order['id'].toString();
+
+  _countdownTimer = CountdownTimer(
+    key: orderId,
+    endTime: endTime,
+    onTick: (Duration duration) {
+      final String formattedTime =
+          '${duration.inHours}:${duration.inMinutes.remainder(60)}:${duration.inSeconds.remainder(60)}';
+      showNotification(orderId, formattedTime, order['name'].toString());
+    },
+    onCountdownFinish: () async{
+      stopBilling(order['id'], order['ip'].toString(),
+          order['secret'].toString(), order['code'].toString());
+      removeNotification(orderId);
+    },
+  );
+  _countdownTimer.start();
+}
+
+Future<void> removeNotification(String orderId) async {
+  await _flutterLocalNotificationsPlugin.cancel(int.parse(orderId));
+
+}
+
+Future<void> removeOrderFromPrefs(String orderId) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<Map<String, dynamic>> orders = [];
+
+  // Load orders from SharedPreferences
+  final String? ordersJson = prefs.getString('orders');
+  if (ordersJson != null) {
+    orders = List<Map<String, dynamic>>.from(json.decode(ordersJson));
+  }
+
+  // Remove the order from the list
+  orders.removeWhere((order) => order['id'] == orderId);
+  // Save updated orders back to SharedPreferences
+  print(orders);
+  await prefs.setString('orders', jsonEncode(orders));
+}
+
+Future<void> showNotification(
+  String orderId,
+  String timeRemaining,
+  String name,
+) async {
+
+
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  AndroidNotificationDetails(
+    'countdown_channel',
+    'Countdown Channel',
+    importance: Importance.high,
+    playSound: false, // Disable sound
+    enableVibration: false,
+    enableLights: false,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+  await _flutterLocalNotificationsPlugin.show(
+    int.parse(orderId),
+    'Countdown ${name}',
+    'Time remaining: $timeRemaining',
+    platformChannelSpecifics,
+  );
+}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

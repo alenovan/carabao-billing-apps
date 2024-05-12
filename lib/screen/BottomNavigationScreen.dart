@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/constant/image_constant.dart';
 import 'package:flutter/material.dart';
@@ -5,11 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constant/data_constant.dart';
 import '../helper/shared_preference.dart';
-import '../main.dart';
 import 'menu/HistoryScreen.dart';
 import 'menu/HomeScreen.dart';
 import 'menu/SettingScreen.dart';
-
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
 
@@ -21,6 +21,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -28,12 +30,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     inapp();
   }
 
+
+
   void inapp() async {
     var timer = await getStringValuesSF(ConstantData.is_timer);
-    if (timer == "1") {
-      await initializeService();
-    }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -126,5 +130,33 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+}
+
+class CountdownTimer {
+  final String key;
+  final DateTime endTime;
+  final Function(Duration) onTick;
+  final Function() onCountdownFinish;
+  late Timer _timer;
+
+  CountdownTimer( {required this.key, required this.endTime, required this.onTick,required this.onCountdownFinish});
+
+  void start() {
+    final Duration countdownDuration = endTime.difference(DateTime.now());
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final Duration remainingTime = endTime.difference(DateTime.now());
+      if (remainingTime.inSeconds <= 0) {
+        _timer.cancel();
+        onCountdownFinish();
+        // Notify when countdown finishes
+      } else {
+        onTick(remainingTime);
+      }
+    });
+  }
+
+  void cancel() {
+    _timer.cancel();
   }
 }

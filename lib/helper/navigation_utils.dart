@@ -6,11 +6,7 @@ class NavigationUtils {
     if (isAddToBackstack) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => page));
     } else {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(fullscreenDialog: true, builder: (context) => page),
-            (route) => false,
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
     }
   }
 

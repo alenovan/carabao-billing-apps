@@ -50,6 +50,13 @@ class GetOrder extends OrderEvent {
   List<Object> get props => [];
 }
 
+class GetOrderBg extends OrderEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+
 class ActOrderHistory extends OrderEvent {
   RequestOrderSearch payload;
 

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
@@ -7,12 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../helper/navigation_utils.dart';
+import '../../service/models/order/ResponseOrdersBgModels.dart';
 import '../BottomNavigationScreen.dart';
 
 class BillingScreen extends StatefulWidget {
@@ -22,12 +27,15 @@ class BillingScreen extends StatefulWidget {
   final String? id_order;
   final String ip;
   final String keys;
+
   const BillingScreen(
       {super.key,
       required this.id_meja,
       required this.code,
       required this.status,
-      this.id_order, required this.ip, required this.keys});
+      this.id_order,
+      required this.ip,
+      required this.keys});
 
   @override
   State<BillingScreen> createState() => _BillingScreenState();
@@ -38,6 +46,19 @@ class _BillingScreenState extends State<BillingScreen> {
   late int selected_time_nunber;
   final TextEditingController _nameController = TextEditingController();
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
+
+  SharedPreferences? _prefs;
+  List<Map<String, dynamic>> _orders = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+
+
 
   void showNameInputDialog(BuildContext context) {
     showDialog(
@@ -54,7 +75,7 @@ class _BillingScreenState extends State<BillingScreen> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Batalkab'),
+              child: Text('Batalkan'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -73,6 +94,14 @@ class _BillingScreenState extends State<BillingScreen> {
     );
   }
 
+  Future<void> saveData(List<NewestOrderBg> orders) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _orders = orders.map((order) => order.toJson()).toList();
+    final String ordersJson = json.encode(_orders);
+    await _prefs.setString('orders', ordersJson);
+  }
+
+
   Widget _consumerApi() {
     return Column(
       children: [
@@ -80,7 +109,7 @@ class _BillingScreenState extends State<BillingScreen> {
           listener: (c, s) async {
             if (s is OrdersLoadingState) {
               LoadingDialog.show(c, "Mohon tunggu");
-            } else if (s is OrdersLoadedState) {
+            } else if (s is OrdersLoadedOpenBillingState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
@@ -89,6 +118,8 @@ class _BillingScreenState extends State<BillingScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: true);
+
+
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersStopLoadedState) {
@@ -101,7 +132,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   code: widget.code,
                   status: false);
               NavigationUtils.navigateTo(
-                  context, const BottomNavigationScreen(), false);
+                  context, const BottomNavigationScreen(), true);
             } else if (s is OrdersErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -296,3 +327,4 @@ class _BillingScreenState extends State<BillingScreen> {
     );
   }
 }
+

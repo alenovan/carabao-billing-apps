@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:carabaobillingapps/service/models/rooms/ResponsePanelModels.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../models/rooms/RequestPanelModels.dart';
 import '../../models/rooms/ResponseRoomsModels.dart';
+import '../../models/rooms/ResponseUpdatePanelModels.dart';
 import '../../repository/RoomsRepository.dart';
 
 part 'meja_event.dart';
@@ -21,6 +24,28 @@ class MejaBloc extends Bloc<MejaEvent, MejaState> {
           emit(MejaErrorState(message: e.toString()));
         }
       }
+
+      if (event is GetPanel) {
+        emit(MejaLoadingState());
+        try {
+          final result = await repository.getPanel();
+          emit(PanelLoadedState(result: result));
+        } catch (e) {
+          emit(MejaErrorState(message: e.toString()));
+        }
+      }
+
+      if (event is updatePanel) {
+        emit(MejaLoadingState());
+        try {
+          final result = await repository.updatePanel(event.payload, event.id);
+          emit(PanelUpdateLoadedState(result: result));
+        } catch (e) {
+          emit(MejaErrorState(message: e.toString()));
+        }
+      }
+
+
     });
   }
 }

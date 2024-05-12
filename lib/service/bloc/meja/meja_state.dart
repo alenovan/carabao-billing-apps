@@ -29,6 +29,28 @@ class MejaLoadedState extends MejaState {
 }
 
 
+class PanelLoadedState extends MejaState {
+  ResponsePanelModels result;
+
+  PanelLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+class PanelUpdateLoadedState extends MejaState {
+  ResponseUpdatePanelModels result;
+
+  PanelUpdateLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+
+
 
 class MejaErrorState extends MejaState {
   String message;

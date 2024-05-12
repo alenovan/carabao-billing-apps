@@ -26,6 +26,17 @@ class OrdersLoadedState extends OrderState {
   List<Object> get props => [result];
 }
 
+class OrdersLoadedOpenBillingState extends OrderState {
+  ResponseOrdersOpenBillingModels result;
+
+  OrdersLoadedOpenBillingState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+
 class OrdersStopLoadedState extends OrderState {
   ResponseStopOrdersModels result;
 
@@ -45,6 +56,17 @@ class OrdersListLoadedState extends OrderState {
   // TODO: implement props
   List<Object> get props => [result];
 }
+
+class OrdersListBgLoadedState extends OrderState {
+  ResponseOrdersBgModels result;
+
+  OrdersListBgLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
 
 class OrdersErrorState extends OrderState {
   String message;

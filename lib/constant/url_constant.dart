@@ -1,5 +1,5 @@
 class UrlConstant {
-  static const base_url_live = "http://billingsystem9033-api.carabaobilliards.com/";
+  static const base_url_live = "http://billingsystem9034-api.carabaobilliards.com/";
   static const base_url_staging = "http://192.168.2.11:3000/";
   static const base_url = base_url_live;
   static const config = base_url + "configs";
@@ -17,6 +17,8 @@ class UrlConstant {
   static const newest_orders = base_url + "newest-orders";
   static const newest_orders_bg = base_url + "newest-bg-orders";
   static const rooms = base_url + "rooms";
+  static const panels = base_url + "panels";
+  static const panelsupdate = base_url + "panels/";
 
 
   static const history_orders = base_url + "history-orders";

@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:carabaobillingapps/constant/data_constant.dart';
+import 'package:carabaobillingapps/main.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/menu_list_card.dart';
 import '../../component/shimmerx.dart';
@@ -13,7 +18,9 @@ import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/shared_preference.dart';
 import '../../service/bloc/configs/configs_bloc.dart';
+import '../../service/models/order/ResponseOrdersBgModels.dart';
 import '../../service/repository/ConfigRepository.dart';
+import '../BottomNavigationScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,18 +29,40 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
   final _ConfigsBloc = ConfigsBloc(repository: ConfigRepoRepositoryImpl());
   late List<NewestOrder>? NewestOrders = [];
   late bool loading = true;
+
+  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
+
+  List<Map<String, dynamic>> _orders = [];
+  late CountdownTimer _countdownTimer;
+  final int _updateIntervalSeconds = 1;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _OrderBloc.add(GetOrder());
-    // _ConfigsBloc.add(GetConfig());
+    _OrderBloc.add(GetOrderBg());
+    initPrefs();
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    // _countdownTimer.cancel();
+    super.dispose();
+  }
+
+  Future<void> saveData(List<NewestOrderBg> orders) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _orders = orders.map((order) => order.toJson()).toList();
+    final String ordersJson = json.encode(_orders);
+    await _prefs.setString('orders', ordersJson);
   }
 
   Widget _consumerApi() {
@@ -41,6 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) {
+            if (s is OrdersListBgLoadedState) {
+              setState(() {
+                saveData(s.result!.newestOrders!);
+              });
+            }
             if (s is OrdersLoadingState) {
             } else if (s is OrdersListLoadedState) {
               setState(() {
@@ -60,12 +94,10 @@ class _HomeScreenState extends State<HomeScreen> {
             if (s is ConfigsLoadingState) {
             } else if (s is ConfigsLoadedState) {
             } else if (s is ConfigsListLoadedState) {
-              try{
+              try {
                 await addStringSf(ConstantData.ip, s.result.rooms![0].ip!);
                 await addStringSf(ConstantData.key, s.result.rooms![0].secret!);
-              }catch(e){
-
-              }
+              } catch (e) {}
             } else if (s is ConfigsErrorState) {}
           },
           builder: (c, s) {
@@ -78,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    initPrefs();
     return Container(
       child: MultiBlocProvider(
           providers: [
@@ -141,6 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       type: data.type.toString(),
                       ip: data.ip!,
                       keys: data.secret!,
+                      onUpdate: () {
+                        _OrderBloc.add(GetOrder());
+                      },
                     );
                   },
                 )
