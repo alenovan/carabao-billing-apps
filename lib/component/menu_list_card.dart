@@ -62,11 +62,6 @@ class _MenuListCardState extends State<MenuListCard> {
                 widget.status = false;
                 statusLocal = false;
               });
-              switchLamp(
-                  ip: widget.ip,
-                  key: widget.keys,
-                  code: widget.code,
-                  status: false);
             }
           },
           builder: (c, s) {
@@ -81,6 +76,7 @@ class _MenuListCardState extends State<MenuListCard> {
   void dispose() {
     // TODO: implement dispose
     _OrderBloc?.close();
+    _timer?.cancel();
     super.dispose();
   }
 

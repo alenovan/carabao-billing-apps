@@ -138,18 +138,19 @@ class CountdownTimer {
   final DateTime endTime;
   final Function(Duration) onTick;
   final Function() onCountdownFinish;
+  final Function() onStart;
   late Timer _timer;
 
-  CountdownTimer( {required this.key, required this.endTime, required this.onTick,required this.onCountdownFinish});
+  CountdownTimer(  {required this.key, required this.endTime, required this.onTick,required this.onCountdownFinish,required this.onStart,});
 
   void start() {
     final Duration countdownDuration = endTime.difference(DateTime.now());
+    onStart();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final Duration remainingTime = endTime.difference(DateTime.now());
-      if (remainingTime.inSeconds <= 0) {
+      if (remainingTime.inSeconds == 0) {
         _timer.cancel();
         onCountdownFinish();
-        // Notify when countdown finishes
       } else {
         onTick(remainingTime);
       }

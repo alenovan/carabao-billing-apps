@@ -6,7 +6,6 @@ import '../../constant/color_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
-import '../../service/models/rooms/ResponseRoomsModels.dart';
 import '../../service/repository/RoomsRepository.dart';
 
 class ListSetting extends StatefulWidget {
@@ -32,8 +31,7 @@ class _ListSettingState extends State<ListSetting> {
       children: [
         BlocConsumer<MejaBloc, MejaState>(
           listener: (c, s) {
-            if (s is MejaLoadingState) {
-            } else if (s is MejaLoadedState) {
+            if (s is MejaLoadingState) {} else if (s is MejaLoadedState) {
               setState(() {
                 meja = s.result.rooms!;
               });
@@ -68,15 +66,14 @@ class _ListSettingState extends State<ListSetting> {
               children: [
                 _consumerApi(),
                 ListView.builder(
-                  itemCount: meja?.length ?? 0,
+                  itemCount: 32,
                   shrinkWrap: true,
                   itemBuilder: (context, i) {
-                    var data = meja[i] as Room;
                     return MenuListControl(
-                      name: data.name!,
-                      code: data.code!,
-                      ip: data.ip!,
-                      keys: data.secret!,
+                      name: "Meja ${1+i}",
+                      code: "mj_${1+i}_",
+                      ip: "http://192.168.100.247/",
+                      keys: "2f073a725916250b35a10fc2ac96d0104d8d592d",
                     );
                   },
                 )

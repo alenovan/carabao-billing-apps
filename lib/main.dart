@@ -7,7 +7,6 @@ import 'package:carabaobillingapps/helper/global_helper.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -66,6 +65,7 @@ Future<void> initializeService() async {
       autoStart: true,
     ),
   );
+  service.startService();
 }
 
 Future<void> stopBilling(int orderId, ip, secret, code) async {
@@ -93,24 +93,24 @@ Future<void> stopBilling(int orderId, ip, secret, code) async {
     } else {
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
-    await removeOrderFromPrefs(orderId.toString());
   } catch (error) {
     print('Error during stopBilling request: $error');
   }
 }
 
 Future<void> initPrefs() async {
-  List<Map<String, dynamic>> _orders = [];
-  SharedPreferences? _prefs = await SharedPreferences.getInstance();
-// Load orders from SharedPreferences
-  final String? ordersJson = _prefs!.getString('orders');
+  removeAllNotifications();
+  SharedPreferences _prefs = await SharedPreferences.getInstance();
+  final String? ordersJson = _prefs.getString('orders');
+  // Load existing orders from SharedPreferences if they exist
   if (ordersJson != null) {
-    _orders = List<Map<String, dynamic>>.from(json.decode(ordersJson));
+    List<dynamic> orderList = json.decode(ordersJson);
+    for (var order in orderList) {
+      // Pass each order directly as Map<String, dynamic> to startCountdown
+
+      startCountdown(order as Map<String, dynamic>);
+    }
   }
-  final List<Map<String, dynamic>> startOrders =
-      _orders.where((order) => order['status_order'] == 'START').toList();
-  // print(startOrders);
-  startOrders.forEach((order) => startCountdown(order));
 }
 
 @pragma('vm:entry-point')
@@ -121,60 +121,101 @@ Future<void> onStart(ServiceInstance service) async {
   // Set initial value to true to allow fetching data
 
   // Start a periodic timer to execute the fetch logic
-  fetchTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-    // Only execute the fetch logic if enableFetch is true
-    if (service is AndroidServiceInstance) {
-      if (await service.isForegroundService()) {
-        try {
-          await initPrefs();
-        } catch (e) {}
-      }
-    }
-  });
+  // fetchTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+  //   // Only execute the fetch logic if enableFetch is true
+  //   if (service is AndroidServiceInstance) {
+  //     if (await service.isForegroundService()) {
+  //       try {
+  //         await initPrefs();
+  //       } catch (e) {}
+  //     }
+  //   }
+  // });
 }
 
+Map<String, CountdownTimer> countdownTimers = {};
+
 void startCountdown(Map<String, dynamic> order) {
-  late CountdownTimer _countdownTimer;
   final DateTime endTime = DateTime.parse(order['newest_order_end_time']);
   final String orderId = order['id'].toString();
 
-  _countdownTimer = CountdownTimer(
+  // Check if a countdown timer with the same key already exists
+  if (countdownTimers.containsKey(orderId)) {
+    // Stop the existing countdown timer before creating a new one
+    stopCountdown(orderId);
+  }
+
+  removeNotification(orderId);
+
+  CountdownTimer _countdownTimer = CountdownTimer(
     key: orderId,
     endTime: endTime,
     onTick: (Duration duration) {
       final String formattedTime =
           '${duration.inHours}:${duration.inMinutes.remainder(60)}:${duration.inSeconds.remainder(60)}';
-      showNotification(orderId, formattedTime, order['name'].toString());
+
     },
-    onCountdownFinish: () async{
-      stopBilling(order['id'], order['ip'].toString(),
-          order['secret'].toString(), order['code'].toString());
+    onCountdownFinish: () async {
+      removeOrderFromPrefs(order['id'].toString());
       removeNotification(orderId);
+      stopBilling(
+        order['id'],
+        order['ip'].toString(),
+        order['secret'].toString(),
+        order['code'].toString(),
+      );
+      // Remove the countdown timer from the map when it finishes
+      countdownTimers.remove(orderId);
+    },
+    onStart: () async {
+      showNotification(orderId, order['name'].toString(), order['name'].toString());
     },
   );
+
+  // Start the countdown timer
   _countdownTimer.start();
+
+  // Store the countdown timer in the map with its key
+  countdownTimers[orderId] = _countdownTimer;
 }
+
+void stopCountdown(String key) {
+  // Check if a countdown timer with the specified key exists
+  if (countdownTimers.containsKey(key)) {
+    // Stop the countdown timer
+    countdownTimers[key]?.cancel();
+    // Remove the countdown timer from the map
+    countdownTimers.remove(key);
+  }
+}
+
 
 Future<void> removeNotification(String orderId) async {
   await _flutterLocalNotificationsPlugin.cancel(int.parse(orderId));
+}
 
+Future<void> removeAllNotifications() async {
+  await _flutterLocalNotificationsPlugin.cancelAll();
 }
 
 Future<void> removeOrderFromPrefs(String orderId) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   List<Map<String, dynamic>> orders = [];
+  removeNotification(orderId);
+  try {
+    // Load orders from SharedPreferences
+    final String? ordersJson = prefs.getString('orders');
+    if (ordersJson != null) {
+      orders = List<Map<String, dynamic>>.from(json.decode(ordersJson));
+    }
 
-  // Load orders from SharedPreferences
-  final String? ordersJson = prefs.getString('orders');
-  if (ordersJson != null) {
-    orders = List<Map<String, dynamic>>.from(json.decode(ordersJson));
+    // Remove order with matching orderId
+    orders.removeWhere((order) => order['id'] == int.parse(orderId));
+    await prefs.setString('orders', jsonEncode(orders));
+    print('Order removed successfully');
+  } catch (e) {
+    print('Error removing order: $e');
   }
-
-  // Remove the order from the list
-  orders.removeWhere((order) => order['id'] == orderId);
-  // Save updated orders back to SharedPreferences
-  print(orders);
-  await prefs.setString('orders', jsonEncode(orders));
 }
 
 Future<void> showNotification(
@@ -182,10 +223,8 @@ Future<void> showNotification(
   String timeRemaining,
   String name,
 ) async {
-
-
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
-  AndroidNotificationDetails(
+      AndroidNotificationDetails(
     'countdown_channel',
     'Countdown Channel',
     importance: Importance.high,
@@ -197,12 +236,11 @@ Future<void> showNotification(
       NotificationDetails(android: androidPlatformChannelSpecifics);
   await _flutterLocalNotificationsPlugin.show(
     int.parse(orderId),
-    'Countdown ${name}',
-    'Time remaining: $timeRemaining',
+    '${name}',
+    'Aktif',
     platformChannelSpecifics,
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../component/loading_dialog.dart';
 import '../constant/color_constant.dart';
@@ -51,6 +52,23 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _checkNotificationPermission();
+  }
+
+  Future<void> _checkNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.status;
+    if (!status.isGranted) {
+      // If notification permission is not granted, request permission
+      status = await Permission.notification.request();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

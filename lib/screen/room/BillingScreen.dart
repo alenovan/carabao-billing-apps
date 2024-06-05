@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
@@ -17,7 +14,7 @@ import '../../constant/color_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../helper/navigation_utils.dart';
-import '../../service/models/order/ResponseOrdersBgModels.dart';
+import '../../main.dart';
 import '../BottomNavigationScreen.dart';
 
 class BillingScreen extends StatefulWidget {
@@ -50,15 +47,10 @@ class _BillingScreenState extends State<BillingScreen> {
   SharedPreferences? _prefs;
   List<Map<String, dynamic>> _orders = [];
 
-
   @override
   void initState() {
     super.initState();
   }
-
-
-
-
 
   void showNameInputDialog(BuildContext context) {
     showDialog(
@@ -94,14 +86,6 @@ class _BillingScreenState extends State<BillingScreen> {
     );
   }
 
-  Future<void> saveData(List<NewestOrderBg> orders) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _orders = orders.map((order) => order.toJson()).toList();
-    final String ordersJson = json.encode(_orders);
-    await _prefs.setString('orders', ordersJson);
-  }
-
-
   Widget _consumerApi() {
     return Column(
       children: [
@@ -118,10 +102,10 @@ class _BillingScreenState extends State<BillingScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: true);
-
-
-              NavigationUtils.navigateTo(
-                  context, const BottomNavigationScreen(), false);
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BottomNavigationScreen()));
             } else if (s is OrdersStopLoadedState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
@@ -278,6 +262,11 @@ class _BillingScreenState extends State<BillingScreen> {
   Widget orderFound() {
     return GestureDetector(
       onTap: () {
+        removeNotification(widget.id_order!);
+        removeOrderFromPrefs(widget.id_order!);
+        removeAllNotifications();
+        initPrefs();
+        stopCountdown(widget.id_order!);
         _OrderBloc.add(ActStopOrderOpenBilling(
             payload: RequestStopOrdersModels(
                 orderId: int.parse(widget.id_order.toString()))));
@@ -327,4 +316,3 @@ class _BillingScreenState extends State<BillingScreen> {
     );
   }
 }
-

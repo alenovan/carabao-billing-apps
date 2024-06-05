@@ -47,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     _OrderBloc.add(GetOrder());
     _OrderBloc.add(GetOrderBg());
-    initPrefs();
     WidgetsBinding.instance?.addObserver(this);
   }
 
@@ -60,9 +59,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> saveData(List<NewestOrderBg> orders) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _orders = orders.map((order) => order.toJson()).toList();
-    final String ordersJson = json.encode(_orders);
-    await _prefs.setString('orders', ordersJson);
+
+    // Reset the existing data to null
+    await _prefs.remove('orders');
+
+    // Convert the input orders to a list of JSON objects
+    List<Map<String, dynamic>> _newOrders = orders.map((order) => order.toJson()).toList();
+
+    // Encode the list of new orders and save to SharedPreferences
+    final String newOrdersJson = json.encode(_newOrders);
+    await _prefs.setString('orders', newOrdersJson);
+    initPrefs();
   }
 
   Widget _consumerApi() {
@@ -74,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               setState(() {
                 saveData(s.result!.newestOrders!);
               });
+
             }
             if (s is OrdersLoadingState) {
             } else if (s is OrdersListLoadedState) {
@@ -108,9 +116,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _refreshList() async {
+    _OrderBloc.add(GetOrder());
+    _OrderBloc.add(GetOrderBg());
+    setState(() {
+      loading = true;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    initPrefs();
     return Container(
       child: MultiBlocProvider(
           providers: [
@@ -121,6 +137,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               create: (BuildContext context) => _ConfigsBloc,
             ),
           ],
+          child: RefreshIndicator(
+          onRefresh: _refreshList,
           child: ListView(
             children: [
               _consumerApi(),
@@ -181,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   },
                 )
             ],
-          )),
+          ))),
     );
   }
 }
