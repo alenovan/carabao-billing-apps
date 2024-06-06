@@ -9,22 +9,26 @@ ResponseListOrdersModels responseListOrdersModelsFromJson(String str) => Respons
 String responseListOrdersModelsToJson(ResponseListOrdersModels data) => json.encode(data.toJson());
 
 class ResponseListOrdersModels {
-  bool? success;
-  List<NewestOrder>? newestOrders;
+  bool? status;
+  String? message;
+  List<NewestOrder>? data;
 
   ResponseListOrdersModels({
-    this.success,
-    this.newestOrders,
+    this.status,
+    this.message,
+    this.data,
   });
 
   factory ResponseListOrdersModels.fromJson(Map<String, dynamic> json) => ResponseListOrdersModels(
-    success: json["success"],
-    newestOrders: json["newestOrders"] == null ? [] : List<NewestOrder>.from(json["newestOrders"]!.map((x) => NewestOrder.fromJson(x))),
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] == null ? [] : List<NewestOrder>.from(json["data"]!.map((x) => NewestOrder.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "newestOrders": newestOrders == null ? [] : List<dynamic>.from(newestOrders!.map((x) => x.toJson())),
+    "status": status,
+    "message": message,
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
   };
 }
 
@@ -35,9 +39,9 @@ class NewestOrder {
   int? statusRooms;
   String? statusOrder;
   String? type;
-  int? id;
   String? ip;
   String? secret;
+  int? id;
   String? newestOrderStartTime;
   String? newestOrderEndTime;
 
@@ -48,9 +52,9 @@ class NewestOrder {
     this.statusRooms,
     this.statusOrder,
     this.type,
-    this.id,
     this.ip,
     this.secret,
+    this.id,
     this.newestOrderStartTime,
     this.newestOrderEndTime,
   });
@@ -62,9 +66,9 @@ class NewestOrder {
     statusRooms: json["status_rooms"],
     statusOrder: json["status_order"],
     type: json["type"],
-    id: json["id"],
     ip: json["ip"],
     secret: json["secret"],
+    id: json["id"],
     newestOrderStartTime: json["newest_order_start_time"],
     newestOrderEndTime: json["newest_order_end_time"],
   );
@@ -76,9 +80,9 @@ class NewestOrder {
     "status_rooms": statusRooms,
     "status_order": statusOrder,
     "type": type,
-    "id": id,
     "ip": ip,
     "secret": secret,
+    "id": id,
     "newest_order_start_time": newestOrderStartTime,
     "newest_order_end_time": newestOrderEndTime,
   };

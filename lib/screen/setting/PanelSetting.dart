@@ -40,8 +40,8 @@ class _PanelSettingState extends State<PanelSetting> {
             } else if (s is PanelLoadedState) {
               popScreen(context);
               setState(() {
-                ipdController.text = s.result.rooms![0].ip ?? "";
-                meja = s.result.rooms!;
+                ipdController.text = s.result.data!.ip! ?? "";
+                meja = s.result.data!;
               });
             } else if (s is PanelUpdateLoadedState) {
               popScreen(context);
@@ -121,7 +121,8 @@ class _PanelSettingState extends State<PanelSetting> {
                     GestureDetector(
                       onTap: () {
                         _MejaBloc.add(updatePanel(payload: RequestPanelModels(
-                          ip: ipdController.text
+                          ip: ipdController.text,
+                          panelId: 1
                         ), id: "1"));
                       },
                       child: Container(

@@ -65,7 +65,7 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
   Future<ResponseUpdatePanelModels> updatePanel(RequestPanelModels payload,String id)async {
     // TODO: implement updatePanel
     var body = jsonEncode(payload);
-    var response = await http.put(Uri.parse(UrlConstant.panelsupdate+id),
+    var response = await http.post(Uri.parse(UrlConstant.panelsupdate),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseUpdatePanelModels responses =

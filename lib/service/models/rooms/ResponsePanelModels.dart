@@ -9,46 +9,53 @@ ResponsePanelModels responsePanelModelsFromJson(String str) => ResponsePanelMode
 String responsePanelModelsToJson(ResponsePanelModels data) => json.encode(data.toJson());
 
 class ResponsePanelModels {
-  bool? success;
-  List<Room>? rooms;
+  bool? status;
+  String? message;
+  Data? data;
 
   ResponsePanelModels({
-    this.success,
-    this.rooms,
+    this.status,
+    this.message,
+    this.data,
   });
 
   factory ResponsePanelModels.fromJson(Map<String, dynamic> json) => ResponsePanelModels(
-    success: json["success"],
-    rooms: json["rooms"] == null ? [] : List<Room>.from(json["rooms"]!.map((x) => Room.fromJson(x))),
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "rooms": rooms == null ? [] : List<dynamic>.from(rooms!.map((x) => x.toJson())),
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
   };
 }
 
-class Room {
+class Data {
   int? id;
   String? position;
   String? ip;
   int? isActive;
   String? secret;
+  DateTime? updatedAt;
 
-  Room({
+  Data({
     this.id,
     this.position,
     this.ip,
     this.isActive,
     this.secret,
+    this.updatedAt,
   });
 
-  factory Room.fromJson(Map<String, dynamic> json) => Room(
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
     id: json["id"],
     position: json["position"],
     ip: json["ip"],
     isActive: json["is_active"],
     secret: json["secret"],
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -57,5 +64,6 @@ class Room {
     "ip": ip,
     "is_active": isActive,
     "secret": secret,
+    "updated_at": updatedAt?.toIso8601String(),
   };
 }

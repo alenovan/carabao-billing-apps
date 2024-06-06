@@ -27,7 +27,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _OrderBloc.add(ActOrderHistory(payload: RequestOrderSearch(search: "")));
+    _OrderBloc.add(ActOrderHistory(payload: RequestOrderSearch(search: "",page: 1,pageSize: 1000)));
   }
 
   Widget _consumerApi() {
@@ -38,7 +38,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             if (s is OrdersLoadingState) {
             } else if (s is OrdersHistoryLoadedState) {
               setState(() {
-                order = s.result.matchedOrders;
+                order = s.result.data!.matchedOrders!;
               });
             } else if (s is OrdersErrorState) {
               popScreen(c);
@@ -106,7 +106,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                         controller: searchController,
                         onChanged: (e){
-                          _OrderBloc.add(ActOrderHistory(payload: RequestOrderSearch(search: e)));
+                          _OrderBloc.add(ActOrderHistory(payload: RequestOrderSearch(search: e,pageSize: 1000,page: 1)));
                         },
                         // Add controller and other TextFormField properties as needed
                       ),

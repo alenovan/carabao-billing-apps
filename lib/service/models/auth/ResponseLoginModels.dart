@@ -9,29 +9,61 @@ ResponseLoginModels responseLoginModelsFromJson(String str) => ResponseLoginMode
 String responseLoginModelsToJson(ResponseLoginModels data) => json.encode(data.toJson());
 
 class ResponseLoginModels {
-  bool? success;
+  bool? status;
   String? message;
-  String? token;
-  int? timer;
+  Data? data;
 
   ResponseLoginModels({
-    this.success,
+    this.status,
     this.message,
-    this.token,
-    this.timer,
+    this.data,
   });
 
   factory ResponseLoginModels.fromJson(Map<String, dynamic> json) => ResponseLoginModels(
-    success: json["success"],
+    status: json["status"],
     message: json["message"],
-    token: json["token"],
-    timer: json["timer"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "status": status,
     "message": message,
+    "data": data?.toJson(),
+  };
+}
+
+class Data {
+  int? id;
+  String? username;
+  dynamic createdAt;
+  dynamic updateAt;
+  int? isTimer;
+  String? token;
+
+  Data({
+    this.id,
+    this.username,
+    this.createdAt,
+    this.updateAt,
+    this.isTimer,
+    this.token,
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    id: json["id"],
+    username: json["username"],
+    createdAt: json["created_at"],
+    updateAt: json["update_at"],
+    isTimer: json["is_timer"],
+    token: json["token"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "username": username,
+    "created_at": createdAt,
+    "update_at": updateAt,
+    "is_timer": isTimer,
     "token": token,
-    "timer": timer,
   };
 }

@@ -9,21 +9,25 @@ ResponseOrdersModels responseOrdersModelsFromJson(String str) => ResponseOrdersM
 String responseOrdersModelsToJson(ResponseOrdersModels data) => json.encode(data.toJson());
 
 class ResponseOrdersModels {
-  bool? success;
+  bool? status;
   String? message;
+  String? data;
 
   ResponseOrdersModels({
-    this.success,
+    this.status,
     this.message,
+    this.data,
   });
 
   factory ResponseOrdersModels.fromJson(Map<String, dynamic> json) => ResponseOrdersModels(
-    success: json["success"],
+    status: json["status"],
     message: json["message"],
+    data: json["data"],
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "status": status,
     "message": message,
+    "data": data,
   };
 }

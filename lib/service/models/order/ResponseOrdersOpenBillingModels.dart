@@ -9,41 +9,42 @@ ResponseOrdersOpenBillingModels responseOrdersOpenBillingModelsFromJson(String s
 String responseOrdersOpenBillingModelsToJson(ResponseOrdersOpenBillingModels data) => json.encode(data.toJson());
 
 class ResponseOrdersOpenBillingModels {
-  bool? success;
+  bool? status;
   String? message;
-  Order? order;
+  Data? data;
 
   ResponseOrdersOpenBillingModels({
-    this.success,
+    this.status,
     this.message,
-    this.order,
+    this.data,
   });
 
   factory ResponseOrdersOpenBillingModels.fromJson(Map<String, dynamic> json) => ResponseOrdersOpenBillingModels(
-    success: json["success"],
+    status: json["status"],
     message: json["message"],
-    order: json["order"] == null ? null : Order.fromJson(json["order"]),
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "status": status,
     "message": message,
-    "order": order?.toJson(),
+    "data": data?.toJson(),
   };
 }
 
-class Order {
-  int? id;
+class Data {
   String? idRooms;
   int? idUsers;
-  String? startTime;
-  String? endTime;
+  DateTime? startTime;
+  DateTime? endTime;
   String? status;
   String? type;
   String? name;
+  DateTime? updatedAt;
+  DateTime? createdAt;
+  int? id;
 
-  Order({
-    this.id,
+  Data({
     this.idRooms,
     this.idUsers,
     this.startTime,
@@ -51,27 +52,34 @@ class Order {
     this.status,
     this.type,
     this.name,
+    this.updatedAt,
+    this.createdAt,
+    this.id,
   });
 
-  factory Order.fromJson(Map<String, dynamic> json) => Order(
-    id: json["id"],
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
     idRooms: json["id_rooms"],
     idUsers: json["id_users"],
-    startTime: json["start_time"],
-    endTime: json["end_time"],
+    startTime: json["start_time"] == null ? null : DateTime.parse(json["start_time"]),
+    endTime: json["end_time"] == null ? null : DateTime.parse(json["end_time"]),
     status: json["status"],
     type: json["type"],
     name: json["name"],
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    id: json["id"],
   );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
     "id_rooms": idRooms,
     "id_users": idUsers,
-    "start_time": startTime,
-    "end_time": endTime,
+    "start_time": startTime?.toIso8601String(),
+    "end_time": endTime?.toIso8601String(),
     "status": status,
     "type": type,
     "name": name,
+    "updated_at": updatedAt?.toIso8601String(),
+    "created_at": createdAt?.toIso8601String(),
+    "id": id,
   };
 }

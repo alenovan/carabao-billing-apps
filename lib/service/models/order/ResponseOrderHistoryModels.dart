@@ -9,73 +9,93 @@ ResponseOrderHistoryModels responseOrderHistoryModelsFromJson(String str) => Res
 String responseOrderHistoryModelsToJson(ResponseOrderHistoryModels data) => json.encode(data.toJson());
 
 class ResponseOrderHistoryModels {
-  bool? success;
-  List<MatchedOrder>? matchedOrders;
+  bool? status;
+  String? message;
+  Data? data;
 
   ResponseOrderHistoryModels({
-    this.success,
-    this.matchedOrders,
+    this.status,
+    this.message,
+    this.data,
   });
 
   factory ResponseOrderHistoryModels.fromJson(Map<String, dynamic> json) => ResponseOrderHistoryModels(
-    success: json["success"],
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
+  };
+}
+
+class Data {
+  int? total;
+  List<MatchedOrder>? matchedOrders;
+
+  Data({
+    this.total,
+    this.matchedOrders,
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    total: json["total"],
     matchedOrders: json["matchedOrders"] == null ? [] : List<MatchedOrder>.from(json["matchedOrders"]!.map((x) => MatchedOrder.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "total": total,
     "matchedOrders": matchedOrders == null ? [] : List<dynamic>.from(matchedOrders!.map((x) => x.toJson())),
   };
 }
 
 class MatchedOrder {
-  int? roomId;
-  String? code;
   String? name;
-  int? statusRooms;
   String? statusOrder;
   String? type;
   String? ordersName;
   int? id;
   DateTime? startTime;
   DateTime? endTime;
+  int? durationMinutes;
+  String? cashierName;
 
   MatchedOrder({
-    this.roomId,
-    this.code,
     this.name,
-    this.statusRooms,
     this.statusOrder,
     this.type,
     this.ordersName,
     this.id,
     this.startTime,
     this.endTime,
+    this.durationMinutes,
+    this.cashierName,
   });
 
   factory MatchedOrder.fromJson(Map<String, dynamic> json) => MatchedOrder(
-    roomId: json["room_id"],
-    code: json["code"],
     name: json["name"],
-    statusRooms: json["status_rooms"],
     statusOrder: json["status_order"],
     type: json["type"],
     ordersName: json["orders_name"],
     id: json["id"],
     startTime: json["start_time"] == null ? null : DateTime.parse(json["start_time"]),
     endTime: json["end_time"] == null ? null : DateTime.parse(json["end_time"]),
+    durationMinutes: json["duration_minutes"],
+    cashierName: json["cashier_name"],
   );
 
   Map<String, dynamic> toJson() => {
-    "room_id": roomId,
-    "code": code,
     "name": name,
-    "status_rooms": statusRooms,
     "status_order": statusOrder,
     "type": type,
     "orders_name": ordersName,
     "id": id,
     "start_time": startTime?.toIso8601String(),
     "end_time": endTime?.toIso8601String(),
+    "duration_minutes": durationMinutes,
+    "cashier_name": cashierName,
   };
 }

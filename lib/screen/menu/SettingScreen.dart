@@ -64,7 +64,7 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _ConfigsBloc.add(GetConfig());
+    // _ConfigsBloc.add(GetConfig());
   }
 
   @override

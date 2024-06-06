@@ -69,7 +69,7 @@ Future<void> initializeService() async {
 }
 
 Future<void> stopBilling(int orderId, ip, secret, code) async {
-  var apiUrl = UrlConstant.order_stop_table_bg;
+  var apiUrl = UrlConstant.order_stop_billing;
   var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
 
   try {

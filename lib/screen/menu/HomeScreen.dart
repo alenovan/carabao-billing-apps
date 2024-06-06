@@ -79,14 +79,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           listener: (c, s) {
             if (s is OrdersListBgLoadedState) {
               setState(() {
-                saveData(s.result!.newestOrders!);
+                saveData(s.result!.data!);
               });
 
             }
             if (s is OrdersLoadingState) {
             } else if (s is OrdersListLoadedState) {
               setState(() {
-                NewestOrders = s.result.newestOrders;
+                NewestOrders = s.result.data;
                 loading = false;
               });
             } else if (s is OrdersErrorState) {

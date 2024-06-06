@@ -20,9 +20,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthLoadingState());
         try {
           final result = await repository.actLogin(event.payload);
-          await addStringSf(ConstantData.token, result.token);
+          await addStringSf(ConstantData.token, result.data!.token);
           await addBoolSf(ConstantData.is_login, true);
-          await addStringSf(ConstantData.is_timer, result.timer.toString());
+          await addStringSf(ConstantData.is_timer, result.data!.isTimer.toString());
           emit(AuthLoadedState(result: result));
         } catch (e) {
           emit(AuthErrorState(message: e.toString()));

@@ -9,21 +9,25 @@ ResponseStopOrdersModels responseStopOrdersModelsFromJson(String str) => Respons
 String responseStopOrdersModelsToJson(ResponseStopOrdersModels data) => json.encode(data.toJson());
 
 class ResponseStopOrdersModels {
-  bool? success;
+  bool? status;
   String? message;
+  String? data;
 
   ResponseStopOrdersModels({
-    this.success,
+    this.status,
     this.message,
+    this.data,
   });
 
   factory ResponseStopOrdersModels.fromJson(Map<String, dynamic> json) => ResponseStopOrdersModels(
-    success: json["success"],
+    status: json["status"],
     message: json["message"],
+    data: json["data"],
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
+    "status": status,
     "message": message,
+    "data": data,
   };
 }

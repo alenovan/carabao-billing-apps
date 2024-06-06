@@ -9,22 +9,26 @@ ResponseOrdersBgModels responseOrdersBgModelsFromJson(String str) => ResponseOrd
 String responseOrdersBgModelsToJson(ResponseOrdersBgModels data) => json.encode(data.toJson());
 
 class ResponseOrdersBgModels {
-  bool? success;
-  List<NewestOrderBg>? newestOrders;
+  bool? status;
+  String? message;
+  List<NewestOrderBg>? data;
 
   ResponseOrdersBgModels({
-    this.success,
-    this.newestOrders,
+    this.status,
+    this.message,
+    this.data,
   });
 
   factory ResponseOrdersBgModels.fromJson(Map<String, dynamic> json) => ResponseOrdersBgModels(
-    success: json["success"],
-    newestOrders: json["newestOrders"] == null ? [] : List<NewestOrderBg>.from(json["newestOrders"]!.map((x) => NewestOrderBg.fromJson(x))),
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] == null ? [] : List<NewestOrderBg>.from(json["data"]!.map((x) => NewestOrderBg.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "newestOrders": newestOrders == null ? [] : List<dynamic>.from(newestOrders!.map((x) => x.toJson())),
+    "status": status,
+    "message": message,
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
   };
 }
 
