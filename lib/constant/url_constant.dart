@@ -1,7 +1,7 @@
 class UrlConstant {
-  static const base_url_live = "http://9037-api.crbillingsystem.com/";
+  static const base_url_live = "https://play-billiards-api.crbillingsystem.com/public/api/";
   static const base_url_staging = "http://192.168.1.3:8001/api/";
-  static const base_url = base_url_staging;
+  static const base_url = base_url_live;
   static const config = base_url + "configs";
   static const login = base_url + "auth/login";
   static const logout = base_url + "auth/logout";
@@ -17,7 +17,7 @@ class UrlConstant {
   static const newest_orders_bg = base_url + "orders/newest-bg-orders";
   static const rooms = base_url + "rooms";
   static const panels = base_url + "panels";
-  static const panelsupdate = base_url + "panels/update/";
+  static const panelsupdate = base_url + "panels/update";
 
 
   static const history_orders = base_url + "orders/history-orders";

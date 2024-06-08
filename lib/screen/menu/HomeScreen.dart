@@ -18,7 +18,6 @@ import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/shared_preference.dart';
 import '../../service/bloc/configs/configs_bloc.dart';
-import '../../service/models/order/ResponseOrdersBgModels.dart';
 import '../../service/repository/ConfigRepository.dart';
 import '../BottomNavigationScreen.dart';
 
@@ -46,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // TODO: implement initState
     super.initState();
     _OrderBloc.add(GetOrder());
-    _OrderBloc.add(GetOrderBg());
+    // _OrderBloc.add(GetOrderBg());
     WidgetsBinding.instance?.addObserver(this);
   }
 
@@ -54,10 +53,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     // _countdownTimer.cancel();
+    _OrderBloc.close();
     super.dispose();
   }
 
-  Future<void> saveData(List<NewestOrderBg> orders) async {
+  Future<void> saveData(List<NewestOrder> orders) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
 
     // Reset the existing data to null
@@ -77,15 +77,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       children: [
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) {
-            if (s is OrdersListBgLoadedState) {
-              setState(() {
-                saveData(s.result!.data!);
-              });
-
-            }
+            // if (s is OrdersListBgLoadedState) {
+            //   setState(() {
+            //     saveData(s.result!.data!);
+            //   });
+            //
+            // }
             if (s is OrdersLoadingState) {
             } else if (s is OrdersListLoadedState) {
+              List<NewestOrder> filteredOrders = s.result.data!.where((order) {
+                return order.type == 'OPEN-BILLING' && order.statusOrder == 'START';
+              }).toList();
               setState(() {
+                saveData(filteredOrders);
                 NewestOrders = s.result.data;
                 loading = false;
               });

@@ -40,6 +40,13 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
 
   final TextEditingController _nameController = TextEditingController();
 
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _OrderBloc.close();
+    super.dispose();
+  }
   void showNameInputDialog(BuildContext context) {
     showDialog(
       context: context,

@@ -180,7 +180,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 ))),
         InkWell(
             onTap: () async{
-              await ConfigRepoRepositoryImpl().logout();
               fetchTimer?.cancel();
               FlutterBackgroundService().invoke('stopService');
               Navigator.push(
