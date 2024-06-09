@@ -185,6 +185,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, i) {
                     var data = NewestOrders![i];
+                    ConstantData.ip_default = data.ip!;
+                    ConstantData.key_config = data.secret!;
                     return MenuListCard(
                       status: data.statusRooms == 0 ? false : true,
                       name: data.name!,
