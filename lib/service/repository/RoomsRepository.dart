@@ -15,7 +15,9 @@ abstract class RoomsRepo {
   Future<dynamic> openRooms(String link);
 
   Future<ResponsePanelModels> getPanel();
-  Future<ResponseUpdatePanelModels> updatePanel(RequestPanelModels payload,String id);
+
+  Future<ResponseUpdatePanelModels> updatePanel(
+      RequestPanelModels payload, String id);
 }
 
 class RoomsRepoRepositoryImpl implements RoomsRepo {
@@ -28,7 +30,10 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
       ResponseRoomsModels responses =
           responseRoomsModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
@@ -53,7 +58,11 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
       ResponsePanelModels responses =
           responsePanelModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
@@ -62,18 +71,24 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
   }
 
   @override
-  Future<ResponseUpdatePanelModels> updatePanel(RequestPanelModels payload,String id)async {
+  Future<ResponseUpdatePanelModels> updatePanel(
+      RequestPanelModels payload, String id) async {
     // TODO: implement updatePanel
     var body = jsonEncode(payload);
     var response = await http.post(Uri.parse(UrlConstant.panelsupdate),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseUpdatePanelModels responses =
-      responseUpdatePanelModelsFromJson(response.body);
-    return responses;
+          responseUpdatePanelModelsFromJson(response.body);
+      return responses;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
-    var responses = jsonDecode(response.body);
-    throw ("${responses["message"]}");
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
     }
   }
 }

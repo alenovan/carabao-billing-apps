@@ -41,6 +41,12 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseListOrdersModels responses =
           responseListOrdersModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 400 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -56,6 +62,12 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseOrdersBgModels responses =
       responseOrdersBgModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 400 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -74,6 +86,12 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseOrdersOpenBillingModels responses =
       responseOrdersOpenBillingModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 400 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -91,6 +109,12 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseStopOrdersModels responses =
           responseStopOrdersModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 400 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");
@@ -108,7 +132,11 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseOrdersModels responses =
           responseOrdersModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
@@ -127,7 +155,11 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseStopOrdersModels responses =
           responseStopOrdersModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
@@ -146,7 +178,11 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       ResponseOrderHistoryModels responses =
           responseOrderHistoryModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);

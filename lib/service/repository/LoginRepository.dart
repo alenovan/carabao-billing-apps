@@ -22,7 +22,11 @@ class LoginRepoRepositoryImpl implements LoginRepo {
       ResponseLoginModels responses =
           responseLoginModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);

@@ -1,7 +1,7 @@
 class UrlConstant {
-  static const base_url_live = "https://play-billiards-api.crbillingsystem.com/public/api/";
-  static const base_url_staging = "http://192.168.1.3:8001/api/";
-  static const base_url = base_url_live;
+  static const base_url_live = "https://test.crbillingsystem.com/public/api/";
+  static const base_url_staging = "http://192.168.1.13:8001/api/";
+  static const base_url = base_url_staging;
   static const config = base_url + "configs";
   static const login = base_url + "auth/login";
   static const logout = base_url + "auth/logout";
@@ -10,6 +10,7 @@ class UrlConstant {
   static const order_open_table = base_url + "orders/orders-open-table";
 
   static const order_stop_billing = base_url + "orders/orders-stop-open-billing";
+  static const order_stop_billing_bg = base_url + "rders-stop-open-billing";
   static const order_stop_table = base_url + "orders/orders-stop-open-table";
 
 

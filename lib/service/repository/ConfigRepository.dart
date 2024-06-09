@@ -27,7 +27,11 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
       ResponseListConfigModels responses =
           responseListConfigModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
@@ -46,7 +50,11 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
       ResponseConfigsModels responses =
           responseConfigsModelsFromJson(response.body);
       return responses;
-    } else if (response.statusCode == 522) {
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
@@ -62,6 +70,12 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
     if (response.statusCode == 200) {
       log(response.body);
       return true;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 400 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
     } else {
       var responses = jsonDecode(response.body);
       throw ("${responses["message"]}");

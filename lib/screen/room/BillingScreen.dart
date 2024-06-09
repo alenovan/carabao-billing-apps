@@ -42,6 +42,7 @@ class _BillingScreenState extends State<BillingScreen> {
   late String selected_time = "Choose Hours";
   late int selected_time_nunber;
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
 
   SharedPreferences? _prefs;
@@ -53,14 +54,26 @@ class _BillingScreenState extends State<BillingScreen> {
   }
 
   void showNameInputDialog(BuildContext context) {
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Masukkan Nama'),
-          content: TextField(
-            controller: _nameController,
-            decoration: InputDecoration(hintText: 'Masukkan nama Pemesan'),
+          title: Text('Masukkan Detail Pelanggan'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(hintText: 'Nama Pemesan'),
+              ),
+              SizedBox(height: 8.0), // Add some space between the text fields
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(hintText: 'Nomor Whatsapp'),
+                keyboardType: TextInputType.phone,
+              ),
+            ],
           ),
           actions: <Widget>[
             TextButton(
@@ -72,10 +85,12 @@ class _BillingScreenState extends State<BillingScreen> {
             ElevatedButton(
               onPressed: () {
                 String enteredName = _nameController.text;
+                String enteredPhone = _phoneController.text;
                 _OrderBloc.add(ActOrderOpenBilling(
                     payload: RequestOrdersModels(
                         idRooms: widget.id_meja,
                         name: enteredName,
+                        phone: enteredPhone,
                         duration: selected_time_nunber.toString())));
               },
               child: Text('Simpan'),
@@ -85,6 +100,7 @@ class _BillingScreenState extends State<BillingScreen> {
       },
     );
   }
+
 
   Widget _consumerApi() {
     return Column(

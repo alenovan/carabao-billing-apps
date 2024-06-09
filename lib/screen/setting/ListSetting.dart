@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,12 +22,13 @@ class _ListSettingState extends State<ListSetting> {
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late TextEditingController searchController = TextEditingController();
   List<dynamic> data = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchData();
-    searchController.text = "http://192.168.143.247/";
+    searchController.text = ConstantData.ip_default;
   }
 
   fetchData() async {
@@ -148,7 +150,6 @@ class _ListSettingState extends State<ListSetting> {
       data = json.decode(jsonString)['data'];
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +188,7 @@ class _ListSettingState extends State<ListSetting> {
                     controller: searchController,
                     onChanged: (e) {
                       setState(() {
+                        ConstantData.ip_default = e;
                         searchController.text = e;
                       });
                     },
@@ -202,7 +204,7 @@ class _ListSettingState extends State<ListSetting> {
                       name: data[index]['name'],
                       code: data[index]['code'],
                       ip: searchController.text,
-                      keys: "51383db2eb3e126e52695488e0650f68ea43b4c6",
+                      keys: ConstantData.key_config,
                     );
                   },
                 )

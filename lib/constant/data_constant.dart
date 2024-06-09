@@ -7,4 +7,6 @@ class ConstantData {
 
   //update version apps
   static String version_apps = "2.0.0";
+  static String ip_default = " ";
+  static String key_config="";
 }

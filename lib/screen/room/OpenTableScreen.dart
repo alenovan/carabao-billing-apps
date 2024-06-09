@@ -40,6 +40,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
 
   final TextEditingController _nameController = TextEditingController();
 
+  final TextEditingController _phoneController = TextEditingController();
 
   @override
   void dispose() {
@@ -47,29 +48,44 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
     _OrderBloc.close();
     super.dispose();
   }
+
   void showNameInputDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Masukkan Nama'),
-          content: TextField(
-            controller: _nameController,
-            decoration: InputDecoration(hintText: 'Masukkan nama Pemesan'),
+          title: Text('Masukkan Detail Pelanggan'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(hintText: 'Nama Pemesan'),
+              ),
+              SizedBox(height: 8.0), // Add some space between the text fields
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(hintText: 'Nomor Whatsapp'),
+                keyboardType: TextInputType.phone,
+              ),
+            ],
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Batalkab'),
+              child: Text('Batalkan'),
             ),
             ElevatedButton(
               onPressed: () {
                 String enteredName = _nameController.text;
+                String enteredPhone = _phoneController.text;
                 _OrderBloc.add(ActOrderOpenTable(
                     payload: RequestOrdersModels(
-                        idRooms: widget.id_meja, name: enteredName)));
+                        phone: enteredPhone,
+                        idRooms: widget.id_meja,
+                        name: enteredName)));
               },
               child: Text('Simpan'),
             ),

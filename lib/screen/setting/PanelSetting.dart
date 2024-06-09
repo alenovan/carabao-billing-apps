@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
+import '../../constant/data_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
@@ -41,6 +42,7 @@ class _PanelSettingState extends State<PanelSetting> {
               popScreen(context);
               setState(() {
                 ipdController.text = s.result.data!.ip! ?? "";
+                ConstantData.ip_default = ipdController.text;
                 meja = s.result.data!;
               });
             } else if (s is PanelUpdateLoadedState) {
