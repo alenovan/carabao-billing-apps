@@ -16,7 +16,6 @@ import '../../component/menu_list_card.dart';
 import '../../component/shimmerx.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
-import '../../helper/shared_preference.dart';
 import '../../service/bloc/configs/configs_bloc.dart';
 import '../../service/repository/ConfigRepository.dart';
 import '../BottomNavigationScreen.dart';
@@ -96,21 +95,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             } else if (s is OrdersErrorState) {
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
             }
-          },
-          builder: (c, s) {
-            return Container();
-          },
-        ),
-        BlocConsumer<ConfigsBloc, ConfigsState>(
-          listener: (c, s) async {
-            if (s is ConfigsLoadingState) {
-            } else if (s is ConfigsLoadedState) {
-            } else if (s is ConfigsListLoadedState) {
-              try {
-                await addStringSf(ConstantData.ip, s.result.rooms![0].ip!);
-                await addStringSf(ConstantData.key, s.result.rooms![0].secret!);
-              } catch (e) {}
-            } else if (s is ConfigsErrorState) {}
           },
           builder: (c, s) {
             return Container();

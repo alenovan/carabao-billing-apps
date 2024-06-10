@@ -1,5 +1,6 @@
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/screen/LoginScreen.dart';
+import 'package:carabaobillingapps/screen/setting/ClientInformation.dart';
 import 'package:carabaobillingapps/screen/setting/PanelSetting.dart';
 import 'package:carabaobillingapps/service/bloc/configs/configs_bloc.dart';
 import 'package:carabaobillingapps/service/repository/ConfigRepository.dart';
@@ -39,14 +40,6 @@ class _SettingScreenState extends State<SettingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message.toString());
-            } else if (s is ConfigsListLoadedState) {
-              try{
-                setState(() {
-                  ipdController.text = s.result.rooms![0].ip.toString() ?? "";
-                });
-              }catch(e){
-
-              }
             } else if (s is ConfigsErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -72,152 +65,199 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
         body: MultiBlocProvider(
             providers: [
-              BlocProvider<ConfigsBloc>(
-                create: (BuildContext context) => _ConfigsBloc,
-              ),
-            ],
-            child:ListView(
-      children: [
-        _consumerApi(),
-        Container(
-          child: Column(
-            children: [
-              Image.asset(
-                ImageConstant.logo,
-                width: 150.w,
-              ),
-              Text(
-                "Billiards Lamp Controls",
-                textAlign: TextAlign.center,
-                style:
-                    GoogleFonts.plusJakartaSans(fontSize: 15.sp, color: Colors.black),
-              ),
-            ],
+          BlocProvider<ConfigsBloc>(
+            create: (BuildContext context) => _ConfigsBloc,
           ),
-        ),
-
-        InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ListSetting()),
-              );
-            },
-            child: Container(
-                margin: EdgeInsets.only(left: 20.w,right: 20.w,top: 10.w),
-                decoration: BoxDecoration(
-                  color: ColorConstant.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 2.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.all(15.w),
-                child: Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ],
+            child: ListView(
+              children: [
+                _consumerApi(),
+                Container(
+                  child: Column(
                     children: [
-                      Text(
-                        "Table List Control",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11.sp,
-                            color: ColorConstant.titletext),
+                      Image.asset(
+                        ImageConstant.logo,
+                        width: 150.w,
                       ),
-                      Icon(
-                        Boxicons.bx_chevron_right,
-                        color: ColorConstant.subtext,
-                      )
-                    ],
-                  ),
-                ))),
-        InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PanelSetting()),
-              );
-            },
-            child: Container(
-                margin: EdgeInsets.only(left: 20.w,right: 20.w,top: 10.w),
-                decoration: BoxDecoration(
-                  color: ColorConstant.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 2.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.all(15.w),
-                child: Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
                       Text(
-                        "Panel Setting",
+                        "Billiards Lamp Controls",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11.sp,
-                            color: ColorConstant.titletext),
-                      ),
-                      Icon(
-                        Boxicons.bx_chevron_right,
-                        color: ColorConstant.subtext,
-                      )
-                    ],
-                  ),
-                ))),
-        InkWell(
-            onTap: () async{
-              fetchTimer?.cancel();
-              FlutterBackgroundService().invoke('stopService');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
-            },
-            child: Container(
-                margin: EdgeInsets.all(20.w),
-                decoration: BoxDecoration(
-                  color: ColorConstant.off,
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 2.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.all(15.w),
-                child: Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Logout",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11.sp,
-                            color: ColorConstant.white),
+                            fontSize: 15.sp, color: Colors.black),
                       ),
                     ],
                   ),
-                ))),
-      ],
-    )));
+                ),
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ListSetting()),
+                      );
+                    },
+                    child: Container(
+                        margin:
+                            EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.white,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Table List Control",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.titletext),
+                              ),
+                              Icon(
+                                Boxicons.bx_chevron_right,
+                                color: ColorConstant.subtext,
+                              )
+                            ],
+                          ),
+                        ))),
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PanelSetting()),
+                      );
+                    },
+                    child: Container(
+                        margin:
+                            EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.white,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Panel Setting",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.titletext),
+                              ),
+                              Icon(
+                                Boxicons.bx_chevron_right,
+                                color: ColorConstant.subtext,
+                              )
+                            ],
+                          ),
+                        ))),
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ClientInformation()),
+                      );
+                    },
+                    child: Container(
+                        margin:
+                            EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.white,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Client Information",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.titletext),
+                              ),
+                              Icon(
+                                Boxicons.bx_chevron_right,
+                                color: ColorConstant.subtext,
+                              )
+                            ],
+                          ),
+                        ))),
+                InkWell(
+                    onTap: () async {
+                      fetchTimer?.cancel();
+                      FlutterBackgroundService().invoke('stopService');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    child: Container(
+                        margin: EdgeInsets.all(20.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.off,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Logout",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.white),
+                              ),
+                            ],
+                          ),
+                        ))),
+              ],
+            )));
   }
 }

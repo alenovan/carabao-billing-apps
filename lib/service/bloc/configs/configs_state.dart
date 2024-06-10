@@ -27,7 +27,7 @@ class ConfigsLoadedState extends ConfigsState {
 }
 
 class ConfigsListLoadedState extends ConfigsState {
-  ResponseListConfigModels result;
+  ResponseClientInformation result;
 
   ConfigsListLoadedState({required this.result});
 

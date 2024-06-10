@@ -3,14 +3,14 @@ import 'dart:developer';
 
 import 'package:carabaobillingapps/service/models/configs/RequestConfigsModels.dart';
 import 'package:carabaobillingapps/service/models/configs/ResponseConfigsModels.dart';
-import 'package:carabaobillingapps/service/models/configs/ResponseListConfigModels.dart';
 import 'package:http/http.dart' as http;
 
 import '../../constant/url_constant.dart';
 import '../../helper/global_helper.dart';
+import '../models/configs/ResponseClientInformation.dart';
 
 abstract class ConfigRepo {
-  Future<ResponseListConfigModels> getConfig();
+  Future<ResponseClientInformation> getConfig();
 
   Future<ResponseConfigsModels> updateConfig(RequestConfigsModels payload);
 
@@ -19,13 +19,13 @@ abstract class ConfigRepo {
 
 class ConfigRepoRepositoryImpl implements ConfigRepo {
   @override
-  Future<ResponseListConfigModels> getConfig() async {
+  Future<ResponseClientInformation> getConfig() async {
     // TODO: implement getConfig
     var response = await http.get(Uri.parse(UrlConstant.config),
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
-      ResponseListConfigModels responses =
-          responseListConfigModelsFromJson(response.body);
+      ResponseClientInformation responses =
+          responseClientInformationFromJson(response.body);
       return responses;
     } else if (response.statusCode == 522 ||
         response.statusCode == 502 ||
