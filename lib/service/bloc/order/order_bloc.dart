@@ -1,10 +1,15 @@
 import 'package:bloc/bloc.dart';
+import 'package:carabaobillingapps/service/models/order/RequestChangeTable.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrderSearch.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
+import 'package:carabaobillingapps/service/models/order/RequestVoidOrder.dart';
+import 'package:carabaobillingapps/service/models/order/ResponseChangeTable.dart';
+import 'package:carabaobillingapps/service/models/order/ResponseDetailHistory.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseStopOrdersModels.dart';
+import 'package:carabaobillingapps/service/models/order/ResponseVoidOrder.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:equatable/equatable.dart';
 
@@ -73,10 +78,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         try {
           final result = await repository.getOrderBg();
           emit(OrdersListBgLoadedState(result: result));
-        } catch (e) {
-        }
+        } catch (e) {}
       }
-
 
       if (event is ActOrderHistory) {
         emit(OrdersLoadingState());
@@ -85,6 +88,35 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           emit(OrdersHistoryLoadedState(result: result));
         } catch (e) {
           emit(OrdersErrorState(message: e.toString()));
+        }
+      }
+      if (event is ActChangetableTable) {
+        emit(OrdersChangeTableLoadingState());
+        try {
+          final result = await repository.changeTable(event.payload);
+          emit(OrdersChangeTableLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersChangetableErrorState(message: e.toString()));
+        }
+      }
+
+      if (event is ActVoid) {
+        emit(OrdersVoidLoadingState());
+        try {
+          final result = await repository.voidTable(event.payload);
+          emit(OrdersVoidLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersVoidErrorState(message: e.toString()));
+        }
+      }
+
+      if (event is getDetailHistory) {
+        emit(OrdersDetailHistoryLoadingState());
+        try {
+          final result = await repository.historyDetail(event.id);
+          emit(OrdersDetailHistoryLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersDetailHistoryErrorState(message: e.toString()));
         }
       }
     });

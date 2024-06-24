@@ -49,6 +49,10 @@ dependencies:
   intl: ^0.19.0
   flutter_foreground_service:
   permission_handler: ^10.4.0
+  http_interceptor:
+  firebase_messaging: ^14.3.0
+  firebase_core:
+  workmanager: ^0.5.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

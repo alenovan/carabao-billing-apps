@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
+import '../../constant/data_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../service/bloc/configs/configs_bloc.dart';
@@ -121,6 +122,23 @@ class _ClientInformationState extends State<ClientInformation> {
                                     color: ColorConstant.primary,
                                   )),
                               Text(detailInformation?.clientId.toString() ?? "",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                            ],
+                          ),
+                          SizedBox(height: 10.w,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Apk Version",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: ColorConstant.primary,
+                                  )),
+                              Text(ConstantData.version_apps,
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11.sp,
                                     fontWeight: FontWeight.bold,

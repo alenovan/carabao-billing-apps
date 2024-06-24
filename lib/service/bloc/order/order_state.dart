@@ -36,7 +36,6 @@ class OrdersLoadedOpenBillingState extends OrderState {
   List<Object> get props => [result];
 }
 
-
 class OrdersStopLoadedState extends OrderState {
   ResponseStopOrdersModels result;
 
@@ -67,7 +66,6 @@ class OrdersListBgLoadedState extends OrderState {
   List<Object> get props => [result];
 }
 
-
 class OrdersErrorState extends OrderState {
   String message;
 
@@ -77,7 +75,6 @@ class OrdersErrorState extends OrderState {
   // TODO: implement props
   List<Object> get props => [message];
 }
-
 
 class OrdersHistoryLoadedState extends OrderState {
   ResponseOrderHistoryModels result;
@@ -89,3 +86,83 @@ class OrdersHistoryLoadedState extends OrderState {
   List<Object> get props => [result];
 }
 
+// Change Table
+class OrdersChangeTableLoadingState extends OrderState {
+  @override
+  // TODO: implement props
+  List<Object> get props => throw UnimplementedError();
+}
+
+class OrdersChangeTableLoadedState extends OrderState {
+  ResponseChangeTable result;
+
+  OrdersChangeTableLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+class OrdersChangetableErrorState extends OrderState {
+  String message;
+
+  OrdersChangetableErrorState({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [message];
+}
+
+// Void
+class OrdersVoidLoadingState extends OrderState {
+  @override
+  // TODO: implement props
+  List<Object> get props => throw UnimplementedError();
+}
+
+class OrdersVoidLoadedState extends OrderState {
+  ResponseVoidOrder result;
+
+  OrdersVoidLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+class OrdersVoidErrorState extends OrderState {
+  String message;
+
+  OrdersVoidErrorState({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [message];
+}
+
+// Void
+class OrdersDetailHistoryLoadingState extends OrderState {
+  @override
+  // TODO: implement props
+  List<Object> get props => throw UnimplementedError();
+}
+
+class OrdersDetailHistoryLoadedState extends OrderState {
+  ResponseDetailHistory result;
+
+  OrdersDetailHistoryLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+class OrdersDetailHistoryErrorState extends OrderState {
+  String message;
+
+  OrdersDetailHistoryErrorState({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [message];
+}

@@ -1,6 +1,6 @@
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:carabaobillingapps/service/bloc/auth/auth_bloc.dart';
-import 'package:carabaobillingapps/service/models/auth/RequestLoginModels.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +13,7 @@ import '../constant/image_constant.dart';
 import '../helper/BottomSheetFeedback.dart';
 import '../helper/global_helper.dart';
 import '../helper/navigation_utils.dart';
+import '../service/models/auth/RequestLoginModels.dart';
 import '../service/repository/LoginRepository.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,6 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _AuthBloc = AuthBloc(repository: LoginRepoRepositoryImpl());
   late TextEditingController usernameController = TextEditingController();
   late TextEditingController passwordController = TextEditingController();
+  late FirebaseMessaging _messaging;
+  var token_firebase = "";
 
   Widget _consumerApi() {
     return Column(
@@ -57,7 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    _messaging = FirebaseMessaging.instance;
+    _messaging.getToken().then((value) {
+      token_firebase = value.toString();
+    });
     _checkNotificationPermission();
   }
 

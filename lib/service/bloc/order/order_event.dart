@@ -56,7 +56,6 @@ class GetOrderBg extends OrderEvent {
   List<Object> get props => [];
 }
 
-
 class ActOrderHistory extends OrderEvent {
   RequestOrderSearch payload;
 
@@ -65,4 +64,34 @@ class ActOrderHistory extends OrderEvent {
   @override
   // TODO: implement props
   List<Object> get props => [payload];
+}
+
+class ActChangetableTable extends OrderEvent {
+  RequestChangeTable payload;
+
+  ActChangetableTable({required this.payload});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [payload];
+}
+
+class ActVoid extends OrderEvent {
+  RequestVoidOrder payload;
+
+  ActVoid({required this.payload});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [payload];
+}
+
+class getDetailHistory extends OrderEvent {
+  String id;
+
+  getDetailHistory({required this.id});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id];
 }

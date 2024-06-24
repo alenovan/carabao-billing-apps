@@ -9,22 +9,26 @@ ResponseRoomsModels responseRoomsModelsFromJson(String str) => ResponseRoomsMode
 String responseRoomsModelsToJson(ResponseRoomsModels data) => json.encode(data.toJson());
 
 class ResponseRoomsModels {
-  bool? success;
-  List<Room>? rooms;
+  bool? status;
+  String? message;
+  List<Room>? data;
 
   ResponseRoomsModels({
-    this.success,
-    this.rooms,
+    this.status,
+    this.message,
+    this.data,
   });
 
   factory ResponseRoomsModels.fromJson(Map<String, dynamic> json) => ResponseRoomsModels(
-    success: json["success"],
-    rooms: json["rooms"] == null ? [] : List<Room>.from(json["rooms"]!.map((x) => Room.fromJson(x))),
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] == null ? [] : List<Room>.from(json["data"]!.map((x) => Room.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "rooms": rooms == null ? [] : List<dynamic>.from(rooms!.map((x) => x.toJson())),
+    "status": status,
+    "message": message,
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
   };
 }
 
@@ -33,28 +37,20 @@ class Room {
   String? name;
   String? code;
   dynamic createdAt;
-  dynamic updateAt;
+  DateTime? updatedAt;
   int? status;
-  int? idPanels;
   int? roomsAvailable;
-  String? position;
-  String? ip;
-  int? isActive;
-  String? secret;
+  int? idPanels;
 
   Room({
     this.id,
     this.name,
     this.code,
     this.createdAt,
-    this.updateAt,
+    this.updatedAt,
     this.status,
-    this.idPanels,
     this.roomsAvailable,
-    this.position,
-    this.ip,
-    this.isActive,
-    this.secret,
+    this.idPanels,
   });
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
@@ -62,14 +58,10 @@ class Room {
     name: json["name"],
     code: json["code"],
     createdAt: json["created_at"],
-    updateAt: json["update_at"],
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
     status: json["status"],
-    idPanels: json["id_panels"],
     roomsAvailable: json["rooms_available"],
-    position: json["position"],
-    ip: json["ip"],
-    isActive: json["is_active"],
-    secret: json["secret"],
+    idPanels: json["id_panels"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -77,13 +69,9 @@ class Room {
     "name": name,
     "code": code,
     "created_at": createdAt,
-    "update_at": updateAt,
+    "updated_at": updatedAt?.toIso8601String(),
     "status": status,
-    "id_panels": idPanels,
     "rooms_available": roomsAvailable,
-    "position": position,
-    "ip": ip,
-    "is_active": isActive,
-    "secret": secret,
+    "id_panels": idPanels,
   };
 }

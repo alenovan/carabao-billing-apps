@@ -5,12 +5,16 @@ import 'dart:ui';
 import 'package:carabaobillingapps/SplashScreen.dart';
 import 'package:carabaobillingapps/helper/global_helper.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'constant/url_constant.dart';
 
@@ -19,10 +23,83 @@ late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
 bool enableFetch = true;
 Timer? fetchTimer;
 
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications',
+  importance: Importance.high,
+);
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+  print('Handling a background message ${message.messageId}');
+  initMessagingFirebase();
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyCnB3XBsGg4yLilvRCEI0A8UDzhM2NAsMA",
+      // paste your api key here
+      appId: "1:992747739253:android:f01c3bf830604f808d003c",
+      //paste your app id here
+      messagingSenderId: "992747739253",
+      //paste your messagingSenderId here
+      projectId: "crbillingsystem", //paste your project id here
+    ),
+  );
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    _firebaseMessagingBackgroundHandler(message);
+  });
   await initializeService();
   runApp(const MyApp());
+}
+
+void initMessagingFirebase() {
+  var initializationSettingsAndroid =
+      const AndroidInitializationSettings('ic_launcher');
+  var initialzationSettingsAndroid =
+      const AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationSettings =
+      InitializationSettings(android: initialzationSettingsAndroid);
+  flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    RemoteNotification notification = message!.notification!;
+    AndroidNotification android = message!.notification!.android!;
+    if (notification != null && android != null) {
+      flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              color: Colors.orange,
+              // TODO add a proper drawable resource to android, for now using
+              //      one that already exists in example app.
+              icon: "@mipmap/ic_launcher",
+            ),
+          ));
+    }
+  });
 }
 
 Future<void> initializeService() async {
@@ -91,9 +168,11 @@ Future<void> stopBilling(int orderId, ip, secret, code) async {
           'Successfully stopped billing. Status code: ${response.statusCode}');
       switchLamp(ip: ip, key: secret, code: code, status: false);
     } else {
+      switchLamp(ip: ip, key: secret, code: code, status: false);
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
   } catch (error) {
+    switchLamp(ip: ip, key: secret, code: code, status: false);
     print('Error during stopBilling request: $error');
   }
 }
@@ -119,10 +198,10 @@ Future<void> onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
   // Set initial value to true to allow fetching data
-
+  //
   // Start a periodic timer to execute the fetch logic
   // fetchTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-  //   // Only execute the fetch logic if enableFetch is true
+  //   // Only execute   the fetch logic if enableFetch is true
   //   if (service is AndroidServiceInstance) {
   //     if (await service.isForegroundService()) {
   //       try {
@@ -131,6 +210,51 @@ Future<void> onStart(ServiceInstance service) async {
   //     }
   //   }
   // });
+}
+
+Future<void> offLamp(link) async {
+  try {
+    var response = await http.post(
+      Uri.parse(link),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+    } else {}
+  } catch (error) {
+    print('Error during stopBilling request: $error');
+  }
+}
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    try {
+      final String endTimeStr = inputData?['endTime'];
+      final DateTime endTime = DateTime.parse(endTimeStr);
+
+      if (DateTime.now().isAfter(endTime)) {
+        offLamp(inputData?['ip'] +
+            inputData?['code'] +
+            "off" +
+            "?key=" +
+            inputData?['secret']);
+        stopBilling(
+          int.parse(inputData?['orderId']),
+          inputData?['ip'],
+          inputData?['secret'],
+          inputData?['code'],
+        );
+        return Future.value(true);
+      }
+    } catch (e) {
+      return Future.value(false);
+    }
+
+    return Future.value(false);
+  });
 }
 
 Map<String, CountdownTimer> countdownTimers = {};
@@ -153,22 +277,22 @@ void startCountdown(Map<String, dynamic> order) {
     onTick: (Duration duration) {
       final String formattedTime =
           '${duration.inHours}:${duration.inMinutes.remainder(60)}:${duration.inSeconds.remainder(60)}';
-
     },
     onCountdownFinish: () async {
       removeOrderFromPrefs(order['id'].toString());
       removeNotification(orderId);
-      stopBilling(
-        order['id'],
-        order['ip'].toString(),
-        order['secret'].toString(),
-        order['code'].toString(),
-      );
+      // stopBilling(
+      //   order['id'],
+      //   order['ip'].toString(),
+      //   order['secret'].toString(),
+      //   order['code'].toString(),
+      // );
       // Remove the countdown timer from the map when it finishes
       countdownTimers.remove(orderId);
     },
     onStart: () async {
-      showNotification(orderId, order['name'].toString(), order['name'].toString());
+      showNotification(
+          orderId, order['name'].toString(), order['name'].toString());
     },
   );
 
@@ -177,6 +301,18 @@ void startCountdown(Map<String, dynamic> order) {
 
   // Store the countdown timer in the map with its key
   countdownTimers[orderId] = _countdownTimer;
+
+  Workmanager().registerPeriodicTask(
+    orderId,
+    'handleCountdownFinish',
+    inputData: {
+      'orderId': orderId,
+      'endTime': endTime.toIso8601String(),
+      'ip': order['ip'].toString(),
+      'secret': order['secret'].toString(),
+      'code': order['code'].toString(),
+    },
+  );
 }
 
 void stopCountdown(String key) {
@@ -188,7 +324,6 @@ void stopCountdown(String key) {
     countdownTimers.remove(key);
   }
 }
-
 
 Future<void> removeNotification(String orderId) async {
   await _flutterLocalNotificationsPlugin.cancel(int.parse(orderId));

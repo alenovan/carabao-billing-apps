@@ -1,5 +1,6 @@
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
+import 'package:carabaobillingapps/service/models/order/RequestChangeTable.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
@@ -15,6 +16,9 @@ import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../helper/navigation_utils.dart';
 import '../../main.dart';
+import '../../service/bloc/meja/meja_bloc.dart';
+import '../../service/models/rooms/ResponseRoomsModels.dart';
+import '../../service/repository/RoomsRepository.dart';
 import '../BottomNavigationScreen.dart';
 
 class BillingScreen extends StatefulWidget {
@@ -43,18 +47,28 @@ class _BillingScreenState extends State<BillingScreen> {
   late int selected_time_nunber;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
-
+  OrderBloc? _OrderBloc;
+  final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
+  late List<Room>? data_meja;
   SharedPreferences? _prefs;
   List<Map<String, dynamic>> _orders = [];
 
   @override
   void initState() {
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _MejaBloc.add(GetMeja());
     super.initState();
   }
 
-  void showNameInputDialog(BuildContext context) {
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _OrderBloc?.close();
+    _MejaBloc?.close();
+    super.dispose();
+  }
 
+  void showNameInputDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -86,7 +100,7 @@ class _BillingScreenState extends State<BillingScreen> {
               onPressed: () {
                 String enteredName = _nameController.text;
                 String enteredPhone = _phoneController.text;
-                _OrderBloc.add(ActOrderOpenBilling(
+                _OrderBloc?.add(ActOrderOpenBilling(
                     payload: RequestOrdersModels(
                         idRooms: widget.id_meja,
                         name: enteredName,
@@ -100,7 +114,6 @@ class _BillingScreenState extends State<BillingScreen> {
       },
     );
   }
-
 
   Widget _consumerApi() {
     return Column(
@@ -137,6 +150,35 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
             }
+
+            if (s is OrdersChangeTableLoadingState) {
+              LoadingDialog.show(c, "Mohon tunggu");
+            } else if (s is OrdersChangeTableLoadedState) {
+              popScreen(context);
+              BottomSheetFeedback.showSuccess(
+                  context, "Selamat", s.result.message!);
+              await RoomsRepoRepositoryImpl()
+                  .openRooms(s.result.data!.oldRooms!);
+              await RoomsRepoRepositoryImpl()
+                  .openRooms(s.result.data!.newRooms!);
+              NavigationUtils.navigateTo(
+                  context, const BottomNavigationScreen(), true);
+            } else if (s is OrdersChangetableErrorState) {
+              popScreen(c);
+              BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
+            }
+          },
+          builder: (c, s) {
+            return Container();
+          },
+        ),
+        BlocConsumer<MejaBloc, MejaState>(
+          listener: (c, s) {
+            if (s is MejaLoadedState) {
+              setState(() {
+                data_meja = s.result!.data!;
+              });
+            }
           },
           builder: (c, s) {
             return Container();
@@ -171,6 +213,40 @@ class _BillingScreenState extends State<BillingScreen> {
                 },
               );
             },
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetChangeMeja(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 800.h, // Use height unit for responsive height
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: data_meja?.length ?? 0,
+                  itemBuilder: (BuildContext context, int index) {
+                    Room detailMeja = data_meja![index];
+                    return ListTile(
+                      title: Text(detailMeja.name ?? ""),
+                      onTap: () {
+                        _OrderBloc?.add(ActChangetableTable(
+                            payload: RequestChangeTable(
+                                idOrder: int.parse(widget.id_order!),
+                                idRooms: detailMeja.id)));
+                        // Handle item tap
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -276,38 +352,68 @@ class _BillingScreenState extends State<BillingScreen> {
   }
 
   Widget orderFound() {
-    return GestureDetector(
-      onTap: () {
-        removeNotification(widget.id_order!);
-        removeOrderFromPrefs(widget.id_order!);
-        removeAllNotifications();
-        initPrefs();
-        stopCountdown(widget.id_order!);
-        _OrderBloc.add(ActStopOrderOpenBilling(
-            payload: RequestStopOrdersModels(
-                orderId: int.parse(widget.id_order.toString()))));
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: ColorConstant.off,
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            removeNotification(widget.id_order!);
+            removeOrderFromPrefs(widget.id_order!);
+            removeAllNotifications();
+            initPrefs();
+            stopCountdown(widget.id_order!);
+            _OrderBloc?.add(ActStopOrderOpenBilling(
+                payload: RequestStopOrdersModels(
+                    orderId: int.parse(widget.id_order.toString()))));
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: ColorConstant.off,
+                ),
+                color: ColorConstant.off,
+                borderRadius: BorderRadius.all(Radius.circular(50))),
+            height: 50.w,
+            margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+            padding: EdgeInsets.only(left: 20.w, right: 20.w),
+            child: Center(
+              child: Text(
+                "Off Billing",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11.sp,
+                    color: ColorConstant.white),
+              ),
             ),
-            color: ColorConstant.off,
-            borderRadius: BorderRadius.all(Radius.circular(50))),
-        height: 50.w,
-        margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
-        padding: EdgeInsets.only(left: 20.w, right: 20.w),
-        child: Center(
-          child: Text(
-            "OFF BILLING",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.bold,
-                fontSize: 11.sp,
-                color: ColorConstant.white),
           ),
         ),
-      ),
+        GestureDetector(
+          onTap: () {
+            _showBottomSheetChangeMeja(context);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: ColorConstant.primary,
+                ),
+                color: ColorConstant.primary,
+                borderRadius: BorderRadius.all(Radius.circular(50))),
+            height: 50.w,
+            margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+            padding: EdgeInsets.only(left: 20.w, right: 20.w),
+            child: Center(
+              child: Text(
+                "Change Table",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11.sp,
+                    color: ColorConstant.white),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -316,7 +422,10 @@ class _BillingScreenState extends State<BillingScreen> {
       body: MultiBlocProvider(
           providers: [
             BlocProvider<OrderBloc>(
-              create: (BuildContext context) => _OrderBloc,
+              create: (BuildContext context) => _OrderBloc!,
+            ),
+            BlocProvider<MejaBloc>(
+              create: (BuildContext context) => _MejaBloc!,
             ),
           ],
           child: Column(

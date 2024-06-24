@@ -40,7 +40,8 @@ class MenuListCard extends StatefulWidget {
       required this.start,
       this.id_order,
       required this.ip,
-      required this.keys, required this.onUpdate});
+      required this.keys,
+      required this.onUpdate});
 
   @override
   State<MenuListCard> createState() => _MenuListCardState();
@@ -50,14 +51,20 @@ class _MenuListCardState extends State<MenuListCard> {
   Duration _remainingTime = Duration(seconds: 0);
   late DateTime? _startTime;
   late Timer _timer;
-  final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
+  OrderBloc? _OrderBloc;
   var statusLocal = false;
+
   Widget _consumerApi() {
     return Column(
       children: [
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) async {
             if (s is OrdersStopLoadedState) {
+              switchLamp(
+                  ip: s.result.data!.panel!.ip!,
+                  key: s.result.data!.panel!.secret!,
+                  code: s.result.data!.code!,
+                  status: false);
               setState(() {
                 widget.status = false;
                 statusLocal = false;
@@ -83,6 +90,7 @@ class _MenuListCardState extends State<MenuListCard> {
   @override
   void initState() {
     super.initState();
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
     statusLocal = widget.status;
     if (widget.end != "No orders") {
       setState(() {
@@ -109,7 +117,7 @@ class _MenuListCardState extends State<MenuListCard> {
           widget.onUpdate();
           // Countdown has reached zero, you may want to handle this case
           timer.cancel();
-          _OrderBloc.add(ActStopOrderOpenBilling(
+          _OrderBloc?.add(ActStopOrderOpenBilling(
               payload: RequestStopOrdersModels(
                   orderId: int.parse(widget.id_order.toString()))));
         }
@@ -130,7 +138,7 @@ class _MenuListCardState extends State<MenuListCard> {
     return MultiBlocProvider(
         providers: [
           BlocProvider<OrderBloc>(
-            create: (BuildContext context) => _OrderBloc,
+            create: (BuildContext context) => _OrderBloc!,
           ),
         ],
         child: InkWell(

@@ -1,3 +1,4 @@
+import 'package:carabaobillingapps/screen/menu/DetailHistory.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrderSearch.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
@@ -20,22 +21,23 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
+  OrderBloc? _OrderBloc;
   late dynamic order = [];
   late TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
     super.initState();
-    _OrderBloc.add(ActOrderHistory(
+    _OrderBloc?.add(ActOrderHistory(
         payload: RequestOrderSearch(search: "", page: 1, pageSize: 1000)));
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    _OrderBloc.close();
+    _OrderBloc?.close();
     super.dispose();
   }
 
@@ -73,7 +75,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           body: MultiBlocProvider(
               providers: [
                 BlocProvider<OrderBloc>(
-                  create: (BuildContext context) => _OrderBloc,
+                  create: (BuildContext context) => _OrderBloc!,
                 ),
               ],
               child: Container(
@@ -117,13 +119,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             controller: searchController,
                             onChanged: (e) {
                               if (e.length <= 0) {
-                                _OrderBloc.add(ActOrderHistory(
+                                _OrderBloc?.add(ActOrderHistory(
                                     payload: RequestOrderSearch(
                                         search: e, pageSize: 1000, page: 1)));
                               }
                             },
                             onFieldSubmitted: (value) {
-                              _OrderBloc.add(
+                              _OrderBloc?.add(
                                 ActOrderHistory(
                                   payload: RequestOrderSearch(
                                       search: value, pageSize: 1000, page: 1),
@@ -147,47 +149,58 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               DateTime.parse(data.startTime.toString()));
                           var _remainingTime =
                               Duration(seconds: difference.inSeconds);
-                          return Container(
-                            margin: EdgeInsets.only(
-                                left: 20.w, right: 20.w, bottom: 10.w),
-                            decoration: BoxDecoration(
-                              color: ColorConstant.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 2.0,
-                                  spreadRadius: 1.0,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            padding: EdgeInsets.all(15.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ItemListHistory(
-                                  title: "Nama",
-                                  value: data.ordersName.toString(),
-                                ),
-                                ItemListHistory(
-                                  title: "Meja",
-                                  value: data.name.toString(),
-                                ),
-                                ItemListHistory(
-                                  title: "Waktu Mulai",
-                                  value: data.startTime.toString(),
-                                ),
-                                ItemListHistory(
-                                  title: "Waktu Selesai",
-                                  value: data.endTime.toString(),
-                                ),
-                                ItemListHistory(
-                                  title: "Total Selesai",
-                                  value: formatDuration(_remainingTime!),
-                                )
-                              ],
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DetailHistory(
+                                          id_order: data.id.toString(),
+                                        )),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  left: 20.w, right: 20.w, bottom: 10.w),
+                              decoration: BoxDecoration(
+                                color: ColorConstant.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 2.0,
+                                    spreadRadius: 1.0,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              padding: EdgeInsets.all(15.w),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ItemListHistory(
+                                    title: "Nama",
+                                    value: data.ordersName.toString(),
+                                  ),
+                                  ItemListHistory(
+                                    title: "Meja",
+                                    value: data.name.toString(),
+                                  ),
+                                  ItemListHistory(
+                                    title: "Waktu Mulai",
+                                    value: data.startTime.toString(),
+                                  ),
+                                  ItemListHistory(
+                                    title: "Waktu Selesai",
+                                    value: data.endTime.toString(),
+                                  ),
+                                  ItemListHistory(
+                                    title: "Total Selesai",
+                                    value: formatDuration(_remainingTime!),
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         },

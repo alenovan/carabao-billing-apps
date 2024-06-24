@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:carabaobillingapps/helper/shared_preference.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 import '../constant/data_constant.dart';
 import '../service/repository/RoomsRepository.dart';
@@ -75,4 +76,16 @@ extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${this.substring(1)}";
   }
+}
+
+String formatDateTimeWeb(DateTime? dateTime) {
+  if (dateTime == null) {
+    return 'Invalid date';
+  }
+
+  // Define a custom date format
+  final DateFormat formatter = DateFormat('d MMMM yyyy - HH:mm', 'id_ID');
+
+  // Format the DateTime object
+  return formatter.format(dateTime);
 }
