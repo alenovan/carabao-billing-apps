@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           width: 150.w,
                         ),
                         Text(
-                          "Billiards Lamp Controls",
+                          "Demo Version",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.plusJakartaSans(
                               fontSize: 15.sp, color: Colors.black),

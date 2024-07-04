@@ -185,11 +185,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-
-              RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
-              await Future.delayed(Duration(seconds: 2));
-              RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
-              await Future.delayed(Duration(seconds: 2));
+              await Future.delayed(Duration(seconds: 1));
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersChangetableErrorState) {
