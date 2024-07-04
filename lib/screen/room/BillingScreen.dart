@@ -157,12 +157,13 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-              await RoomsRepoRepositoryImpl()
-                  .openRooms(s.result.data!.oldRooms!);
-              await RoomsRepoRepositoryImpl()
-                  .openRooms(s.result.data!.newRooms!);
+
+              RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
+              await Future.delayed(Duration(seconds: 2));
+              RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
+              await Future.delayed(Duration(seconds: 2));
               NavigationUtils.navigateTo(
-                  context, const BottomNavigationScreen(), true);
+                  context, const BottomNavigationScreen(), false);
             } else if (s is OrdersChangetableErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -176,7 +177,7 @@ class _BillingScreenState extends State<BillingScreen> {
           listener: (c, s) {
             if (s is MejaLoadedState) {
               setState(() {
-                data_meja = s.result!.data!;
+                data_meja = s.result!.data!.where((room) => room.status == 0).toList();
               });
             }
           },

@@ -189,12 +189,15 @@ class _MenuListCardState extends State<MenuListCard> {
                       children: [
                         Row(
                           children: [
-                            Image.asset(
-                              ImageConstant.boxicons,
-                              width: 50.w,
+                            Container(
+                              margin: EdgeInsets.only(top: 6.w),
+                              child: Image.asset(
+                                ImageConstant.xinjue,
+                                width: 50.w,
+                              ),
                             ),
                             SizedBox(
-                              width: 5,
+                              width: 10.w,
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

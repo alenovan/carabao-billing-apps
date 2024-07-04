@@ -46,7 +46,7 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
     // TODO: implement openRooms
     var response =
         await http.post(Uri.parse(link), headers: await tokenHeader(true));
-    throw ("Oke");
+    return "Success";
   }
 
   @override

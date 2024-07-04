@@ -47,6 +47,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late List<Room>? data_meja;
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -62,6 +63,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
     _MejaBloc.add(GetMeja());
     super.initState();
   }
+
   void showNameInputDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -142,7 +144,6 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
     );
   }
 
-
   Widget _consumerApi() {
     return Column(
       children: [
@@ -170,8 +171,10 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: false);
-              NavigationUtils.navigateTo(
-                  context, const BottomNavigationScreen(), false);
+              Future.delayed(Duration(seconds: 1), () {
+                NavigationUtils.navigateTo(
+                    context, const BottomNavigationScreen(), false);
+              });
             } else if (s is OrdersErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -182,12 +185,13 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-              await RoomsRepoRepositoryImpl()
-                  .openRooms(s.result.data!.oldRooms!);
-              await RoomsRepoRepositoryImpl()
-                  .openRooms(s.result.data!.newRooms!);
+
+              RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
+              await Future.delayed(Duration(seconds: 2));
+              RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
+              await Future.delayed(Duration(seconds: 2));
               NavigationUtils.navigateTo(
-                  context, const BottomNavigationScreen(), true);
+                  context, const BottomNavigationScreen(), false);
             } else if (s is OrdersChangetableErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -201,7 +205,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
           listener: (c, s) {
             if (s is MejaLoadedState) {
               setState(() {
-                data_meja = s.result!.data!;
+                data_meja = s.result!.data!.where((room) => room.status == 0).toList();
               });
             }
           },
@@ -258,7 +262,6 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     ),
                   ),
                 ),
-
               if (widget.status)
                 GestureDetector(
                   onTap: () {
@@ -301,7 +304,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                         color: ColorConstant.primary,
                         borderRadius: BorderRadius.all(Radius.circular(50))),
                     height: 50.w,
-                    margin: EdgeInsets.only(left: 20.w, right: 20.w,top: 10.w),
+                    margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                     padding: EdgeInsets.only(left: 20.w, right: 20.w),
                     child: Center(
                       child: Text(
