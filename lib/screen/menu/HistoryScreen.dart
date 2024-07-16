@@ -274,7 +274,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "#${detailInformation!.clientId.toString() + data.id.toString()}",
+                                            "#${(detailInformation?.clientId.toString() ?? "") + data.id.toString()}",
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.poppins(
                                                 fontSize: 12.sp,

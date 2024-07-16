@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
+import '../../constant/data_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../helper/navigation_utils.dart';
@@ -185,11 +186,11 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-
-              RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
-              await Future.delayed(Duration(seconds: 2));
-              RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
-              await Future.delayed(Duration(seconds: 2));
+              if (ConstantData.lamp_connection) {
+                RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
+                await Future.delayed(Duration(seconds: 2));
+                RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
+              }
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersChangetableErrorState) {
@@ -205,7 +206,8 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
           listener: (c, s) {
             if (s is MejaLoadedState) {
               setState(() {
-                data_meja = s.result!.data!.where((room) => room.status == 0).toList();
+                data_meja =
+                    s.result!.data!.where((room) => room.status == 0).toList();
               });
             }
           },

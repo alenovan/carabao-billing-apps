@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/menu_list_control.dart';
 import '../../constant/color_constant.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
+import '../../service/models/rooms/ResponseRoomsModels.dart';
 import '../../service/repository/RoomsRepository.dart';
 
 class ListSetting extends StatefulWidget {
@@ -21,7 +23,7 @@ class ListSetting extends StatefulWidget {
 class _ListSettingState extends State<ListSetting> {
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late TextEditingController searchController = TextEditingController();
-  List<dynamic> data = [];
+  ResponseRoomsModels? data;
 
   @override
   void initState() {
@@ -32,11 +34,13 @@ class _ListSettingState extends State<ListSetting> {
   }
 
   fetchData() async {
-    String jsonString = ConstantData.list_meja;
-    print(jsonString);
-    setState(() {
-      data = json.decode(jsonString)['data'];
-    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString('result_meja');
+    if (jsonString != null) {
+      setState(() {
+        data = ResponseRoomsModels.fromJson(json.decode(jsonString));
+      });
+    }
   }
 
   @override
@@ -84,13 +88,13 @@ class _ListSettingState extends State<ListSetting> {
                   ),
                 ),
                 ListView.builder(
-                  itemCount: data.length,
+                  itemCount: data!.data!.length,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return MenuListControl(
-                      name: data[index]['name'],
-                      code: data[index]['code'],
+                      name: data!.data![index].name!,
+                      code: data!.data![index].code!,
                       ip: searchController.text,
                       keys: ConstantData.key_config,
                     );

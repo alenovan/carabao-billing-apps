@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/service/models/rooms/RequestPanelModels.dart';
 import 'package:carabaobillingapps/service/models/rooms/ResponseRoomsModels.dart';
 import 'package:http/http.dart' as http;
@@ -44,8 +45,11 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
   @override
   Future openRooms(String link) async {
     // TODO: implement openRooms
-    var response =
-        await http.post(Uri.parse(link), headers: await tokenHeader(true));
+    if (ConstantData.lamp_connection) {
+      var response =
+          await http.post(Uri.parse(link), headers: await tokenHeader(true));
+    }
+
     return "Success";
   }
 

@@ -1,4 +1,5 @@
 import 'package:boxicons/boxicons.dart';
+import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/RequestChangeTable.dart';
 import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart';
@@ -157,11 +158,12 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
+              if (ConstantData.lamp_connection) {
+                RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
+                await Future.delayed(Duration(seconds: 2));
+                RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
+              }
 
-              RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
-              await Future.delayed(Duration(seconds: 2));
-              RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
-              await Future.delayed(Duration(seconds: 2));
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersChangetableErrorState) {
@@ -177,7 +179,8 @@ class _BillingScreenState extends State<BillingScreen> {
           listener: (c, s) {
             if (s is MejaLoadedState) {
               setState(() {
-                data_meja = s.result!.data!.where((room) => room.status == 0).toList();
+                data_meja =
+                    s.result!.data!.where((room) => room.status == 0).toList();
               });
             }
           },
@@ -357,11 +360,6 @@ class _BillingScreenState extends State<BillingScreen> {
       children: [
         GestureDetector(
           onTap: () {
-            removeNotification(widget.id_order!);
-            removeOrderFromPrefs(widget.id_order!);
-            removeAllNotifications();
-            initPrefs();
-            stopCountdown(widget.id_order!);
             _OrderBloc?.add(ActStopOrderOpenBilling(
                 payload: RequestStopOrdersModels(
                     orderId: int.parse(widget.id_order.toString()))));

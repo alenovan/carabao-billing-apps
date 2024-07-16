@@ -1,6 +1,5 @@
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:carabaobillingapps/service/bloc/auth/auth_bloc.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _AuthBloc = AuthBloc(repository: LoginRepoRepositoryImpl());
   late TextEditingController usernameController = TextEditingController();
   late TextEditingController passwordController = TextEditingController();
-  late FirebaseMessaging _messaging;
   var token_firebase = "";
 
   Widget _consumerApi() {
@@ -60,10 +58,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _messaging = FirebaseMessaging.instance;
-    _messaging.getToken().then((value) {
-      token_firebase = value.toString();
-    });
     _checkNotificationPermission();
   }
 

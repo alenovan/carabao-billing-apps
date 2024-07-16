@@ -1,20 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
+import 'dart:io';
 
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:carabaobillingapps/SplashScreen.dart';
 import 'package:carabaobillingapps/helper/global_helper.dart';
-import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:carabaobillingapps/util/BackgroundService.dart';
+import 'package:carabaobillingapps/util/foregroundTask.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'constant/url_constant.dart';
 
@@ -31,118 +30,70 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-  print('Handling a background message ${message.messageId}');
-  initMessagingFirebase();
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "AIzaSyCnB3XBsGg4yLilvRCEI0A8UDzhM2NAsMA",
-      // paste your api key here
-      appId: "1:992747739253:android:f01c3bf830604f808d003c",
-      //paste your app id here
-      messagingSenderId: "992747739253",
-      //paste your messagingSenderId here
-      projectId: "crbillingsystem", //paste your project id here
-    ),
-  );
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    _firebaseMessagingBackgroundHandler(message);
-  });
-  await initializeService();
+  if (Platform.isWindows) {
+    await windowManager.ensureInitialized();
+    WindowManager.instance.setSize(const Size(360, 690));
+  }
+  if (Platform.isAndroid) {
+    _requestPermissionForAndroid();
+    // await AndroidAlarmManager.initialize();
+    // await AndroidAlarmManager.periodic(
+    //   Duration(seconds: 60),
+    //   0,
+    //   backgroundTask,
+    //   wakeup: true,
+    //   rescheduleOnReboot: true,
+    // );
+    ForegroundTaskService.init();
+    await ForegroundTaskService().startForegroundTask();
+  }
   runApp(const MyApp());
 }
 
-void initMessagingFirebase() {
-  var initializationSettingsAndroid =
-      const AndroidInitializationSettings('ic_launcher');
-  var initialzationSettingsAndroid =
-      const AndroidInitializationSettings('@mipmap/ic_launcher');
-  var initializationSettings =
-      InitializationSettings(android: initialzationSettingsAndroid);
-  flutterLocalNotificationsPlugin.initialize(initializationSettings);
+Future<void> _requestPermissionForAndroid() async {
+  if (!Platform.isAndroid) {
+    return;
+  }
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    RemoteNotification notification = message!.notification!;
-    AndroidNotification android = message!.notification!.android!;
-    if (notification != null && android != null) {
-      flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              color: Colors.orange,
-              // TODO add a proper drawable resource to android, for now using
-              //      one that already exists in example app.
-              icon: "@mipmap/ic_launcher",
-            ),
-          ));
-    }
-  });
+  // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
+  // onNotificationPressed function to be called.
+  //
+  // When the notification is pressed while permission is denied,
+  // the onNotificationPressed function is not called and the app opens.
+  //
+  // If you do not use the onNotificationPressed or launchApp function,
+  // you do not need to write this code.
+  if (!await FlutterForegroundTask.canDrawOverlays) {
+    // This function requires `android.permission.SYSTEM_ALERT_WINDOW` permission.
+    await FlutterForegroundTask.openSystemAlertWindowSettings();
+  }
+
+  // Android 12 or higher, there are restrictions on starting a foreground service.
+  //
+  // To restart the service on device reboot or unexpected problem, you need to allow below permission.
+  if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
+    // This function requires `android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission.
+    await FlutterForegroundTask.requestIgnoreBatteryOptimization();
+  }
+
+  // Android 13 and higher, you need to allow notification permission to expose foreground service notification.
+  final NotificationPermission notificationPermissionStatus =
+  await FlutterForegroundTask.checkNotificationPermission();
+  if (notificationPermissionStatus != NotificationPermission.granted) {
+    await FlutterForegroundTask.requestNotificationPermission();
+  }
 }
 
-Future<void> initializeService() async {
-  final service = FlutterBackgroundService();
 
-  /// OPTIONAL, using custom notification channel id
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'my_foreground', // id
-    'MY FOREGROUND SERVICE', // title
-    description:
-        'This channel is used for important notifications.', // description
-    importance: Importance.low, // importance must be at low or higher level
-  );
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  await flutterLocalNotificationsPlugin.initialize(
-    const InitializationSettings(
-      iOS: DarwinInitializationSettings(),
-      android: AndroidInitializationSettings('ic_bg_service_small'),
-    ),
-  );
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
-      autoStart: true,
-      isForegroundMode: true,
-      notificationChannelId: 'my_foreground',
-      initialNotificationTitle: 'Carabao Service',
-      initialNotificationContent: 'Initializing',
-      foregroundServiceNotificationId: 888,
-    ),
-    iosConfiguration: IosConfiguration(
-      autoStart: true,
-    ),
-  );
-  service.startService();
+Future<void> cancelNotification(int notificationId) async {
+  await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
 Future<void> stopBilling(int orderId, ip, secret, code) async {
@@ -172,44 +123,8 @@ Future<void> stopBilling(int orderId, ip, secret, code) async {
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
   } catch (error) {
-    switchLamp(ip: ip, key: secret, code: code, status: false);
     print('Error during stopBilling request: $error');
   }
-}
-
-Future<void> initPrefs() async {
-  removeAllNotifications();
-  SharedPreferences _prefs = await SharedPreferences.getInstance();
-  final String? ordersJson = _prefs.getString('orders');
-  // Load existing orders from SharedPreferences if they exist
-  if (ordersJson != null) {
-    List<dynamic> orderList = json.decode(ordersJson);
-    for (var order in orderList) {
-      // Pass each order directly as Map<String, dynamic> to startCountdown
-
-      startCountdown(order as Map<String, dynamic>);
-    }
-  }
-}
-
-@pragma('vm:entry-point')
-Future<void> onStart(ServiceInstance service) async {
-  // Only available for flutter 3.0.0 and later
-  DartPluginRegistrant.ensureInitialized();
-
-  // Set initial value to true to allow fetching data
-  //
-  // Start a periodic timer to execute the fetch logic
-  // fetchTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-  //   // Only execute   the fetch logic if enableFetch is true
-  //   if (service is AndroidServiceInstance) {
-  //     if (await service.isForegroundService()) {
-  //       try {
-  //         await initPrefs();
-  //       } catch (e) {}
-  //     }
-  //   }
-  // });
 }
 
 Future<void> offLamp(link) async {
@@ -228,155 +143,6 @@ Future<void> offLamp(link) async {
   }
 }
 
-@pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
-    try {
-      final String endTimeStr = inputData?['endTime'];
-      final DateTime endTime = DateTime.parse(endTimeStr);
-
-      if (DateTime.now().isAfter(endTime)) {
-        offLamp(inputData?['ip'] +
-            inputData?['code'] +
-            "off" +
-            "?key=" +
-            inputData?['secret']);
-        stopBilling(
-          int.parse(inputData?['orderId']),
-          inputData?['ip'],
-          inputData?['secret'],
-          inputData?['code'],
-        );
-        return Future.value(true);
-      }
-    } catch (e) {
-      return Future.value(false);
-    }
-
-    return Future.value(false);
-  });
-}
-
-Map<String, CountdownTimer> countdownTimers = {};
-
-void startCountdown(Map<String, dynamic> order) {
-  final DateTime endTime = DateTime.parse(order['newest_order_end_time']);
-  final String orderId = order['id'].toString();
-
-  // Check if a countdown timer with the same key already exists
-  if (countdownTimers.containsKey(orderId)) {
-    // Stop the existing countdown timer before creating a new one
-    stopCountdown(orderId);
-  }
-
-  removeNotification(orderId);
-
-  CountdownTimer _countdownTimer = CountdownTimer(
-    key: orderId,
-    endTime: endTime,
-    onTick: (Duration duration) {
-      final String formattedTime =
-          '${duration.inHours}:${duration.inMinutes.remainder(60)}:${duration.inSeconds.remainder(60)}';
-    },
-    onCountdownFinish: () async {
-      removeOrderFromPrefs(order['id'].toString());
-      removeNotification(orderId);
-      // stopBilling(
-      //   order['id'],
-      //   order['ip'].toString(),
-      //   order['secret'].toString(),
-      //   order['code'].toString(),
-      // );
-      // Remove the countdown timer from the map when it finishes
-      countdownTimers.remove(orderId);
-    },
-    onStart: () async {
-      showNotification(
-          orderId, order['name'].toString(), order['name'].toString());
-    },
-  );
-
-  // Start the countdown timer
-  _countdownTimer.start();
-
-  // Store the countdown timer in the map with its key
-  countdownTimers[orderId] = _countdownTimer;
-
-  Workmanager().registerPeriodicTask(
-    orderId,
-    'handleCountdownFinish',
-    inputData: {
-      'orderId': orderId,
-      'endTime': endTime.toIso8601String(),
-      'ip': order['ip'].toString(),
-      'secret': order['secret'].toString(),
-      'code': order['code'].toString(),
-    },
-  );
-}
-
-void stopCountdown(String key) {
-  // Check if a countdown timer with the specified key exists
-  if (countdownTimers.containsKey(key)) {
-    // Stop the countdown timer
-    countdownTimers[key]?.cancel();
-    // Remove the countdown timer from the map
-    countdownTimers.remove(key);
-  }
-}
-
-Future<void> removeNotification(String orderId) async {
-  await _flutterLocalNotificationsPlugin.cancel(int.parse(orderId));
-}
-
-Future<void> removeAllNotifications() async {
-  await _flutterLocalNotificationsPlugin.cancelAll();
-}
-
-Future<void> removeOrderFromPrefs(String orderId) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<Map<String, dynamic>> orders = [];
-  removeNotification(orderId);
-  try {
-    // Load orders from SharedPreferences
-    final String? ordersJson = prefs.getString('orders');
-    if (ordersJson != null) {
-      orders = List<Map<String, dynamic>>.from(json.decode(ordersJson));
-    }
-
-    // Remove order with matching orderId
-    orders.removeWhere((order) => order['id'] == int.parse(orderId));
-    await prefs.setString('orders', jsonEncode(orders));
-    print('Order removed successfully');
-  } catch (e) {
-    print('Error removing order: $e');
-  }
-}
-
-Future<void> showNotification(
-  String orderId,
-  String timeRemaining,
-  String name,
-) async {
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    'countdown_channel',
-    'Countdown Channel',
-    importance: Importance.high,
-    playSound: false, // Disable sound
-    enableVibration: false,
-    enableLights: false,
-  );
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-  await _flutterLocalNotificationsPlugin.show(
-    int.parse(orderId),
-    '${name}',
-    'Aktif',
-    platformChannelSpecifics,
-  );
-}
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -391,15 +157,6 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Carabao Lamp',
-          // You can use the library anywhere in the app even in theme
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
-            textTheme: const TextTheme(
-              bodyText2: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          ),
           home: child,
         );
       },

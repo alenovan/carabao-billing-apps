@@ -5,13 +5,13 @@ import 'package:carabaobillingapps/main.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
+import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 import '../../component/menu_list_card.dart';
 import '../../component/shimmerx.dart';
@@ -21,6 +21,7 @@ import '../../service/bloc/configs/configs_bloc.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
 import '../../service/repository/ConfigRepository.dart';
 import '../../service/repository/RoomsRepository.dart';
+import '../../util/BackgroundService.dart';
 import '../BottomNavigationScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,32 +38,67 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late bool loading = true;
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
-
+  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
   List<Map<String, dynamic>> _orders = [];
   late CountdownTimer _countdownTimer;
   final int _updateIntervalSeconds = 1;
+  var firstOpen = true;
 
   @override
   void initState() {
     // TODO: implement initState
     _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _MejaBloc?.add(GetMeja());
     super.initState();
     _OrderBloc?.add(GetOrder());
     // _OrderBloc.add(GetOrderBg());
     WidgetsBinding.instance?.addObserver(this);
+    cancelNotification(0);
+    checkForNewData();
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _appLifecycleState = state;
+    });
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        cancelNotification(0);
+        checkForNewData();
+        break;
+      case AppLifecycleState.inactive:
+        cancelNotification(0);
+        checkForNewData();
+        break;
+      case AppLifecycleState.paused:
+        cancelNotification(0);
+        checkForNewData();
+        break;
+      case AppLifecycleState.detached:
+        cancelNotification(0);
+        checkForNewData();
+        break;
+      case AppLifecycleState.hidden:
+        cancelNotification(0);
+        checkForNewData();
+    }
+  }
+
+
 
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     // _countdownTimer.cancel();
     _OrderBloc?.close();
+    checkForNewData();
     super.dispose();
   }
 
   Future<void> saveData(List<NewestOrder> orders) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    Workmanager().cancelAll();
     // Reset the existing data to null
     await _prefs.remove('orders');
 
@@ -73,7 +109,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // Encode the list of new orders and save to SharedPreferences
     final String newOrdersJson = json.encode(_newOrders);
     await _prefs.setString('orders', newOrdersJson);
-    initPrefs();
+
+    // Save orders to the local database
+    final dbHelper = DatabaseHelper();
+    await dbHelper.deleteOrders(); // Clear existing orders
+    for (var order in orders) {
+      await dbHelper.insertOrder(order);
+    }
   }
 
   Widget _consumerApi() {
@@ -107,7 +149,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           },
         ),
         BlocConsumer<MejaBloc, MejaState>(
-          listener: (c, s) {
+          listener: (c, s) async {
+            if (s is MejaLoadedState) {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setString('result_meja', jsonEncode(s.result.toJson()));
+            }
           },
           builder: (c, s) {
             return Container();
