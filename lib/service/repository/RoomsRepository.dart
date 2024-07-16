@@ -44,6 +44,7 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
   @override
   Future openRooms(String link) async {
     // TODO: implement openRooms
+    print("lamp hit success");
     var response =
         await http.post(Uri.parse(link), headers: await tokenHeader(true));
     return "Success";

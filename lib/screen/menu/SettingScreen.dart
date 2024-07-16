@@ -5,7 +5,6 @@ import 'package:carabaobillingapps/screen/setting/PanelSetting.dart';
 import 'package:carabaobillingapps/service/bloc/configs/configs_bloc.dart';
 import 'package:carabaobillingapps/service/repository/ConfigRepository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -220,7 +219,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 InkWell(
                     onTap: () async {
                       fetchTimer?.cancel();
-                      FlutterBackgroundService().invoke('stopService');
                       Navigator.push(
                         context,
                         MaterialPageRoute(

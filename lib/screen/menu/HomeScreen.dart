@@ -11,7 +11,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 import '../../component/menu_list_card.dart';
 import '../../component/shimmerx.dart';
@@ -48,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
     super.initState();
     _OrderBloc?.add(GetOrder());
+    _MejaBloc.add(GetMeja());
     // _OrderBloc.add(GetOrderBg());
     WidgetsBinding.instance?.addObserver(this);
   }
@@ -62,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> saveData(List<NewestOrder> orders) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    Workmanager().cancelAll();
     // Reset the existing data to null
     await _prefs.remove('orders');
 
@@ -107,7 +106,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           },
         ),
         BlocConsumer<MejaBloc, MejaState>(
-          listener: (c, s) {
+          listener: (c, s) async {
+            if (s is MejaLoadedState) {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setString('result_meja', jsonEncode(s.result.toJson()));
+            }
           },
           builder: (c, s) {
             return Container();

@@ -1,20 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:carabaobillingapps/SplashScreen.dart';
 import 'package:carabaobillingapps/helper/global_helper.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'constant/url_constant.dart';
 
@@ -31,42 +26,9 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-  print('Handling a background message ${message.messageId}');
-  initMessagingFirebase();
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "AIzaSyCnB3XBsGg4yLilvRCEI0A8UDzhM2NAsMA",
-      // paste your api key here
-      appId: "1:992747739253:android:f01c3bf830604f808d003c",
-      //paste your app id here
-      messagingSenderId: "992747739253",
-      //paste your messagingSenderId here
-      projectId: "crbillingsystem", //paste your project id here
-    ),
-  );
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    _firebaseMessagingBackgroundHandler(message);
-  });
   await initializeService();
   runApp(const MyApp());
 }
@@ -80,30 +42,9 @@ void initMessagingFirebase() {
       InitializationSettings(android: initialzationSettingsAndroid);
   flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    RemoteNotification notification = message!.notification!;
-    AndroidNotification android = message!.notification!.android!;
-    if (notification != null && android != null) {
-      flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              color: Colors.orange,
-              // TODO add a proper drawable resource to android, for now using
-              //      one that already exists in example app.
-              icon: "@mipmap/ic_launcher",
-            ),
-          ));
-    }
-  });
 }
 
 Future<void> initializeService() async {
-  final service = FlutterBackgroundService();
 
   /// OPTIONAL, using custom notification channel id
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -120,7 +61,7 @@ Future<void> initializeService() async {
   await flutterLocalNotificationsPlugin.initialize(
     const InitializationSettings(
       iOS: DarwinInitializationSettings(),
-      android: AndroidInitializationSettings('ic_bg_service_small'),
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     ),
   );
   await flutterLocalNotificationsPlugin
@@ -128,21 +69,6 @@ Future<void> initializeService() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
-      autoStart: true,
-      isForegroundMode: true,
-      notificationChannelId: 'my_foreground',
-      initialNotificationTitle: 'Carabao Service',
-      initialNotificationContent: 'Initializing',
-      foregroundServiceNotificationId: 888,
-    ),
-    iosConfiguration: IosConfiguration(
-      autoStart: true,
-    ),
-  );
-  service.startService();
 }
 
 Future<void> stopBilling(int orderId, ip, secret, code) async {
@@ -172,7 +98,6 @@ Future<void> stopBilling(int orderId, ip, secret, code) async {
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
   } catch (error) {
-    switchLamp(ip: ip, key: secret, code: code, status: false);
     print('Error during stopBilling request: $error');
   }
 }
@@ -192,25 +117,7 @@ Future<void> initPrefs() async {
   }
 }
 
-@pragma('vm:entry-point')
-Future<void> onStart(ServiceInstance service) async {
-  // Only available for flutter 3.0.0 and later
-  DartPluginRegistrant.ensureInitialized();
 
-  // Set initial value to true to allow fetching data
-  //
-  // Start a periodic timer to execute the fetch logic
-  // fetchTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-  //   // Only execute   the fetch logic if enableFetch is true
-  //   if (service is AndroidServiceInstance) {
-  //     if (await service.isForegroundService()) {
-  //       try {
-  //         await initPrefs();
-  //       } catch (e) {}
-  //     }
-  //   }
-  // });
-}
 
 Future<void> offLamp(link) async {
   try {
@@ -228,34 +135,6 @@ Future<void> offLamp(link) async {
   }
 }
 
-@pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
-    try {
-      final String endTimeStr = inputData?['endTime'];
-      final DateTime endTime = DateTime.parse(endTimeStr);
-
-      if (DateTime.now().isAfter(endTime)) {
-        offLamp(inputData?['ip'] +
-            inputData?['code'] +
-            "off" +
-            "?key=" +
-            inputData?['secret']);
-        stopBilling(
-          int.parse(inputData?['orderId']),
-          inputData?['ip'],
-          inputData?['secret'],
-          inputData?['code'],
-        );
-        return Future.value(true);
-      }
-    } catch (e) {
-      return Future.value(false);
-    }
-
-    return Future.value(false);
-  });
-}
 
 Map<String, CountdownTimer> countdownTimers = {};
 
@@ -281,12 +160,12 @@ void startCountdown(Map<String, dynamic> order) {
     onCountdownFinish: () async {
       removeOrderFromPrefs(order['id'].toString());
       removeNotification(orderId);
-      // stopBilling(
-      //   order['id'],
-      //   order['ip'].toString(),
-      //   order['secret'].toString(),
-      //   order['code'].toString(),
-      // );
+      stopBilling(
+        order['id'],
+        order['ip'].toString(),
+        order['secret'].toString(),
+        order['code'].toString(),
+      );
       // Remove the countdown timer from the map when it finishes
       countdownTimers.remove(orderId);
     },
@@ -302,17 +181,6 @@ void startCountdown(Map<String, dynamic> order) {
   // Store the countdown timer in the map with its key
   countdownTimers[orderId] = _countdownTimer;
 
-  Workmanager().registerPeriodicTask(
-    orderId,
-    'handleCountdownFinish',
-    inputData: {
-      'orderId': orderId,
-      'endTime': endTime.toIso8601String(),
-      'ip': order['ip'].toString(),
-      'secret': order['secret'].toString(),
-      'code': order['code'].toString(),
-    },
-  );
 }
 
 void stopCountdown(String key) {
@@ -394,11 +262,6 @@ class MyApp extends StatelessWidget {
           // You can use the library anywhere in the app even in theme
           theme: ThemeData(
             primarySwatch: Colors.orange,
-            textTheme: const TextTheme(
-              bodyText2: TextStyle(
-                color: Colors.black,
-              ),
-            ),
           ),
           home: child,
         );
