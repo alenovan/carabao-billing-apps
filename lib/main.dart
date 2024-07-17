@@ -5,7 +5,10 @@ import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:carabaobillingapps/SplashScreen.dart';
 import 'package:carabaobillingapps/helper/global_helper.dart';
+import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
+import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:carabaobillingapps/util/BackgroundService.dart';
+import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:carabaobillingapps/util/foregroundTask.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -13,6 +16,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'constant/url_constant.dart';
@@ -42,20 +46,28 @@ Future<void> main() async {
     WindowManager.instance.setSize(const Size(360, 690));
   }
   if (Platform.isAndroid) {
-    _requestPermissionForAndroid();
-    // await AndroidAlarmManager.initialize();
-    // await AndroidAlarmManager.periodic(
-    //   Duration(seconds: 60),
-    //   0,
-    //   backgroundTask,
-    //   wakeup: true,
-    //   rescheduleOnReboot: true,
-    // );
+    await AndroidAlarmManager.initialize();
+    await AndroidAlarmManager.periodic(
+      Duration(seconds: 20),
+      0,
+      backgroundTask,
+      wakeup: true,
+      rescheduleOnReboot: true,
+    );
     ForegroundTaskService.init();
     await ForegroundTaskService().startForegroundTask();
   }
   runApp(const MyApp());
 }
+
+void Registerbackgroun(context) async {
+  var result = await OrderRepoRepositoryImpl(context).getOrderBg();
+  await saveData(result.data ?? []);
+  backgroundTask();
+}
+
+
+
 
 Future<void> _requestPermissionForAndroid() async {
   if (!Platform.isAndroid) {
@@ -85,12 +97,11 @@ Future<void> _requestPermissionForAndroid() async {
 
   // Android 13 and higher, you need to allow notification permission to expose foreground service notification.
   final NotificationPermission notificationPermissionStatus =
-  await FlutterForegroundTask.checkNotificationPermission();
+      await FlutterForegroundTask.checkNotificationPermission();
   if (notificationPermissionStatus != NotificationPermission.granted) {
     await FlutterForegroundTask.requestNotificationPermission();
   }
 }
-
 
 Future<void> cancelNotification(int notificationId) async {
   await flutterLocalNotificationsPlugin.cancel(notificationId);
@@ -140,6 +151,27 @@ Future<void> offLamp(link) async {
     } else {}
   } catch (error) {
     print('Error during stopBilling request: $error');
+  }
+}
+
+Future<void> saveData(List<NewestOrder> orders) async {
+  SharedPreferences _prefs = await SharedPreferences.getInstance();
+  // Reset the existing data to null
+  await _prefs.remove('orders');
+
+  // Convert the input orders to a list of JSON objects
+  List<Map<String, dynamic>> _newOrders =
+      orders.map((order) => order.toJson()).toList();
+
+  // Encode the list of new orders and save to SharedPreferences
+  final String newOrdersJson = json.encode(_newOrders);
+  await _prefs.setString('orders', newOrdersJson);
+
+  // Save orders to the local database
+  final dbHelper = DatabaseHelper();
+  await dbHelper.deleteOrders(); // Clear existing orders
+  for (var order in orders) {
+    await dbHelper.insertOrder(order);
   }
 }
 

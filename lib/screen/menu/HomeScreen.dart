@@ -5,7 +5,6 @@ import 'package:carabaobillingapps/main.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
-import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -55,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance?.addObserver(this);
     cancelNotification(0);
     checkForNewData();
+    Registerbackgroun(context);
   }
 
   @override
@@ -66,23 +66,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         cancelNotification(0);
-        checkForNewData();
+        Registerbackgroun(context);
         break;
       case AppLifecycleState.inactive:
         cancelNotification(0);
-        checkForNewData();
+        Registerbackgroun(context);
         break;
       case AppLifecycleState.paused:
         cancelNotification(0);
-        checkForNewData();
+        Registerbackgroun(context);
         break;
       case AppLifecycleState.detached:
         cancelNotification(0);
-        checkForNewData();
+        Registerbackgroun(context);
         break;
       case AppLifecycleState.hidden:
         cancelNotification(0);
-        checkForNewData();
+        Registerbackgroun(context);
     }
   }
 
@@ -97,26 +97,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  Future<void> saveData(List<NewestOrder> orders) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    // Reset the existing data to null
-    await _prefs.remove('orders');
-
-    // Convert the input orders to a list of JSON objects
-    List<Map<String, dynamic>> _newOrders =
-        orders.map((order) => order.toJson()).toList();
-
-    // Encode the list of new orders and save to SharedPreferences
-    final String newOrdersJson = json.encode(_newOrders);
-    await _prefs.setString('orders', newOrdersJson);
-
-    // Save orders to the local database
-    final dbHelper = DatabaseHelper();
-    await dbHelper.deleteOrders(); // Clear existing orders
-    for (var order in orders) {
-      await dbHelper.insertOrder(order);
-    }
-  }
 
   Widget _consumerApi() {
     return Column(
@@ -136,7 +116,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     order.statusOrder == 'START';
               }).toList();
               setState(() {
-                saveData(filteredOrders);
                 NewestOrders = s.result.data;
                 loading = false;
               });

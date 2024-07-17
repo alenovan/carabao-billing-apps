@@ -132,6 +132,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: true);
+              Registerbackgroun(context);
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -145,6 +146,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: false);
+              Registerbackgroun(context);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), true);
             } else if (s is OrdersErrorState) {
@@ -163,6 +165,7 @@ class _BillingScreenState extends State<BillingScreen> {
                 await Future.delayed(Duration(seconds: 2));
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
               }
+              Registerbackgroun(context);
 
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
@@ -191,6 +194,8 @@ class _BillingScreenState extends State<BillingScreen> {
       ],
     );
   }
+
+
 
   @override
   void _showBottomSheet(BuildContext context) {

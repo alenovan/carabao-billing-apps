@@ -27,7 +27,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'orders.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
     );
   }
@@ -35,7 +35,7 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE orders (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         room_id INTEGER,
         code TEXT,
         name TEXT,
@@ -66,6 +66,7 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) {
       return NewestOrder(
         roomId: maps[i]['room_id'],
+        id: maps[i]['id'],
         code: maps[i]['code'],
         name: maps[i]['name'],
         statusRooms: maps[i]['status_rooms'],
@@ -90,6 +91,7 @@ class DatabaseHelper {
       for (var orderData in data['data']) {
         NewestOrder order = NewestOrder(
           roomId: orderData['room_id'],
+          id: orderData['id'],
           code: orderData['code'],
           name: orderData['name'],
           statusRooms: orderData['status_rooms'],

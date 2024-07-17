@@ -1,3 +1,4 @@
+import 'package:carabaobillingapps/helper/global_helper.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../main.dart';
@@ -12,26 +13,27 @@ void backgroundTask() async {
 }
 
 Future<void> checkForNewData() async {
-  // final dbHelper = DatabaseHelper();
-  // List<NewestOrder> orders = await dbHelper.getOrders();
-  // if (orders.isNotEmpty) {
-  //   String ordersMessage = "";
-  //   for (var order in orders) {
-  //     DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
-  //     Duration timeLeft = endTime.difference(DateTime.now());
-  //
-  //     ordersMessage += "${order.name} - ON\n";
-  //     if (DateTime.now().isAfter(endTime)) {
-  //       stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
-  //     }
-  //   }
-  //
-  //   // Show all orders in a notification
-  //   await _showNotification(
-  //     "Open - Billing",
-  //     ordersMessage,
-  //   );
-  // }
+  final dbHelper = DatabaseHelper();
+  List<NewestOrder> orders = await dbHelper.getOrders();
+  if (orders.isNotEmpty) {
+    String ordersMessage = "";
+    for (var order in orders) {
+      DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
+      ordersMessage += "${order.name} - ON\n";
+
+      if (DateTime.now().isAfter(endTime)) {
+        stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
+      }else{
+        switchLamp(ip: order!.ip!, key: order!.secret!, code: order!.code!, status: true);
+      }
+    }
+
+    // Show all orders in a notification
+    await _showNotification(
+      "Open - Billing",
+      "Start",
+    );
+  }
 }
 
 Future<void> _showNotification(String title, String body) async {

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/constant/image_constant.dart';
+import 'package:carabaobillingapps/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -30,6 +31,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   }
 
   void inapp() async {
+    Registerbackgroun(context);
     var timer = await getStringValuesSF(ConstantData.is_timer);
   }
 
@@ -126,6 +128,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   }
 
   void _navigateToPage(int index) {
+    Registerbackgroun(context);
     _pageController.jumpToPage(index);
   }
 }
