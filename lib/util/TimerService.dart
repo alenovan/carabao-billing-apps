@@ -15,7 +15,6 @@ class TimerService {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _seconds++;
       backgroundTask(false);
-      print('Seconds: $_seconds');
     });
   }
 

@@ -6,7 +6,6 @@ import '../service/models/order/ResponseListOrdersModels.dart';
 import 'DatabaseHelper.dart';
 
 void backgroundTask(popup) async {
-  print("Background task executed!");
 
   // Check for new data
   await checkForNewData(popup ?? true);

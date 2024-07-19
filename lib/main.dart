@@ -9,13 +9,17 @@ import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:carabaobillingapps/util/BackgroundService.dart';
 import 'package:carabaobillingapps/util/DatabaseHelper.dart';
+import 'package:carabaobillingapps/util/PusherForegroundService.dart';
 import 'package:carabaobillingapps/util/TimerService.dart';
+import 'package:carabaobillingapps/util/pusher_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -54,11 +58,55 @@ Future<void> main() async {
       wakeup: true,
       rescheduleOnReboot: true,
     );
-    // ForegroundTaskService.init();
-    // await ForegroundTaskService().startForegroundTask();
+    PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
+    await pusher.init(
+      apiKey: "1ae635fc4ca9f011e201",
+      cluster: "ap1",
+    );
+    final myChannel = await pusher.subscribe(
+        channelName: "orders",
+        onEvent: (event) async {
+          try {
+            final eventData = json.decode(event.data);
+            final message = eventData['message'];
+            final link = eventData['link'];
+            print(link);
+            await offLamp(link);
+            await _showNotification(
+              "Open - Billing",
+              message,
+            );
+          } catch (e) {}
+        });
+    await pusher.connect();
+
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'foreground_service',
+        channelName: 'Foreground Service Notification',
+        channelDescription:
+            'This notification appears when the foreground service is running.',
+        channelImportance: NotificationChannelImportance.LOW,
+        priority: NotificationPriority.LOW,
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: false,
+        playSound: false,
+      ),
+      foregroundTaskOptions: const ForegroundTaskOptions(
+        interval: 5000,
+        isOnceEvent: false,
+        autoRunOnBoot: true,
+        allowWakeLock: true,
+        allowWifiLock: true,
+      ),
+    );
   }
+
   TimerService.instance.startTimer();
-  runApp(const MyApp());
+  runApp(
+    MyApp(),
+  );
 }
 
 void Registerbackgroun(context) async {
@@ -73,46 +121,41 @@ Future<void> RegisterBackground(BuildContext context) async {
   backgroundTask(true);
 }
 
-Future<void> _requestPermissionForAndroid() async {
-  if (!Platform.isAndroid) {
-    return;
-  }
+Future<void> _showNotification(String title, String body) async {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  var initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/launcher_icon');
+  var initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
-  // onNotificationPressed function to be called.
-  //
-  // When the notification is pressed while permission is denied,
-  // the onNotificationPressed function is not called and the app opens.
-  //
-  // If you do not use the onNotificationPressed or launchApp function,
-  // you do not need to write this code.
-  if (!await FlutterForegroundTask.canDrawOverlays) {
-    // This function requires `android.permission.SYSTEM_ALERT_WINDOW` permission.
-    await FlutterForegroundTask.openSystemAlertWindowSettings();
-  }
+  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    'countdown_channel',
+    'Countdown Channel',
+    importance: Importance.high,
+    playSound: false,
+    enableVibration: false,
+    enableLights: false,
+    ongoing: true, // Set to true to create a persistent notification
+  );
+  var platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
 
-  // Android 12 or higher, there are restrictions on starting a foreground service.
-  //
-  // To restart the service on device reboot or unexpected problem, you need to allow below permission.
-  if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
-    // This function requires `android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission.
-    await FlutterForegroundTask.requestIgnoreBatteryOptimization();
-  }
-
-  // Android 13 and higher, you need to allow notification permission to expose foreground service notification.
-  final NotificationPermission notificationPermissionStatus =
-      await FlutterForegroundTask.checkNotificationPermission();
-  if (notificationPermissionStatus != NotificationPermission.granted) {
-    await FlutterForegroundTask.requestNotificationPermission();
-  }
+  await flutterLocalNotificationsPlugin.show(
+    0, // Notification ID (should be unique for each notification)
+    title,
+    body,
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
 }
 
 Future<void> cancelNotification(int notificationId) async {
   await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
-Future<void> stopBilling(
-    int orderId, ip, secret, code) async {
+Future<void> stopBilling(int orderId, ip, secret, code) async {
   var apiUrl = UrlConstant.order_stop_billing;
   var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
 

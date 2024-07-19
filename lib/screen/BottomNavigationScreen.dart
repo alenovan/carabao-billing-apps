@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/constant/image_constant.dart';
 import 'package:carabaobillingapps/main.dart';
+import 'package:carabaobillingapps/util/pusher_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -33,6 +34,12 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   void inapp() async {
     await RegisterBackground(context);
     var timer = await getStringValuesSF(ConstantData.is_timer);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
