@@ -35,7 +35,7 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE orders (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         room_id INTEGER,
         code TEXT,
         name TEXT,
@@ -83,6 +83,15 @@ class DatabaseHelper {
   Future<void> deleteOrders() async {
     final db = await database;
     await db.delete('orders');
+  }
+
+  Future<void> deleteOrderById(int id) async {
+    final db = await database;
+    await db.delete(
+      'orders',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<void> saveJsonData(String jsonData) async {

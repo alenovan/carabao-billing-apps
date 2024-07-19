@@ -9,7 +9,7 @@ import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:carabaobillingapps/util/BackgroundService.dart';
 import 'package:carabaobillingapps/util/DatabaseHelper.dart';
-import 'package:carabaobillingapps/util/foregroundTask.dart';
+import 'package:carabaobillingapps/util/TimerService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -48,26 +48,30 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
-      Duration(seconds: 20),
+      Duration(minutes: 1),
       0,
       backgroundTask,
       wakeup: true,
       rescheduleOnReboot: true,
     );
-    ForegroundTaskService.init();
-    await ForegroundTaskService().startForegroundTask();
+    // ForegroundTaskService.init();
+    // await ForegroundTaskService().startForegroundTask();
   }
+  TimerService.instance.startTimer();
   runApp(const MyApp());
 }
 
 void Registerbackgroun(context) async {
   var result = await OrderRepoRepositoryImpl(context).getOrderBg();
   await saveData(result.data ?? []);
-  backgroundTask();
+  backgroundTask(true);
 }
 
-
-
+Future<void> RegisterBackground(BuildContext context) async {
+  var result = await OrderRepoRepositoryImpl(context).getOrderBg();
+  await saveData(result.data ?? []);
+  backgroundTask(true);
+}
 
 Future<void> _requestPermissionForAndroid() async {
   if (!Platform.isAndroid) {
@@ -107,7 +111,8 @@ Future<void> cancelNotification(int notificationId) async {
   await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
-Future<void> stopBilling(int orderId, ip, secret, code) async {
+Future<void> stopBilling(
+    int orderId, ip, secret, code) async {
   var apiUrl = UrlConstant.order_stop_billing;
   var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
 

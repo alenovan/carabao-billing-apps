@@ -5,34 +5,42 @@ import '../main.dart';
 import '../service/models/order/ResponseListOrdersModels.dart';
 import 'DatabaseHelper.dart';
 
-void backgroundTask() async {
+void backgroundTask(popup) async {
   print("Background task executed!");
 
   // Check for new data
-  await checkForNewData();
+  await checkForNewData(popup ?? true);
 }
 
-Future<void> checkForNewData() async {
+Future<void> checkForNewData(popup) async {
   final dbHelper = DatabaseHelper();
   List<NewestOrder> orders = await dbHelper.getOrders();
   if (orders.isNotEmpty) {
     String ordersMessage = "";
     for (var order in orders) {
       DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
-      ordersMessage += "${order.name} - ON\n";
-
       if (DateTime.now().isAfter(endTime)) {
-        stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
-      }else{
-        switchLamp(ip: order!.ip!, key: order!.secret!, code: order!.code!, status: true);
+        ordersMessage += "${order.name} - OFF\n";
+        await stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
+        await dbHelper.deleteOrderById(order!.id!);
+        backgroundTask(true);
+        cancelNotification(0);
+      } else {
+        ordersMessage += "${order.name} - ON\n";
+        switchLamp(
+            ip: order!.ip!,
+            key: order!.secret!,
+            code: order!.code!,
+            status: true);
       }
     }
 
-    // Show all orders in a notification
-    await _showNotification(
-      "Open - Billing",
-      "Start",
-    );
+    if (popup ?? true) {
+      await _showNotification(
+        "Open - Billing",
+        ordersMessage,
+      );
+    }
   }
 }
 
@@ -40,7 +48,7 @@ Future<void> _showNotification(String title, String body) async {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   var initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/launcher_icon');
   var initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);

@@ -31,12 +31,9 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   }
 
   void inapp() async {
-    Registerbackgroun(context);
+    await RegisterBackground(context);
     var timer = await getStringValuesSF(ConstantData.is_timer);
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -127,8 +124,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         });
   }
 
-  void _navigateToPage(int index) {
-    Registerbackgroun(context);
+  void _navigateToPage(int index) async {
     _pageController.jumpToPage(index);
   }
 }

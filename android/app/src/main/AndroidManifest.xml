@@ -35,7 +35,7 @@
         android:name="${applicationName}"
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/launcher_icon"
-        android:label="Carabao Controller"
+        android:label="CR Controller"
         android:usesCleartextTraffic="true">
 
         <!-- This is required -->

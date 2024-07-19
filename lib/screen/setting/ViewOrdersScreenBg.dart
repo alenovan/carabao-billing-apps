@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -12,27 +14,37 @@ class ViewOrdersScreenBG extends StatefulWidget {
 
 class _ViewOrdersScreenState extends State<ViewOrdersScreenBG> {
   late Future<List<NewestOrder>> futureOrders;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
     futureOrders = DatabaseHelper().getOrders();
+    timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+      setState(() {
+        futureOrders = DatabaseHelper().getOrders();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Background Tasks '),
+        title: Text('Background Tasks'),
       ),
       body: Container(
         margin: EdgeInsets.all(20.w),
         child: FutureBuilder<List<NewestOrder>>(
           future: futureOrders,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
+             if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(child: Text('No orders found.'));
@@ -45,8 +57,7 @@ class _ViewOrdersScreenState extends State<ViewOrdersScreenBG> {
                     margin: EdgeInsets.only(bottom: 10.w),
                     decoration: BoxDecoration(
                       color: ColorConstant.white,
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(15)),
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),

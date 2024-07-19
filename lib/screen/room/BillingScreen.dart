@@ -106,6 +106,7 @@ class _BillingScreenState extends State<BillingScreen> {
                         idRooms: widget.id_meja,
                         name: enteredName,
                         phone: enteredPhone,
+                        version: ConstantData.version_apps,
                         duration: selected_time_nunber.toString())));
               },
               child: Text('Simpan'),
@@ -132,7 +133,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: true);
-              Registerbackgroun(context);
+              await RegisterBackground(context);
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -146,7 +147,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   key: widget.keys,
                   code: widget.code,
                   status: false);
-              Registerbackgroun(context);
+              await RegisterBackground(context);
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), true);
             } else if (s is OrdersErrorState) {
@@ -165,7 +166,7 @@ class _BillingScreenState extends State<BillingScreen> {
                 await Future.delayed(Duration(seconds: 2));
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
               }
-              Registerbackgroun(context);
+              await RegisterBackground(context);
 
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);

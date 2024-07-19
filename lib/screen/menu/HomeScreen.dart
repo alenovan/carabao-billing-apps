@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // _OrderBloc.add(GetOrderBg());
     WidgetsBinding.instance?.addObserver(this);
     cancelNotification(0);
-    checkForNewData();
+    checkForNewData(true);
     Registerbackgroun(context);
   }
 
@@ -65,38 +65,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     switch (state) {
       case AppLifecycleState.resumed:
-        cancelNotification(0);
-        Registerbackgroun(context);
+        backgroundTask(true);
         break;
       case AppLifecycleState.inactive:
-        cancelNotification(0);
-        Registerbackgroun(context);
+        backgroundTask(true);
         break;
       case AppLifecycleState.paused:
-        cancelNotification(0);
-        Registerbackgroun(context);
+        backgroundTask(true);
         break;
       case AppLifecycleState.detached:
-        cancelNotification(0);
-        Registerbackgroun(context);
+        backgroundTask(true);
         break;
       case AppLifecycleState.hidden:
-        cancelNotification(0);
-        Registerbackgroun(context);
+        backgroundTask(true);
     }
   }
-
-
 
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     // _countdownTimer.cancel();
     _OrderBloc?.close();
-    checkForNewData();
+    checkForNewData(true);
     super.dispose();
   }
-
 
   Widget _consumerApi() {
     return Column(

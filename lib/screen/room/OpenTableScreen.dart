@@ -100,6 +100,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                 _OrderBloc?.add(ActOrderOpenTable(
                     payload: RequestOrdersModels(
                         phone: enteredPhone,
+                        version: ConstantData.version_apps,
                         idRooms: widget.id_meja,
                         name: enteredName)));
               },

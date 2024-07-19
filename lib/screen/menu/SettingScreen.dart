@@ -223,7 +223,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                         ))),
                 InkWell(
-                    onTap: () {
+                    onTap: () async {
+                      await RegisterBackground(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(

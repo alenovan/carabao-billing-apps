@@ -11,6 +11,7 @@ String requestOrdersModelsToJson(RequestOrdersModels data) => json.encode(data.t
 class RequestOrdersModels {
   String? idRooms;
   String? duration;
+  String? version;
   String name;
   String? phone;
 
@@ -18,6 +19,7 @@ class RequestOrdersModels {
     this.idRooms,
     this.duration,
     this.phone,
+    required this.version,
     required this.name,
 
   });
@@ -26,6 +28,7 @@ class RequestOrdersModels {
     idRooms: json["id_rooms"],
     duration: json["duration"],
     phone: json["phone"],
+    version: json["version"],
     name: json["name"],
   );
 
@@ -33,6 +36,7 @@ class RequestOrdersModels {
     "id_rooms": idRooms,
     "duration": duration,
     "phone": phone,
+    "version": version,
     "name": name,
   };
 }

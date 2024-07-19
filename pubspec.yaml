@@ -69,7 +69,11 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/logo.png"
+  image_path: "assets/favicon.png"
+  windows:
+    generate: true
+    image_path: "assets/favicon.png"
+    icon_size: 48 # min:48, max:256, default: 48
   min_sdk_android: 21
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
