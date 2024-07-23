@@ -119,6 +119,16 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           emit(OrdersDetailHistoryErrorState(message: e.toString()));
         }
       }
+
+      if (event is getDetailOrders) {
+        emit(OrdersLoadingState());
+        try {
+          final result = await repository.getOrdersDetail(event.id);
+          emit(OrdersDetailLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersErrorState(message: e.toString()));
+        }
+      }
     });
   }
 }

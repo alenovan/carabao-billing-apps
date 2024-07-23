@@ -47,7 +47,8 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
 
   final TextEditingController _phoneController = TextEditingController();
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
-  late List<Room>? data_meja;
+  late List<Room>? data_meja = [];
+  bool loadingMeja = true;
 
   @override
   void dispose() {
@@ -207,6 +208,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
           listener: (c, s) {
             if (s is MejaLoadedState) {
               setState(() {
+                loadingMeja = false;
                 data_meja =
                     s.result!.data!.where((room) => room.status == 0).toList();
               });
@@ -295,32 +297,39 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                   ),
                 ),
               if (widget.status)
-                GestureDetector(
-                  onTap: () async {
-                    _showBottomSheetChangeMeja(context);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: ColorConstant.primary,
+                loadingMeja
+                    ? Container(
+                        margin: EdgeInsets.only(top: 10.w),
+                        child: CircularProgressIndicator(),
+                      )
+                    : GestureDetector(
+                        onTap: () async {
+                          _showBottomSheetChangeMeja(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: ColorConstant.primary,
+                              ),
+                              color: ColorConstant.primary,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50))),
+                          height: 50.w,
+                          margin: EdgeInsets.only(
+                              left: 20.w, right: 20.w, top: 10.w),
+                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                          child: Center(
+                            child: Text(
+                              "Change Table",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.plusJakartaSans(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11.sp,
+                                  color: ColorConstant.white),
+                            ),
+                          ),
                         ),
-                        color: ColorConstant.primary,
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    height: 50.w,
-                    margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
-                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                    child: Center(
-                      child: Text(
-                        "Change Table",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11.sp,
-                            color: ColorConstant.white),
                       ),
-                    ),
-                  ),
-                ),
             ],
           )),
     );

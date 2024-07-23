@@ -17,10 +17,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'constant/url_constant.dart';
-
 late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 bool enableFetch = true;
@@ -46,6 +46,7 @@ Future<void> main() async {
     WindowManager.instance.setSize(const Size(360, 690));
   }
   if (Platform.isAndroid) {
+    WakelockPlus.enable();
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
       Duration(minutes: 1),
@@ -111,8 +112,7 @@ Future<void> cancelNotification(int notificationId) async {
   await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
-Future<void> stopBilling(
-    int orderId, ip, secret, code) async {
+Future<void> stopBilling(int orderId, ip, secret, code) async {
   var apiUrl = UrlConstant.order_stop_billing;
   var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
 
@@ -135,7 +135,6 @@ Future<void> stopBilling(
           'Successfully stopped billing. Status code: ${response.statusCode}');
       switchLamp(ip: ip, key: secret, code: code, status: false);
     } else {
-      switchLamp(ip: ip, key: secret, code: code, status: false);
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
   } catch (error) {

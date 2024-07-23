@@ -149,14 +149,7 @@ class _MenuListCardState extends State<MenuListCard> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => RoomScreen(
-                          id_order: widget.id_order,
-                          status: widget.status,
-                          name: widget.name,
-                          code: widget.code,
-                          type: widget.type,
-                          id_meja: widget.id_meja,
-                          ip: widget.ip,
-                          keys: widget.keys,
+                          meja_id: widget.id_meja,
                         )),
               );
             } else {

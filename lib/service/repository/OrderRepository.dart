@@ -45,6 +45,8 @@ abstract class OrderRepo {
   Future<ResponseVoidOrder> voidTable(RequestVoidOrder payload);
 
   Future<ResponseDetailHistory> historyDetail(String id);
+
+  Future<ResponseListOrdersModels> getOrdersDetail(String id);
 }
 
 class OrderRepoRepositoryImpl implements OrderRepo {
@@ -265,6 +267,27 @@ class OrderRepoRepositoryImpl implements OrderRepo {
     if (response.statusCode == 200) {
       ResponseDetailHistory responses =
           responseDetailHistoryFromJson(response.body);
+      return responses;
+    } else if (response.statusCode == 522 ||
+        response.statusCode == 502 ||
+        response.statusCode == 504 ||
+        response.statusCode == 500) {
+      throw ("Silahkan Ulangi Kembali");
+    } else {
+      var responses = jsonDecode(response.body);
+      throw ("${responses["message"]}");
+    }
+  }
+
+  @override
+  Future<ResponseListOrdersModels> getOrdersDetail(String id) async {
+    // TODO: implement getOrdersDetail
+    var response = await http.get(
+        Uri.parse(UrlConstant.newest_orders + "/" + id),
+        headers: await tokenHeader(true));
+    if (response.statusCode == 200) {
+      ResponseListOrdersModels responses =
+          responseListOrdersModelsFromJson(response.body);
       return responses;
     } else if (response.statusCode == 522 ||
         response.statusCode == 502 ||
