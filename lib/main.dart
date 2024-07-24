@@ -21,10 +21,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'constant/url_constant.dart';
-
 late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 bool enableFetch = true;
@@ -50,6 +50,7 @@ Future<void> main() async {
     WindowManager.instance.setSize(const Size(360, 690));
   }
   if (Platform.isAndroid) {
+    WakelockPlus.enable();
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
       Duration(minutes: 1),
@@ -178,7 +179,6 @@ Future<void> stopBilling(int orderId, ip, secret, code) async {
           'Successfully stopped billing. Status code: ${response.statusCode}');
       switchLamp(ip: ip, key: secret, code: code, status: false);
     } else {
-      switchLamp(ip: ip, key: secret, code: code, status: false);
       print('Failed to stop billing. Status code: ${response.statusCode}');
     }
   } catch (error) {

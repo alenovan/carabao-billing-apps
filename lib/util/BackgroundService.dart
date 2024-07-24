@@ -1,4 +1,3 @@
-import 'package:carabaobillingapps/helper/global_helper.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../main.dart';
@@ -20,17 +19,12 @@ Future<void> checkForNewData(popup) async {
       DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
       if (DateTime.now().isAfter(endTime)) {
         ordersMessage += "${order.name} - OFF\n";
-        await stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
+        // await stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
         await dbHelper.deleteOrderById(order!.id!);
         backgroundTask(true);
         cancelNotification(0);
       } else {
         ordersMessage += "${order.name} - ON\n";
-        switchLamp(
-            ip: order!.ip!,
-            key: order!.secret!,
-            code: order!.code!,
-            status: true);
       }
     }
 

@@ -95,3 +95,15 @@ class getDetailHistory extends OrderEvent {
   // TODO: implement props
   List<Object> get props => [id];
 }
+
+
+class getDetailOrders extends OrderEvent {
+  String id;
+
+  getDetailOrders({required this.id});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id];
+}
+

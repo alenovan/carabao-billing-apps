@@ -166,3 +166,14 @@ class OrdersDetailHistoryErrorState extends OrderState {
   // TODO: implement props
   List<Object> get props => [message];
 }
+
+
+class OrdersDetailLoadedState extends OrderState {
+  ResponseListOrdersModels result;
+
+  OrdersDetailLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
