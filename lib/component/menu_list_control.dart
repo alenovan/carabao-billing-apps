@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,13 +13,17 @@ class MenuListControl extends StatefulWidget {
   final String code;
   final String ip;
   final String keys;
+  final int isMuiltiple;
+  final String multipleChannel;
 
   const MenuListControl(
       {super.key,
       required this.name,
       required this.code,
       required this.ip,
-      required this.keys});
+      required this.keys,
+      required this.isMuiltiple,
+      required this.multipleChannel});
 
   @override
   State<MenuListControl> createState() => _MenuListControlState();
@@ -56,11 +62,24 @@ class _MenuListControlState extends State<MenuListControl> {
                   GestureDetector(
                     onTap: () async {
                       LoadingDialog.show(context, "Mohon tunggu");
-                      switchLamp(
-                          ip: widget.ip,
-                          key: widget.keys,
-                          code: widget.code,
-                          status: true);
+                      if (widget.isMuiltiple == 1) {
+                        List<dynamic> multipleChannelList =
+                            jsonDecode(widget.multipleChannel);
+                        multipleChannelList.forEach((e) {
+                          switchLamp(
+                            ip: widget.ip,
+                            key: widget.keys,
+                            code: e,
+                            status: true,
+                          );
+                        });
+                      } else {
+                        switchLamp(
+                            ip: widget.ip,
+                            key: widget.keys,
+                            code: widget.code,
+                            status: true);
+                      }
                       await Future.delayed(Duration(seconds: 2));
                       popScreen(context);
                     },
@@ -86,11 +105,24 @@ class _MenuListControlState extends State<MenuListControl> {
                   GestureDetector(
                       onTap: () async {
                         LoadingDialog.show(context, "Mohon tunggu");
-                        switchLamp(
-                            ip: widget.ip,
-                            key: widget.keys,
-                            code: widget.code,
-                            status: false);
+                        if (widget.isMuiltiple == 1) {
+                          List<dynamic> multipleChannelList =
+                              jsonDecode(widget.multipleChannel);
+                          multipleChannelList.forEach((e) {
+                            switchLamp(
+                              ip: widget.ip,
+                              key: widget.keys,
+                              code: e,
+                              status: false,
+                            );
+                          });
+                        } else {
+                          switchLamp(
+                              ip: widget.ip,
+                              key: widget.keys,
+                              code: widget.code,
+                              status: false);
+                        }
                         await Future.delayed(Duration(seconds: 2));
                         popScreen(context);
                       },
@@ -116,19 +148,39 @@ class _MenuListControlState extends State<MenuListControl> {
                   GestureDetector(
                       onTap: () async {
                         LoadingDialog.show(context, "Mohon tunggu");
-                        switchLamp(
-                            ip: widget.ip,
-                            key: widget.keys,
-                            code: widget.code,
-                            status: true);
-                        await Future.delayed(Duration(seconds: 2));
-                        switchLamp(
-                            ip: widget.ip,
-                            key: widget.keys,
-                            code: widget.code,
-                            status: false);
-                        await Future.delayed(Duration(seconds: 1));
-                        popScreen(context);
+                        if (widget.isMuiltiple == 1) {
+                          List<dynamic> multipleChannelList =
+                              jsonDecode(widget.multipleChannel);
+                          multipleChannelList.forEach((e) async {
+                            switchLamp(
+                                ip: widget.ip,
+                                key: widget.keys,
+                                code: e,
+                                status: true);
+                            await Future.delayed(Duration(seconds: 2));
+                            switchLamp(
+                                ip: widget.ip,
+                                key: widget.keys,
+                                code: e,
+                                status: false);
+                            await Future.delayed(Duration(seconds: 1));
+                            popScreen(context);
+                          });
+                        } else {
+                          switchLamp(
+                              ip: widget.ip,
+                              key: widget.keys,
+                              code: widget.code,
+                              status: true);
+                          await Future.delayed(Duration(seconds: 2));
+                          switchLamp(
+                              ip: widget.ip,
+                              key: widget.keys,
+                              code: widget.code,
+                              status: false);
+                          await Future.delayed(Duration(seconds: 1));
+                          popScreen(context);
+                        }
                       },
                       child: Container(
                         width: 55.w,

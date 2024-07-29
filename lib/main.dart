@@ -4,27 +4,20 @@ import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:carabaobillingapps/SplashScreen.dart';
-import 'package:carabaobillingapps/helper/global_helper.dart';
+import 'package:carabaobillingapps/service/PusherService.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
-import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:carabaobillingapps/util/BackgroundService.dart';
 import 'package:carabaobillingapps/util/DatabaseHelper.dart';
-import 'package:carabaobillingapps/util/PusherForegroundService.dart';
 import 'package:carabaobillingapps/util/TimerService.dart';
-import 'package:carabaobillingapps/util/pusher_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:provider/provider.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'constant/url_constant.dart';
 late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 bool enableFetch = true;
@@ -59,50 +52,9 @@ Future<void> main() async {
       wakeup: true,
       rescheduleOnReboot: true,
     );
-    PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
-    await pusher.init(
-      apiKey: "1ae635fc4ca9f011e201",
-      cluster: "ap1",
-    );
-    final myChannel = await pusher.subscribe(
-        channelName: "orders",
-        onEvent: (event) async {
-          try {
-            final eventData = json.decode(event.data);
-            final message = eventData['message'];
-            final link = eventData['link'];
-            print(link);
-            await offLamp(link);
-            await _showNotification(
-              "Open - Billing",
-              message,
-            );
-          } catch (e) {}
-        });
-    await pusher.connect();
-
-    FlutterForegroundTask.init(
-      androidNotificationOptions: AndroidNotificationOptions(
-        channelId: 'foreground_service',
-        channelName: 'Foreground Service Notification',
-        channelDescription:
-            'This notification appears when the foreground service is running.',
-        channelImportance: NotificationChannelImportance.LOW,
-        priority: NotificationPriority.LOW,
-      ),
-      iosNotificationOptions: const IOSNotificationOptions(
-        showNotification: false,
-        playSound: false,
-      ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 5000,
-        isOnceEvent: false,
-        autoRunOnBoot: true,
-        allowWakeLock: true,
-        allowWifiLock: true,
-      ),
-    );
+    PusherService().initPusher();
   }
+
 
   TimerService.instance.startTimer();
   runApp(
@@ -110,81 +62,25 @@ Future<void> main() async {
   );
 }
 
+
+
 void Registerbackgroun(context) async {
-  var result = await OrderRepoRepositoryImpl(context).getOrderBg();
-  await saveData(result.data ?? []);
-  backgroundTask(true);
+  // var result = await OrderRepoRepositoryImpl(context).getOrderBg();
+  // await saveData(result.data ?? []);
+  // backgroundTask(true);
 }
 
 Future<void> RegisterBackground(BuildContext context) async {
-  var result = await OrderRepoRepositoryImpl(context).getOrderBg();
-  await saveData(result.data ?? []);
-  backgroundTask(true);
-}
-
-Future<void> _showNotification(String title, String body) async {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  var initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/launcher_icon');
-  var initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'countdown_channel',
-    'Countdown Channel',
-    importance: Importance.high,
-    playSound: false,
-    enableVibration: false,
-    enableLights: false,
-    ongoing: true, // Set to true to create a persistent notification
-  );
-  var platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-
-  await flutterLocalNotificationsPlugin.show(
-    0, // Notification ID (should be unique for each notification)
-    title,
-    body,
-    platformChannelSpecifics,
-    payload: 'item x',
-  );
+  // var result = await OrderRepoRepositoryImpl(context).getOrderBg();
+  // await saveData(result.data ?? []);
+  // backgroundTask(true);
 }
 
 Future<void> cancelNotification(int notificationId) async {
   await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
-Future<void> stopBilling(int orderId, ip, secret, code) async {
-  var apiUrl = UrlConstant.order_stop_billing;
-  var apiKey = '51383db2eb3e126e52695488e0650f68ea43b4c6';
 
-  try {
-    print('Attempting to stop billing. Order ID: $orderId');
-    var response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'order_id': orderId,
-        'key': apiKey,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Request was successful
-      print(
-          'Successfully stopped billing. Status code: ${response.statusCode}');
-      switchLamp(ip: ip, key: secret, code: code, status: false);
-    } else {
-      print('Failed to stop billing. Status code: ${response.statusCode}');
-    }
-  } catch (error) {
-    print('Error during stopBilling request: $error');
-  }
-}
 
 Future<void> offLamp(link) async {
   try {
@@ -196,7 +92,10 @@ Future<void> offLamp(link) async {
     );
 
     if (response.statusCode == 200) {
-    } else {}
+
+    } else {
+
+    }
   } catch (error) {
     print('Error during stopBilling request: $error');
   }

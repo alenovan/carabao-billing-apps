@@ -41,6 +41,8 @@ class Room {
   int? status;
   int? roomsAvailable;
   int? idPanels;
+  String? multipleChannel;
+  dynamic isMultipleChannel;
 
   Room({
     this.id,
@@ -51,6 +53,8 @@ class Room {
     this.status,
     this.roomsAvailable,
     this.idPanels,
+    this.multipleChannel,
+    this.isMultipleChannel,
   });
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
@@ -62,6 +66,8 @@ class Room {
     status: json["status"],
     roomsAvailable: json["rooms_available"],
     idPanels: json["id_panels"],
+    multipleChannel: json["multiple_channel"],
+    isMultipleChannel: json["is_multiple_channel"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -73,5 +79,7 @@ class Room {
     "status": status,
     "rooms_available": roomsAvailable,
     "id_panels": idPanels,
+    "multiple_channel": multipleChannel,
+    "is_multiple_channel": isMultipleChannel,
   };
 }

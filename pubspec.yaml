@@ -46,11 +46,9 @@ dependencies:
   flutter_local_notifications: ^16.3.0
   shimmer: ^3.0.0
   intl: ^0.19.0
-  flutter_foreground_service:
   permission_handler: ^10.4.0
   http_interceptor:
   android_alarm_manager_plus: ^4.0.3
-  flutter_foreground_task: ^3.6.0
   window_manager: ^0.3.9
   sqflite: ^2.3.3+1
   pusher_channels_flutter: ^2.2.1

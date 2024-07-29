@@ -45,6 +45,18 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         }
       }
 
+      if (event is ActStopOrderOpenAutoBilling) {
+        emit(OrdersLoadingState());
+        try {
+          final result =
+          await repository.stop_order_open_billing(event.payload);
+          emit(OrdersStopOpenBillingLoadedState(result: result));
+        } catch (e) {
+          emit(OrdersErrorState(message: e.toString()));
+        }
+      }
+
+
       if (event is ActOrderOpenTable) {
         emit(OrdersLoadingState());
         try {

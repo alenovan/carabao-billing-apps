@@ -35,6 +35,8 @@ class ResponseListOrdersModels {
 class NewestOrder {
   int? roomId;
   String? code;
+  String? multipleChannel;
+  int? isMultipleChannel;
   String? name;
   int? statusRooms;
   String? statusOrder;
@@ -48,6 +50,8 @@ class NewestOrder {
   NewestOrder({
     this.roomId,
     this.code,
+    this.multipleChannel,
+    this.isMultipleChannel,
     this.name,
     this.statusRooms,
     this.statusOrder,
@@ -62,6 +66,8 @@ class NewestOrder {
   factory NewestOrder.fromJson(Map<String, dynamic> json) => NewestOrder(
     roomId: json["room_id"],
     code: json["code"],
+    multipleChannel: json["multiple_channel"],
+    isMultipleChannel: json["is_multiple_channel"],
     name: json["name"],
     statusRooms: json["status_rooms"],
     statusOrder: json["status_order"],
@@ -76,6 +82,8 @@ class NewestOrder {
   Map<String, dynamic> toJson() => {
     "room_id": roomId,
     "code": code,
+    "multiple_channel": multipleChannel,
+    "is_multiple_channel": isMultipleChannel,
     "name": name,
     "status_rooms": statusRooms,
     "status_order": statusOrder,

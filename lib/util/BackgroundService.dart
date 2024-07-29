@@ -1,13 +1,12 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../main.dart';
 import '../service/models/order/ResponseListOrdersModels.dart';
 import 'DatabaseHelper.dart';
 
 void backgroundTask(popup) async {
 
-  // Check for new data
   await checkForNewData(popup ?? true);
+
 }
 
 Future<void> checkForNewData(popup) async {
@@ -15,25 +14,25 @@ Future<void> checkForNewData(popup) async {
   List<NewestOrder> orders = await dbHelper.getOrders();
   if (orders.isNotEmpty) {
     String ordersMessage = "";
-    for (var order in orders) {
-      DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
-      if (DateTime.now().isAfter(endTime)) {
-        ordersMessage += "${order.name} - OFF\n";
-        // await stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
-        await dbHelper.deleteOrderById(order!.id!);
-        backgroundTask(true);
-        cancelNotification(0);
-      } else {
-        ordersMessage += "${order.name} - ON\n";
-      }
-    }
+    // for (var order in orders) {
+    //   DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
+    //   if (DateTime.now().isAfter(endTime)) {
+    //     ordersMessage += "${order.name} - OFF\n";
+    //     // await stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
+    //     await dbHelper.deleteOrderById(order!.id!);
+    //     backgroundTask(true);
+    //     cancelNotification(0);
+    //   } else {
+    //     ordersMessage += "${order.name} - ON\n";
+    //   }
+    // }
 
-    if (popup ?? true) {
-      await _showNotification(
-        "Open - Billing",
-        ordersMessage,
-      );
-    }
+    // if (popup ?? true) {
+    //   await _showNotification(
+    //     "Open - Billing",
+    //     ordersMessage,
+    //   );
+    // }
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +25,8 @@ class OpenTableScreen extends StatefulWidget {
   final String code;
   final String id_meja;
   final bool status;
+  final int isMuiltiple;
+  final String multipleChannel;
   final String? id_order;
   final String ip;
   final String keys;
@@ -34,7 +38,9 @@ class OpenTableScreen extends StatefulWidget {
       required this.status,
       this.id_order,
       required this.ip,
-      required this.keys});
+      required this.keys,
+      required this.isMuiltiple,
+      required this.multipleChannel});
 
   @override
   State<OpenTableScreen> createState() => _OpenTableScreenState();
@@ -158,22 +164,49 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", "Selamat Berhasil");
-              switchLamp(
-                  ip: widget.ip,
-                  key: widget.keys,
-                  code: widget.code,
-                  status: true);
+              if (widget.isMuiltiple == 1) {
+                List<dynamic> multipleChannelList =
+                    jsonDecode(widget.multipleChannel);
+                multipleChannelList.forEach((e) {
+                  switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: e,
+                    status: true,
+                  );
+                });
+              } else {
+                switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: widget.code,
+                    status: true);
+              }
+
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
             } else if (s is OrdersStopLoadedState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", "Selamat Berhasil");
-              switchLamp(
-                  ip: widget.ip,
-                  key: widget.keys,
-                  code: widget.code,
-                  status: false);
+              if (widget.isMuiltiple == 1) {
+                List<dynamic> multipleChannelList =
+                    jsonDecode(widget.multipleChannel);
+                multipleChannelList.forEach((e) {
+                  switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: e,
+                    status: false,
+                  );
+                });
+              } else {
+                switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: widget.code,
+                    status: false);
+              }
               Future.delayed(Duration(seconds: 1), () {
                 NavigationUtils.navigateTo(
                     context, const BottomNavigationScreen(), false);
@@ -210,7 +243,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               setState(() {
                 loadingMeja = false;
                 data_meja =
-                    s.result!.data!.where((room) => room.status == 0).toList();
+                    s.result!.data!.where((room) => (room.status == 0 &&  room.isMultipleChannel == 0 )).toList();
               });
             }
           },
@@ -302,34 +335,36 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                         margin: EdgeInsets.only(top: 10.w),
                         child: CircularProgressIndicator(),
                       )
-                    : GestureDetector(
-                        onTap: () async {
-                          _showBottomSheetChangeMeja(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: ColorConstant.primary,
+                    : widget.isMuiltiple == 1
+                        ? Container()
+                        : GestureDetector(
+                            onTap: () async {
+                              _showBottomSheetChangeMeja(context);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: ColorConstant.primary,
+                                  ),
+                                  color: ColorConstant.primary,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50))),
+                              height: 50.w,
+                              margin: EdgeInsets.only(
+                                  left: 20.w, right: 20.w, top: 10.w),
+                              padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                              child: Center(
+                                child: Text(
+                                  "Change Table",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.sp,
+                                      color: ColorConstant.white),
+                                ),
                               ),
-                              color: ColorConstant.primary,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50))),
-                          height: 50.w,
-                          margin: EdgeInsets.only(
-                              left: 20.w, right: 20.w, top: 10.w),
-                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                          child: Center(
-                            child: Text(
-                              "Change Table",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11.sp,
-                                  color: ColorConstant.white),
                             ),
                           ),
-                        ),
-                      ),
             ],
           )),
     );

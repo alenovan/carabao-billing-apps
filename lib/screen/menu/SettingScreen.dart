@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 import '../../component/loading_dialog.dart';
 import '../../constant/color_constant.dart';
@@ -19,9 +18,7 @@ import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../main.dart';
-import '../../util/PusherForegroundService.dart';
 import '../setting/ListSetting.dart';
-import '../setting/ViewOrdersScreenBg.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -33,6 +30,8 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   final _ConfigsBloc = ConfigsBloc(repository: ConfigRepoRepositoryImpl());
   late TextEditingController ipdController = TextEditingController();
+
+
 
   Widget _consumerApi() {
     return Column(
@@ -99,7 +98,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ListSetting()),
+                              builder: (context) =>  ListSetting()),
                         );
                       },
                       child: Container(
@@ -211,50 +210,6 @@ class _SettingScreenState extends State<SettingScreen> {
                             children: [
                               Text(
                                 "Client Information",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.plusJakartaSans(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11.sp,
-                                    color: ColorConstant.titletext),
-                              ),
-                              Icon(
-                                Boxicons.bx_chevron_right,
-                                color: ColorConstant.subtext,
-                              )
-                            ],
-                          ),
-                        ))),
-                InkWell(
-                    onTap: () async {
-                      await RegisterBackground(context);
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => ViewOrdersScreenBG()),
-                      // );
-                    },
-                    child: Container(
-                        margin:
-                            EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
-                        decoration: BoxDecoration(
-                          color: ColorConstant.white,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 2.0,
-                              spreadRadius: 1.0,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        padding: EdgeInsets.all(15.w),
-                        child: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Background Proses",
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.bold,

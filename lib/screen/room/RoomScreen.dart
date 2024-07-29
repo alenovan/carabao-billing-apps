@@ -190,6 +190,7 @@ class _RoomScreenState extends State<RoomScreen> {
                                   dataGet?.type.toString() == "null" ||
                                   dataGet?.statusOrder == "STOP")
                                 OpenTableScreen(
+                                  isMuiltiple: dataGet?.isMultipleChannel ?? 0,
                                   id_order: dataGet?.id.toString(),
                                   id_meja: dataGet!.roomId.toString(),
                                   code: dataGet?.code ?? "",
@@ -198,11 +199,16 @@ class _RoomScreenState extends State<RoomScreen> {
                                       : false,
                                   ip: dataGet?.ip ?? "",
                                   keys: dataGet?.secret ?? "",
+                                  multipleChannel:
+                                      dataGet?.multipleChannel ?? "",
                                 ),
                               if (dataGet?.type == "OPEN-BILLING" ||
                                   dataGet?.type.toString() == "null" ||
                                   dataGet?.statusOrder == "STOP")
                                 BillingScreen(
+                                  isMuiltiple: dataGet?.isMultipleChannel ?? 0,
+                                  multipleChannel:
+                                      dataGet?.multipleChannel ?? "",
                                   id_order: dataGet?.id.toString(),
                                   id_meja: dataGet!.roomId.toString(),
                                   code: dataGet?.code ?? "",

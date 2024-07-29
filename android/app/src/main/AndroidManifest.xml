@@ -18,7 +18,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- For apps with targetSDK 31 (Android 12) and newer -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- required -->
@@ -39,6 +38,10 @@
         android:usesCleartextTraffic="true">
 
         <!-- This is required -->
+        <service android:name=".ForegroundService" android:exported="true"/>
+
+
+
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundTaskService"
             android:permission="android.permission.BIND_JOB_SERVICE"
@@ -61,6 +64,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+
 
         <meta-data
             android:name="firebase_performance_logcat_enabled"

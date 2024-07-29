@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 
 import '../component/loading_dialog.dart';
 import '../constant/color_constant.dart';
@@ -15,7 +14,6 @@ import '../helper/global_helper.dart';
 import '../helper/navigation_utils.dart';
 import '../service/models/auth/RequestLoginModels.dart';
 import '../service/repository/LoginRepository.dart';
-import '../util/PusherForegroundService.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

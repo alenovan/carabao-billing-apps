@@ -24,6 +24,16 @@ class ActStopOrderOpenBilling extends OrderEvent {
   List<Object> get props => [payload];
 }
 
+class ActStopOrderOpenAutoBilling extends OrderEvent {
+  RequestStopOrdersModels payload;
+
+  ActStopOrderOpenAutoBilling({required this.payload});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [payload];
+}
+
 class ActOrderOpenTable extends OrderEvent {
   RequestOrdersModels payload;
 
@@ -96,7 +106,6 @@ class getDetailHistory extends OrderEvent {
   List<Object> get props => [id];
 }
 
-
 class getDetailOrders extends OrderEvent {
   String id;
 
@@ -106,4 +115,3 @@ class getDetailOrders extends OrderEvent {
   // TODO: implement props
   List<Object> get props => [id];
 }
-

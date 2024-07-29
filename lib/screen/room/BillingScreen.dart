@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
@@ -16,7 +18,6 @@ import '../../constant/color_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../helper/navigation_utils.dart';
-import '../../main.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
 import '../../service/models/rooms/ResponseRoomsModels.dart';
 import '../../service/repository/RoomsRepository.dart';
@@ -29,6 +30,8 @@ class BillingScreen extends StatefulWidget {
   final String? id_order;
   final String ip;
   final String keys;
+  final int isMuiltiple;
+  final String multipleChannel;
 
   const BillingScreen(
       {super.key,
@@ -37,7 +40,9 @@ class BillingScreen extends StatefulWidget {
       required this.status,
       this.id_order,
       required this.ip,
-      required this.keys});
+      required this.keys,
+      required this.isMuiltiple,
+      required this.multipleChannel});
 
   @override
   State<BillingScreen> createState() => _BillingScreenState();
@@ -129,12 +134,24 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-              switchLamp(
-                  ip: widget.ip,
-                  key: widget.keys,
-                  code: widget.code,
-                  status: true);
-              await RegisterBackground(context);
+              if (widget.isMuiltiple == 1) {
+                List<dynamic> multipleChannelList =
+                    jsonDecode(widget.multipleChannel);
+                multipleChannelList.forEach((e) {
+                  switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: e,
+                    status: true,
+                  );
+                });
+              } else {
+                switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: widget.code,
+                    status: true);
+              }
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -143,12 +160,24 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
-              switchLamp(
-                  ip: widget.ip,
-                  key: widget.keys,
-                  code: widget.code,
-                  status: false);
-              await RegisterBackground(context);
+              if (widget.isMuiltiple == 1) {
+                List<dynamic> multipleChannelList =
+                    jsonDecode(widget.multipleChannel);
+                multipleChannelList.forEach((e) {
+                  switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: e,
+                    status: false,
+                  );
+                });
+              } else {
+                switchLamp(
+                    ip: widget.ip,
+                    key: widget.keys,
+                    code: widget.code,
+                    status: false);
+              }
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), true);
             } else if (s is OrdersErrorState) {
@@ -167,7 +196,6 @@ class _BillingScreenState extends State<BillingScreen> {
                 await Future.delayed(Duration(seconds: 2));
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
               }
-              await RegisterBackground(context);
 
               NavigationUtils.navigateTo(
                   context, const BottomNavigationScreen(), false);
@@ -186,7 +214,7 @@ class _BillingScreenState extends State<BillingScreen> {
               setState(() {
                 loadingMeja = false;
                 data_meja =
-                    s.result!.data!.where((room) => room.status == 0).toList();
+                    s.result!.data!.where((room) => (room.status == 0 &&  room.isMultipleChannel == 0 )).toList();
               });
             }
           },
@@ -397,32 +425,35 @@ class _BillingScreenState extends State<BillingScreen> {
                 margin: EdgeInsets.only(top: 10.w),
                 child: CircularProgressIndicator(),
               )
-            : GestureDetector(
-                onTap: () {
-                  _showBottomSheetChangeMeja(context);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: ColorConstant.primary,
+            : widget.isMuiltiple == 1
+                ? Container()
+                : GestureDetector(
+                    onTap: () {
+                      _showBottomSheetChangeMeja(context);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: ColorConstant.primary,
+                          ),
+                          color: ColorConstant.primary,
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      height: 50.w,
+                      margin:
+                          EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+                      padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                      child: Center(
+                        child: Text(
+                          "Change Table",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11.sp,
+                              color: ColorConstant.white),
+                        ),
                       ),
-                      color: ColorConstant.primary,
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
-                  height: 50.w,
-                  margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
-                  padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                  child: Center(
-                    child: Text(
-                      "Change Table",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11.sp,
-                          color: ColorConstant.white),
                     ),
                   ),
-                ),
-              ),
       ],
     );
   }

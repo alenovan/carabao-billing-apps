@@ -46,6 +46,17 @@ class OrdersStopLoadedState extends OrderState {
   List<Object> get props => [result];
 }
 
+class OrdersStopOpenBillingLoadedState extends OrderState {
+  ResponseStopOrdersModels result;
+
+  OrdersStopOpenBillingLoadedState({required this.result});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
+
+
 class OrdersListLoadedState extends OrderState {
   ResponseListOrdersModels result;
 

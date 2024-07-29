@@ -59,7 +59,7 @@ class _MenuListCardState extends State<MenuListCard> {
       children: [
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) async {
-            if (s is OrdersStopLoadedState) {
+            if (s is OrdersStopOpenBillingLoadedState) {
               switchLamp(
                   ip: s.result.data!.panel!.ip!,
                   key: s.result.data!.panel!.secret!,
@@ -117,7 +117,7 @@ class _MenuListCardState extends State<MenuListCard> {
           widget.onUpdate();
           // Countdown has reached zero, you may want to handle this case
           timer.cancel();
-          _OrderBloc?.add(ActStopOrderOpenBilling(
+          _OrderBloc?.add(ActStopOrderOpenAutoBilling(
               payload: RequestStopOrdersModels(
                   orderId: int.parse(widget.id_order.toString()))));
         }
