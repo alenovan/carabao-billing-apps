@@ -222,7 +222,99 @@ class _RoomScreenState extends State<RoomScreen> {
                           ),
                         )
                       ],
-                    )
+                    ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                    padding: EdgeInsets.all(16.0),
+                    color: ColorConstant.white,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Test Lampu",
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                        Text(
+                          "Tombol ini digunakan untuk menguji lampu. Itu tidak akan dicatat dalam transaksi. Gunakan jika lampu tidak menyala atau mati",
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10.sp,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(
+                          height: 10.w,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                LoadingDialog.show(context, "Mohon tunggu");
+                                switchLamp(
+                                    ip: dataGet?.ip ?? "",
+                                    key: dataGet?.secret ?? "",
+                                    code: dataGet?.code ?? "",
+                                    status: true);
+                                await Future.delayed(Duration(seconds: 2));
+                                switchLamp(
+                                    ip: dataGet?.ip ?? "",
+                                    key: dataGet?.secret ?? "",
+                                    code: dataGet?.code ?? "",
+                                    status: false);
+                                await Future.delayed(Duration(seconds: 1));
+                                popScreen(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorConstant.alarm,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                                "TEST",
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10.sp,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            // ElevatedButton(
+                            //   onPressed: () async{
+                            //     LoadingDialog.show(context, "Mohon tunggu");
+                            //     switchLamp(
+                            //       ip: dataGet?.ip ?? "",
+                            //       key: dataGet?.secret ?? "",
+                            //       code: dataGet?.code ?? "",
+                            //       status: false,
+                            //     );
+                            //     await Future.delayed(Duration(seconds: 2));
+                            //     popScreen(context);
+                            //   },
+                            //   style: ElevatedButton.styleFrom(
+                            //     backgroundColor: ColorConstant.off,
+                            //     shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(20),
+                            //     ),
+                            //   ),
+                            //   child: Text(
+                            //     "OFF",
+                            //     style: GoogleFonts.plusJakartaSans(
+                            //       fontSize: 10.sp,
+                            //       color: Colors.white,
+                            //     ),
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ],
+                    )),
+              ),
             ],
           )),
     );
