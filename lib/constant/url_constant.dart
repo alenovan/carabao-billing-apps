@@ -12,7 +12,7 @@ class UrlConstant {
 
   static const order_stop_billing =
       base_url + "orders/orders-stop-open-billing";
-  static const order_stop_billing_bg = base_url + "rders-stop-open-billing";
+  static const order_stop_billing_bg = base_url + "orders-stop-open-billing";
   static const order_stop_table = base_url + "orders/orders-stop-open-table";
 
   static const change_table = base_url + "orders/change-table";
