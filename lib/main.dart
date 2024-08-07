@@ -42,21 +42,21 @@ Future<void> main() async {
     await windowManager.ensureInitialized();
     WindowManager.instance.setSize(const Size(360, 690));
   }
-  if (Platform.isAndroid) {
-    WakelockPlus.enable();
-    await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.periodic(
-      Duration(minutes: 1),
-      0,
-      backgroundTask,
-      wakeup: true,
-      rescheduleOnReboot: true,
-    );
-    PusherService().initPusher();
-  }
-
-
-  TimerService.instance.startTimer();
+  // if (Platform.isAndroid) {
+  //   WakelockPlus.enable();
+  //   await AndroidAlarmManager.initialize();
+  //   await AndroidAlarmManager.periodic(
+  //     Duration(minutes: 1),
+  //     0,
+  //     backgroundTask,
+  //     wakeup: true,
+  //     rescheduleOnReboot: true,
+  //   );
+  //   PusherService().initPusher();
+  // }
+  //
+  //
+  // TimerService.instance.startTimer();
   runApp(
     MyApp(),
   );

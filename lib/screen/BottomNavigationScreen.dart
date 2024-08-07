@@ -8,8 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constant/data_constant.dart';
 import '../helper/shared_preference.dart';
-import 'menu/HistoryScreen.dart';
-import 'menu/HomeScreen.dart';
 import 'menu/SettingScreen.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
@@ -65,46 +63,46 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  // InkWell(
+                  //   onTap: () {
+                  //     _navigateToPage(0);
+                  //   },
+                  //   child: Image.asset(
+                  //     _currentIndex == 0
+                  //         ? ImageConstant.home_selected
+                  //         : ImageConstant.home,
+                  //     width: 45.w,
+                  //     height: 45.w,
+                  //   ),
+                  // ),
+                  // VerticalDivider(
+                  //   color: ColorConstant.dividermenu,
+                  //   thickness: 1.0,
+                  //   width: 20.0,
+                  // ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     _navigateToPage(1);
+                  //   },
+                  //   child: Image.asset(
+                  //     _currentIndex == 1
+                  //         ? ImageConstant.history
+                  //         : ImageConstant.history_selected,
+                  //     width: 45.w,
+                  //     height: 45.w,
+                  //   ),
+                  // ),
+                  VerticalDivider(
+                    color: ColorConstant.dividermenu,
+                    thickness: 1.0,
+                    width: 20.0,
+                  ),
                   InkWell(
                     onTap: () {
                       _navigateToPage(0);
                     },
                     child: Image.asset(
                       _currentIndex == 0
-                          ? ImageConstant.home_selected
-                          : ImageConstant.home,
-                      width: 45.w,
-                      height: 45.w,
-                    ),
-                  ),
-                  VerticalDivider(
-                    color: ColorConstant.dividermenu,
-                    thickness: 1.0,
-                    width: 20.0,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _navigateToPage(1);
-                    },
-                    child: Image.asset(
-                      _currentIndex == 1
-                          ? ImageConstant.history
-                          : ImageConstant.history_selected,
-                      width: 45.w,
-                      height: 45.w,
-                    ),
-                  ),
-                  VerticalDivider(
-                    color: ColorConstant.dividermenu,
-                    thickness: 1.0,
-                    width: 20.0,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _navigateToPage(2);
-                    },
-                    child: Image.asset(
-                      _currentIndex == 2
                           ? ImageConstant.setting_selected
                           : ImageConstant.setting,
                       width: 45.w,
@@ -122,7 +120,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                 _currentIndex = index;
               });
             },
-            children: [HomeScreen(), HistoryScreen(), SettingScreen()],
+            children: [SettingScreen()],
           ),
         ),
         onWillPop: () async {

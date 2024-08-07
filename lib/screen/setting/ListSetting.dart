@@ -23,7 +23,7 @@ class ListSetting extends StatefulWidget {
 class _ListSettingState extends State<ListSetting> {
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late TextEditingController searchController = TextEditingController();
-  ResponseRoomsModels? data;
+  List<dynamic> data = [];
 
   @override
   void initState() {
@@ -34,13 +34,10 @@ class _ListSettingState extends State<ListSetting> {
   }
 
   fetchData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? jsonString = prefs.getString('result_meja');
-    if (jsonString != null) {
-      setState(() {
-        data = ResponseRoomsModels.fromJson(json.decode(jsonString));
-      });
-    }
+    String? jsonString = ConstantData.list_meja;
+    setState(() {
+      data = json.decode(jsonString)['data'];
+    });
   }
 
   @override
@@ -54,7 +51,7 @@ class _ListSettingState extends State<ListSetting> {
     return Scaffold(
       backgroundColor: ColorConstant.bg,
       appBar: AppBar(
-        title: Text('List Table'),
+        title: Text('Orca  Control Table'),
       ),
       body: MultiBlocProvider(
           providers: [
@@ -94,17 +91,17 @@ class _ListSettingState extends State<ListSetting> {
                   ),
                 ),
                 ListView.builder(
-                  itemCount: data!.data!.length,
+                  itemCount: data?.length ?? 0,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return MenuListControl(
-                      name: data!.data![index].name!,
-                      code: data!.data![index].code!,
+                      name: data![index]['name'],
+                      code: data![index]['code'],
                       ip: searchController.text,
                       keys: ConstantData.key_config,
-                      isMuiltiple: data!.data![index].isMultipleChannel,
-                      multipleChannel: data!.data![index].multipleChannel ?? "",
+                      isMuiltiple: 0,
+                      multipleChannel: "",
                     );
                   },
                 )

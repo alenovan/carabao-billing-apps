@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:carabaobillingapps/screen/LoginScreen.dart';
+import 'package:carabaobillingapps/screen/setting/ListSetting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -24,23 +25,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void navigateToNextScreen() async {
-    var token = await getStringValuesSF(ConstantData.token);
-    if (token.toString().length>4) {
-      Timer(const Duration(seconds: 1), () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const BottomNavigationScreen()),
-        );
-      });
-    } else {
-      Timer(const Duration(seconds: 1), () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      });
-    }
+    Timer(const Duration(seconds: 1), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ListSetting()),
+      );
+    });
   }
 
   @override
