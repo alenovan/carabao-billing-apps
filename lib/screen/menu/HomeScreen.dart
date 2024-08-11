@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/menu_list_card.dart';
 import '../../component/shimmerx.dart';
+import '../../constant/color_constant.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../service/bloc/configs/configs_bloc.dart';
@@ -180,6 +181,43 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   SizedBox(
                     height: 15.w,
+                  ),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(""),
+                        GestureDetector(
+                          onTap: () {
+                            _refreshList();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: ColorConstant.primary,
+                                ),
+                                color: ColorConstant.primary,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            height: 30.w,
+                            margin: EdgeInsets.only(right: 10.w),
+                            padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                            child: Center(
+                              child: Text(
+                                "Refresh",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5.w,
                   ),
                   if (loading)
                     ListView.builder(
