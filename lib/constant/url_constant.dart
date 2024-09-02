@@ -1,6 +1,6 @@
 class UrlConstant {
   static const base_url_live =
-      "https://polaris-api.crbillingsystem.com/public/api/";
+      "https://dzeus-api.crbillingsystem.com/public/api/";
   static const base_url_staging = "http://192.168.1.15:8001/api/";
   static const base_url = base_url_live;
   static const config = base_url + "config";
@@ -12,7 +12,7 @@ class UrlConstant {
 
   static const order_stop_billing =
       base_url + "orders/orders-stop-open-billing";
-  static const order_stop_billing_bg = base_url + "rders-stop-open-billing";
+  static const order_stop_billing_bg = base_url + "orders-stop-open-billing";
   static const order_stop_table = base_url + "orders/orders-stop-open-table";
 
   static const change_table = base_url + "orders/change-table";
