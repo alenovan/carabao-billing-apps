@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:carabaobillingapps/constant/data_constant.dart';
+import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,7 +52,7 @@ class _ListSettingState extends State<ListSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  WillPopScope(child: Scaffold(
       backgroundColor: ColorConstant.bg,
       appBar: AppBar(
         title: Text('List Table'),
@@ -81,7 +82,7 @@ class _ListSettingState extends State<ListSetting> {
                         ),
                       ),
                       contentPadding:
-                          EdgeInsets.symmetric(vertical: 2.w, horizontal: 16.w),
+                      EdgeInsets.symmetric(vertical: 2.w, horizontal: 16.w),
                     ),
                     controller: searchController,
                     onChanged: (e) {
@@ -111,6 +112,12 @@ class _ListSettingState extends State<ListSetting> {
               ],
             ),
           )),
-    );
+    ), onWillPop: ()async{
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BottomNavigationScreen(defaultMenuIndex: 2,)));
+      return false;
+    });
   }
 }

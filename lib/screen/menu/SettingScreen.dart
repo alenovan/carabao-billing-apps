@@ -18,7 +18,7 @@ import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../main.dart';
-import '../setting/ListSetting.dart';
+import '../setting/PinEntryScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -98,7 +98,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  ListSetting()),
+                              builder: (context) =>  PinEntryScreen()),
                         );
                       },
                       child: Container(
