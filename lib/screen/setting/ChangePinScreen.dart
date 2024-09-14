@@ -1,5 +1,6 @@
 import 'package:carabaobillingapps/screen/setting/PinEntryScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePinScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
   final _newPinFocusNodes = List.generate(4, (_) => FocusNode());
   final _confirmNewPinFocusNodes = List.generate(4, (_) => FocusNode());
 
-  String _storedPin = '9041'; // Default PIN
+  String _storedPin = '0000'; // Default PIN
   String _secretPin = '5381'; // Default PIN
 
   @override
@@ -113,7 +114,8 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
-                  return SizedBox(
+                  return Container(
+                    margin: EdgeInsets.only(left: 10.w),
                     width: 50,
                     child: TextField(
                       controller: _currentPinControllers[index],
@@ -158,7 +160,8 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
-                  return SizedBox(
+                  return Container(
+                    margin: EdgeInsets.only(left: 10.w),
                     width: 50,
                     child: TextField(
                       controller: _newPinControllers[index],
@@ -203,7 +206,8 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
-                  return SizedBox(
+                  return Container(
+                    margin: EdgeInsets.only(left: 10.w),
                     width: 50,
                     child: TextField(
                       controller: _confirmNewPinControllers[index],

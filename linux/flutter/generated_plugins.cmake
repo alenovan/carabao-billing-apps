@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  charset_converter
   screen_retriever
   window_manager
 )

@@ -1,5 +1,6 @@
 import 'package:carabaobillingapps/screen/setting/PinEntryScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PinCreationScreen extends StatefulWidget {
@@ -69,8 +70,8 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
-                  return SizedBox(
-                    width: 50,
+                  return Container(
+                    margin: EdgeInsets.only(left: 10.w),
                     child: TextField(
                       controller: _pinControllers[index],
                       focusNode: _focusNodes[index],

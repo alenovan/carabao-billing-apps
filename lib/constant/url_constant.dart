@@ -1,6 +1,6 @@
 class UrlConstant {
   static const base_url_live =
-      "https://test.crbillingsystem.com/public/api/";
+      "https://joes-billiards-api.crbillingsystem.com/public/api/";
   static const base_url_staging = "http://192.168.1.15:8001/api/";
   static const base_url = base_url_live;
   static const config = base_url + "config";

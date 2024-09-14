@@ -1,5 +1,6 @@
 import 'package:carabaobillingapps/screen/setting/ListSetting.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../BottomNavigationScreen.dart';
@@ -87,7 +88,8 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
-                  return SizedBox(
+                  return Container(
+                    margin: EdgeInsets.only(left: 10.w),
                     width: 50,
                     child: TextField(
                       controller: _pinControllers[index],
