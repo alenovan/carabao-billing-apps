@@ -1,67 +1,150 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../service/models/order/ResponseListOrdersModels.dart';
-import 'DatabaseHelper.dart';
+class BackgroundService {
+  static final BackgroundService _instance = BackgroundService._internal();
 
-void backgroundTask(popup) async {
+  factory BackgroundService() => _instance;
 
-  await checkForNewData(popup ?? true);
+  BackgroundService._internal();
 
-}
-
-Future<void> checkForNewData(popup) async {
-  final dbHelper = DatabaseHelper();
-  List<NewestOrder> orders = await dbHelper.getOrders();
-  if (orders.isNotEmpty) {
-    String ordersMessage = "";
-    // for (var order in orders) {
-    //   DateTime endTime = DateTime.parse(order.newestOrderEndTime!);
-    //   if (DateTime.now().isAfter(endTime)) {
-    //     ordersMessage += "${order.name} - OFF\n";
-    //     // await stopBilling(order!.id!, order!.ip, order!.secret, order!.code);
-    //     await dbHelper.deleteOrderById(order!.id!);
-    //     backgroundTask(true);
-    //     cancelNotification(0);
-    //   } else {
-    //     ordersMessage += "${order.name} - ON\n";
-    //   }
-    // }
-
-    // if (popup ?? true) {
-    //   await _showNotification(
-    //     "Open - Billing",
-    //     ordersMessage,
-    //   );
-    // }
-  }
-}
-
-Future<void> _showNotification(String title, String body) async {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  var initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/launcher_icon');
-  var initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'countdown_channel',
-    'Countdown Channel',
-    importance: Importance.high,
-    playSound: false,
-    enableVibration: false,
-    enableLights: false,
-    ongoing: true, // Set to true to create a persistent notification
-  );
-  var platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
+  Future<void> initializeService() async {
+    final service = FlutterBackgroundService();
 
-  await flutterLocalNotificationsPlugin.show(
-    0, // Notification ID (should be unique for each notification)
-    title,
-    body,
-    platformChannelSpecifics,
-    payload: 'item x',
-  );
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'open_billing_channel', // Channel ID
+      'Open Billing Service', // Channel Name
+      description: 'This channel handles the Open Billing service',
+      importance: Importance.low, // Importance level
+    );
+
+    // Setup notification plugin
+    if (Platform.isIOS || Platform.isAndroid) {
+      await _notificationsPlugin.initialize(
+        const InitializationSettings(
+          iOS: DarwinInitializationSettings(),
+          android: AndroidInitializationSettings('ic_bg_service_small'),
+        ),
+      );
+    }
+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    // Configure the background service
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: onStart,
+        autoStart: true,
+        isForegroundMode: true,
+        notificationChannelId: 'open_billing_channel',
+        initialNotificationTitle: 'Open Billing Service',
+        initialNotificationContent: 'Initializing',
+        foregroundServiceNotificationId: 999,
+      ),
+      iosConfiguration: IosConfiguration(
+        autoStart: true,
+        onForeground: onStart,
+        onBackground: onIosBackground,
+      ),
+    );
+  }
+
+  @pragma('vm:entry-point')
+  Future<bool> onIosBackground(ServiceInstance service) async {
+    WidgetsFlutterBinding.ensureInitialized();
+    DartPluginRegistrant.ensureInitialized();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    final log = prefs.getStringList('log') ?? <String>[];
+    log.add('Background task executed at ${DateTime.now()}');
+    await prefs.setStringList('log', log);
+
+    return true;
+  }
+
+  @pragma('vm:entry-point')
+  void onStart(ServiceInstance service) async {
+    DartPluginRegistrant.ensureInitialized();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (service is AndroidServiceInstance) {
+      service.on('setAsForeground').listen((event) {
+        service.setAsForegroundService();
+      });
+
+      service.on('setAsBackground').listen((event) {
+        service.setAsBackgroundService();
+      });
+    }
+
+    service.on('startBillingTimer').listen((event) {
+      String endTimeString = event!['endTime'];
+      String orderId = event['orderId'];
+
+      DateTime endTime = DateTime.parse(endTimeString);
+      Duration remaining = endTime.difference(DateTime.now());
+
+      Timer.periodic(const Duration(seconds: 1), (timer) async {
+        remaining = remaining - const Duration(seconds: 1);
+
+        if (remaining.inSeconds <= 0) {
+          timer.cancel();
+          _showNotification(
+            title: 'Billing Ended',
+            body: 'Your billing for Order #$orderId has ended.',
+            id: int.parse(orderId),
+          );
+        }
+        if (service is AndroidServiceInstance) {
+          if (await service.isForegroundService()) {
+            service.setForegroundNotificationInfo(
+              title: 'Billing for Order #$orderId',
+              content: 'Remaining Time: ${remaining.inMinutes} mins',
+            );
+          }
+        }
+      });
+    });
+
+    service.on('stopBillingTimer').listen((event) {
+      service.stopSelf();
+    });
+  }
+
+  Future<void> _showNotification(
+      {required String title, required String body, required int id}) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'open_billing_channel',
+      'Open Billing Service',
+      importance: Importance.max,
+      priority: Priority.high,
+      ongoing: false,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await _notificationsPlugin.show(
+      id, // Use order ID as notification ID to make it unique
+      title,
+      body,
+      platformDetails,
+    );
+  }
 }

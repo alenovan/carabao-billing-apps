@@ -6,7 +6,6 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:carabaobillingapps/SplashScreen.dart';
 import 'package:carabaobillingapps/service/PusherService.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
-import 'package:carabaobillingapps/util/BackgroundService.dart';
 import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:carabaobillingapps/util/TimerService.dart';
 import 'package:flutter/material.dart';
@@ -45,24 +44,21 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     WakelockPlus.enable();
     await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.periodic(
-      Duration(minutes: 1),
-      0,
-      backgroundTask,
-      wakeup: true,
-      rescheduleOnReboot: true,
-    );
+    // await AndroidAlarmManager.periodic(
+    //   Duration(minutes: 1),
+    //   0,
+    //   backgroundTask,
+    //   wakeup: true,
+    //   rescheduleOnReboot: true,
+    // );
     PusherService().initPusher();
   }
-
 
   TimerService.instance.startTimer();
   runApp(
     MyApp(),
   );
 }
-
-
 
 void Registerbackgroun(context) async {
   // var result = await OrderRepoRepositoryImpl(context).getOrderBg();
@@ -80,8 +76,6 @@ Future<void> cancelNotification(int notificationId) async {
   await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
-
-
 Future<void> offLamp(link) async {
   try {
     var response = await http.post(
@@ -92,10 +86,7 @@ Future<void> offLamp(link) async {
     );
 
     if (response.statusCode == 200) {
-
-    } else {
-
-    }
+    } else {}
   } catch (error) {
     print('Error during stopBilling request: $error');
   }

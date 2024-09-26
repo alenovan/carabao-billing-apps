@@ -89,3 +89,9 @@ String formatDateTimeWeb(DateTime? dateTime) {
   // Format the DateTime object
   return formatter.format(dateTime);
 }
+
+int calculateTimeDifference(String endTime) {
+  DateTime now = DateTime.now();
+  DateTime end = DateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime); // Adjust format if needed
+  return now.difference(end).inMinutes.abs();
+}

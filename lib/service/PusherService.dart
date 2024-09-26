@@ -58,7 +58,9 @@ class PusherService {
   }
 
   Future<void> _handleEvent(String link, String message) async {
-    offLamp(link);
+    if (ConstantData.auto_cut) {
+      offLamp(link);
+    }
     await _showNotification("Open - Billing", message);
   }
 

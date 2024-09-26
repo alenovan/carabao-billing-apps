@@ -19,6 +19,7 @@ import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
 import '../../main.dart';
 import '../setting/PinEntryScreen.dart';
+import '../setting/SettingsScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -30,8 +31,6 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   final _ConfigsBloc = ConfigsBloc(repository: ConfigRepoRepositoryImpl());
   late TextEditingController ipdController = TextEditingController();
-
-
 
   Widget _consumerApi() {
     return Column(
@@ -98,7 +97,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  PinEntryScreen()),
+                              builder: (context) => PinEntryScreen()),
                         );
                       },
                       child: Container(
@@ -210,6 +209,49 @@ class _SettingScreenState extends State<SettingScreen> {
                             children: [
                               Text(
                                 "Client Information",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.titletext),
+                              ),
+                              Icon(
+                                Boxicons.bx_chevron_right,
+                                color: ColorConstant.subtext,
+                              )
+                            ],
+                          ),
+                        ))),
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsScreen()),
+                      );
+                    },
+                    child: Container(
+                        margin:
+                            EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.white,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Setting",
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.bold,

@@ -57,6 +57,8 @@ dependencies:
   flutter_blue: ^0.8.0
   esc_pos_printer: ^4.1.0
   blue_thermal_printer: ^1.1.00
+  flutter_background_service: ^5.0.10
+  flutter_ringtone_player: ^4.0.0+3
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/main.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
@@ -21,7 +20,6 @@ import '../../service/bloc/configs/configs_bloc.dart';
 import '../../service/bloc/meja/meja_bloc.dart';
 import '../../service/repository/ConfigRepository.dart';
 import '../../service/repository/RoomsRepository.dart';
-import '../../util/BackgroundService.dart';
 import '../BottomNavigationScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -53,33 +51,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _OrderBloc?.add(GetOrder());
     // _OrderBloc.add(GetOrderBg());
     WidgetsBinding.instance?.addObserver(this);
-    cancelNotification(0);
-    checkForNewData(true);
     Registerbackgroun(context);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      _appLifecycleState = state;
-    });
-
-    switch (state) {
-      case AppLifecycleState.resumed:
-        backgroundTask(true);
-        break;
-      case AppLifecycleState.inactive:
-        backgroundTask(true);
-        break;
-      case AppLifecycleState.paused:
-        backgroundTask(true);
-        break;
-      case AppLifecycleState.detached:
-        backgroundTask(true);
-        break;
-      case AppLifecycleState.hidden:
-        backgroundTask(true);
-    }
   }
 
   @override
@@ -87,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance?.removeObserver(this);
     // _countdownTimer.cancel();
     _OrderBloc?.close();
-    checkForNewData(true);
     super.dispose();
   }
 
@@ -232,32 +203,63 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         );
                       },
                     ),
-                  if (!loading)
-                    ListView.builder(
-                      itemCount: NewestOrders?.length ?? 0,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, i) {
-                        var data = NewestOrders![i];
-                        ConstantData.ip_default = data.ip!;
-                        ConstantData.key_config = data.secret!;
-                        return MenuListCard(
-                          status: data.statusRooms == 0 ? false : true,
-                          name: data.name!,
-                          id_order: data.id.toString(),
-                          code: data.code!,
-                          start: data.newestOrderStartTime!,
-                          end: data.newestOrderEndTime!,
-                          id_meja: data.roomId.toString(),
-                          type: data.type.toString(),
-                          ip: data.ip!,
-                          keys: data.secret!,
-                          onUpdate: () {
-                            _OrderBloc?.add(GetOrder());
+                  if (!loading && NewestOrders != null)
+                    Builder(
+                      builder: (context) {
+                        List<NewestOrder> reorderedOrders = [...NewestOrders!];
+
+                        // reorderedOrders.sort((a, b) {
+                        //   // Priority 1: Orders with statusRooms == 1 and type == "OPEN-BILLING"
+                        //   if (a.statusRooms == 1 &&
+                        //       a.type == "OPEN-BILLING" &&
+                        //       (b.statusRooms != 1 ||
+                        //           b.type != "OPEN-BILLING")) {
+                        //     return -1; // Move 'statusRooms == 1' and 'OPEN-BILLING' to the top
+                        //   } else if (b.statusRooms == 1 &&
+                        //       b.type == "OPEN-BILLING" &&
+                        //       (a.statusRooms != 1 ||
+                        //           a.type != "OPEN-BILLING")) {
+                        //     return 1; // Keep other orders below
+                        //   }
+                        //
+                        //   // Priority 2: Orders with type == "OPEN-BILLING"
+                        //   if (a.type == "OPEN-BILLING" &&
+                        //       b.type != "OPEN-BILLING") {
+                        //     return -1; // Move 'OPEN-BILLING' to the top
+                        //   } else if (b.type == "OPEN-BILLING" &&
+                        //       a.type != "OPEN-BILLING") {
+                        //     return 1; // Keep other orders below
+                        //   }
+                        //
+                        //   // Otherwise, keep the same order
+                        //   return 0;
+                        // });
+
+                        return ListView.builder(
+                          itemCount: reorderedOrders.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, i) {
+                            var data = reorderedOrders[i];
+                            return MenuListCard(
+                              status: data.statusRooms == 0 ? false : true,
+                              name: data.name!,
+                              idOrder: data.id.toString(),
+                              code: data.code!,
+                              start: data.newestOrderStartTime!,
+                              end: data.newestOrderEndTime!,
+                              idMeja: data.roomId.toString(),
+                              type: data.type.toString(),
+                              ip: data.ip!,
+                              keys: data.secret!,
+                              onUpdate: () {
+                                _OrderBloc?.add(GetOrder());
+                              },
+                            );
                           },
                         );
                       },
-                    )
+                    ),
                 ],
               ))),
     );

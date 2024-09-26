@@ -4,6 +4,7 @@ import 'package:carabaobillingapps/screen/room/OpenTableScreen.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,7 +36,7 @@ class _RoomScreenState extends State<RoomScreen> {
   @override
   void initState() {
     _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
-
+    FlutterRingtonePlayer().stop();
     // TODO: implement initState
     super.initState();
     _OrderBloc?.add(getDetailOrders(id: widget.meja_id.toString()));

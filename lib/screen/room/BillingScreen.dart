@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/constant/data_constant.dart';
@@ -8,6 +9,7 @@ import 'package:carabaobillingapps/service/models/order/RequestOrdersModels.dart
 import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,6 +61,13 @@ class _BillingScreenState extends State<BillingScreen> {
   SharedPreferences? _prefs;
   List<Map<String, dynamic>> _orders = [];
   bool loadingMeja = true;
+
+  void _startBackgroundTimer(String endTime, String orderId) {
+    final service = FlutterBackgroundService();
+    service.startService();
+    service
+        .invoke('startBillingTimer', {"endTime": endTime, "orderId": orderId});
+  }
 
   @override
   void initState() {
@@ -134,6 +143,18 @@ class _BillingScreenState extends State<BillingScreen> {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
                   context, "Selamat", s.result.message!);
+              String endTime = s.result.data?.endTime?.toIso8601String() ?? "";
+              // Retrieve endTime and orderId from the state
+              String orderId = s.result.data?.id?.toString() ??
+                  ""; // Assuming `id` is available in data
+
+              if (endTime.isNotEmpty && orderId.isNotEmpty) {
+                if(Platform.isAndroid){
+                  _startBackgroundTimer(endTime,
+                      orderId); // Start the background service with timer
+                }
+
+              }
               if (widget.isMuiltiple == 1) {
                 List<dynamic> multipleChannelList =
                     jsonDecode(widget.multipleChannel);
@@ -213,8 +234,10 @@ class _BillingScreenState extends State<BillingScreen> {
             if (s is MejaLoadedState) {
               setState(() {
                 loadingMeja = false;
-                data_meja =
-                    s.result!.data!.where((room) => (room.status == 0 &&  room.isMultipleChannel == 0 )).toList();
+                data_meja = s.result!.data!
+                    .where((room) =>
+                        (room.status == 0 && room.isMultipleChannel == 0))
+                    .toList();
               });
             }
           },

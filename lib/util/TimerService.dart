@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'BackgroundService.dart';
-
 class TimerService {
   static final TimerService _instance = TimerService._internal();
   int _seconds = 0;
@@ -14,7 +12,7 @@ class TimerService {
   void startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _seconds++;
-      backgroundTask(false);
+      // backgroundTask(false);
     });
   }
 
