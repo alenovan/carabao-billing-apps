@@ -22,7 +22,7 @@
 
     <!-- required -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- foregroundServiceType: dataSync -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
@@ -41,8 +41,6 @@
         android:label="CR Controller"
         android:usesCleartextTraffic="true">
 
-        <!-- This is required -->
-        <service android:name=".ForegroundService" android:exported="true"/>
 
 
 
@@ -69,7 +67,7 @@
             </intent-filter>
         </receiver>
 
-
+        <service android:name=".ForegroundService" android:foregroundServiceType="location"/>
 
         <meta-data
             android:name="firebase_performance_logcat_enabled"

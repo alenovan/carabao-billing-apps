@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:carabaobillingapps/constant/data_constant.dart';
@@ -42,12 +43,30 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
     }
   }
 
-  @override
   Future openRooms(String link) async {
-    // TODO: implement openRooms
+    // Check if lamp connection is active
     if (ConstantData.lamp_connection) {
-      var response =
-          await http.post(Uri.parse(link), headers: await tokenHeader(true));
+      try {
+        var response = await http
+            .post(
+              Uri.parse(link),
+              headers: await tokenHeader(
+                  true), // Assuming tokenHeader is defined elsewhere
+            )
+            .timeout(const Duration(seconds: 5)); // Set the timeout duration
+
+        if (response.statusCode == 200) {
+          print("Rooms opened successfully");
+        } else {
+          print("Failed to open rooms. Status code: ${response.statusCode}");
+        }
+      } on TimeoutException catch (e) {
+        print('The request to open rooms timed out: $e');
+        // Handle timeout logic here (e.g., notify user, retry)
+      } catch (error) {
+        print('Error during openRooms request: $error');
+        // Handle other errors (network, server, etc.)
+      }
     }
 
     return "Success";

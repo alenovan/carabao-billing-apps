@@ -14,7 +14,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constant/data_constant.dart';
 import '../constant/image_constant.dart';
 import '../helper/BottomSheetFeedback.dart';
-import '../helper/global_helper.dart';
 import '../helper/shared_preference.dart';
 import '../service/bloc/order/order_bloc.dart';
 
@@ -103,11 +102,11 @@ class _MenuListCardState extends State<MenuListCard> {
                     ColorConstant.white; // Reset background color
                 statusLocal = false; // Update status to ready
               });
-              switchLamp(
-                  ip: s.result.data!.panel!.ip!,
-                  key: s.result.data!.panel!.secret!,
-                  code: s.result.data!.code!,
-                  status: false);
+              // switchLamp(
+              //     ip: s.result.data!.panel!.ip!,
+              //     key: s.result.data!.panel!.secret!,
+              //     code: s.result.data!.code!,
+              //     status: false);
               FlutterRingtonePlayer().stop();
             }
             // Handle other states as necessary

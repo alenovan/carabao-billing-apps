@@ -6,10 +6,10 @@ class ConstantData {
   static String key = "key";
 
   //update version apps
-  static String version_apps = "10.0.10";
-  static String ip_default = "http://192.168.1.247/";
-  static String key_config = "4a94d6e3be52fdf907739b9a1f24e8bbcf3515af";
-  static String pusher_apiKey = "49b8c5b84c5e19c4680c";
+  static String version_apps = "10.0.12";
+  static String ip_default = "http://192.168.0.247/";
+  static String key_config = "d7a91186013f0c1ebd36ce56c9e37e30cfd33d09";
+  static String pusher_apiKey = "c39aa4db709e2f468c81";
 
   // set lamp_connection true   jika ada mesin
   // set lamp_connection false  jika tidak ada mesin
