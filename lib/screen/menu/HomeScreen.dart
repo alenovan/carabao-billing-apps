@@ -229,6 +229,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             onUpdate: () {
                               // _OrderBloc?.add(GetOrder());
                             },
+                            onCloseAutoCut: () {
+
+                              _OrderBloc?.add(GetOrder());
+                            },
                           );
                         },
                       );
@@ -239,7 +243,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ),
-
     );
   }
 }

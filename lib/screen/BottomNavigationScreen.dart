@@ -19,6 +19,7 @@ class BottomNavigationScreen extends StatefulWidget {
   @override
   State<BottomNavigationScreen> createState() => _BottomNavigationScreenState();
 }
+
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   late int _currentIndex;
   late PageController _pageController;
@@ -53,7 +54,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     } else {
       _stopBlinking();
       setState(() {
-        _fabColor = ColorConstant.primary; // Reset to primary color when not blinking
+        _fabColor =
+            ColorConstant.primary; // Reset to primary color when not blinking
       });
     }
   }
@@ -64,7 +66,9 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     _blinkTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
       setState(() {
         // Toggle between red and primary color
-        _fabColor = (_fabColor == ColorConstant.primary) ? Colors.red : ColorConstant.primary;
+        _fabColor = (_fabColor == ColorConstant.primary)
+            ? Colors.red
+            : ColorConstant.primary;
       });
     });
   }
@@ -79,12 +83,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   void dispose() {
     _pageController.dispose();
     countdownTimer?.cancel();
-    _blinkTimer?.cancel(); // Cancel the blinking timer when the widget is disposed
+    _blinkTimer
+        ?.cancel(); // Cancel the blinking timer when the widget is disposed
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: () async {
         return false;
@@ -116,8 +122,13 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                         type: data.type.toString(),
                         ip: data.ip!,
                         keys: data.secret!,
-                        onUpdate: () {
-                          fetchActiveOrders();
+                        onUpdate: () async{
+                          await fetchActiveOrders();
+                        },
+                        onCloseAutoCut: () {
+                          setState(() {
+                            _isUpdated = false;
+                          });
                         },
                       );
                     },
@@ -139,6 +150,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             setState(() {
               _currentIndex = index;
             });
+            fetchActiveOrders();
           },
           children: [
             HomeScreen(),
@@ -225,6 +237,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   // Navigation function to handle page change
   void _navigateToPage(int index) {
+    fetchActiveOrders();
     _pageController.jumpToPage(index);
     setState(() {
       _currentIndex = index;
@@ -275,7 +288,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     );
   }
 }
-
 
 // Countdown Timer Class
 class CountdownTimer {

@@ -29,6 +29,7 @@ class MenuListCard extends StatefulWidget {
   final String ip;
   final String keys;
   final Function() onUpdate;
+  final Function() onCloseAutoCut;
 
   MenuListCard({
     super.key,
@@ -43,6 +44,7 @@ class MenuListCard extends StatefulWidget {
     required this.ip,
     required this.keys,
     required this.onUpdate,
+    required this.onCloseAutoCut,
   });
 
   @override
@@ -102,6 +104,7 @@ class _MenuListCardState extends State<MenuListCard> {
                     ColorConstant.white; // Reset background color
                 statusLocal = false; // Update status to ready
               });
+              widget.onCloseAutoCut();
               // switchLamp(
               //     ip: s.result.data!.panel!.ip!,
               //     key: s.result.data!.panel!.secret!,
