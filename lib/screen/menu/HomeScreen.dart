@@ -239,48 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ),
-      // Tambahkan Floating Action Button
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          List<NewestOrder> activeOrders = getActiveOrders();
 
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                padding: EdgeInsets.all(16.0),
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: ListView.builder(
-                  itemCount: activeOrders.length,
-                  itemBuilder: (context, index) {
-                    var data = activeOrders[index];
-                    return MenuListCard(
-                      status: data.statusRooms == 1,
-                      name: data.name!,
-                      idOrder: data.id.toString(),
-                      code: data.code!,
-                      start: data.newestOrderStartTime!,
-                      end: data.newestOrderEndTime!,
-                      idMeja: data.roomId.toString(),
-                      type: data.type.toString(),
-                      ip: data.ip!,
-                      keys: data.secret!,
-                      onUpdate: () {
-                        _OrderBloc?.add(GetOrder());
-                      },
-                    );
-                  },
-                ),
-              );
-            },
-          );
-        },
-        child: Icon(
-          Icons.filter_alt,
-          color: Colors.white,
-        ),
-        backgroundColor: ColorConstant.primary,
-      ),
     );
   }
 }

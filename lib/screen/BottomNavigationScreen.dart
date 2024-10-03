@@ -1,42 +1,85 @@
 import 'dart:async';
-
+import 'package:boxicons/boxicons.dart';
+import 'package:carabaobillingapps/component/menu_list_card.dart';
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/constant/image_constant.dart';
+import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import '../service/models/order/ResponseListOrdersModels.dart';
 import 'menu/HistoryScreen.dart';
 import 'menu/HomeScreen.dart';
 import 'menu/SettingScreen.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
-  final int? defaultMenuIndex; // Added parameter
+  final int? defaultMenuIndex;
 
-  const BottomNavigationScreen({super.key, this.defaultMenuIndex = 0}); // Default to 0 if null
+  const BottomNavigationScreen({super.key, this.defaultMenuIndex = 0});
 
   @override
   State<BottomNavigationScreen> createState() => _BottomNavigationScreenState();
 }
-
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   late int _currentIndex;
   late PageController _pageController;
   CountdownTimer? countdownTimer;
+  List<NewestOrder> _activeOrders = [];
+  bool _isUpdated = false; // Track the update state
+  Color _fabColor = ColorConstant.primary; // Default FAB color
+  Timer? _blinkTimer; // Timer for blinking effect
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.defaultMenuIndex ?? 0;
     _pageController = PageController(initialPage: _currentIndex);
+  }
 
-    // Example usage of CountdownTimer
-    // _setupCountdownTimer();
+  Future<void> fetchActiveOrders() async {
+    List<NewestOrder> activeOrders = await DatabaseHelper().getActiveOrders();
+
+    // Simulate the onUpdate status based on some conditions in your logic.
+    bool updateStatus = activeOrders.any((order) => order.statusRooms == 1);
+
+    // Call setState to update the UI with the new data and set the update status
+    setState(() {
+      _activeOrders = activeOrders; // Store the active orders in the state
+      _isUpdated = updateStatus; // Update the state with the onUpdate status
+    });
+
+    // Start or stop blinking based on the update status
+    if (_isUpdated) {
+      _startBlinking();
+    } else {
+      _stopBlinking();
+      setState(() {
+        _fabColor = ColorConstant.primary; // Reset to primary color when not blinking
+      });
+    }
+  }
+
+  // Start the blinking effect
+  void _startBlinking() {
+    _blinkTimer?.cancel(); // Cancel any previous timer
+    _blinkTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        // Toggle between red and primary color
+        _fabColor = (_fabColor == ColorConstant.primary) ? Colors.red : ColorConstant.primary;
+      });
+    });
+  }
+
+  // Stop the blinking effect
+  void _stopBlinking() {
+    _blinkTimer?.cancel();
+    _blinkTimer = null;
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    countdownTimer?.cancel(); // Cancel the timer if it's running
+    countdownTimer?.cancel();
+    _blinkTimer?.cancel(); // Cancel the blinking timer when the widget is disposed
     super.dispose();
   }
 
@@ -49,6 +92,47 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       child: Scaffold(
         backgroundColor: ColorConstant.bg,
         bottomNavigationBar: _buildBottomNavigationBar(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await fetchActiveOrders();
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return Container(
+                  padding: EdgeInsets.all(16.0),
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: ListView.builder(
+                    itemCount: _activeOrders.length,
+                    itemBuilder: (context, index) {
+                      var data = _activeOrders[index];
+                      return MenuListCard(
+                        status: data.statusRooms == 1,
+                        name: data.name!,
+                        idOrder: data.id.toString(),
+                        code: data.code!,
+                        start: data.newestOrderStartTime!,
+                        end: data.newestOrderEndTime!,
+                        idMeja: data.roomId.toString(),
+                        type: data.type.toString(),
+                        ip: data.ip!,
+                        keys: data.secret!,
+                        onUpdate: () {
+                          fetchActiveOrders();
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          },
+          child: Icon(
+            Boxicons.bxs_flame,
+            color: Colors.white,
+          ),
+          // Use the dynamically blinking color
+          backgroundColor: _fabColor,
+        ),
         body: PageView(
           controller: _pageController,
           onPageChanged: (index) {
@@ -110,8 +194,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
               },
               child: Image.asset(
                 _currentIndex == 1
-                    ? ImageConstant.history_selected
-                    : ImageConstant.history,
+                    ? ImageConstant.history
+                    : ImageConstant.history_selected,
                 width: 45.w,
                 height: 45.w,
               ),
@@ -149,15 +233,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   // Countdown timer setup and handling
   void _setupCountdownTimer() {
-    // Define the end time for the countdown (for example, 5 minutes from now)
     DateTime endTime = DateTime.now().add(Duration(minutes: 5));
 
     countdownTimer = CountdownTimer(
       key: "timer1",
       endTime: endTime,
       onTick: (remainingTime) {
-        print('Remaining time: ${remainingTime.inMinutes}:${remainingTime.inSeconds % 60}');
-        // You can update the UI or show notification here for each tick
+        print(
+            'Remaining time: ${remainingTime.inMinutes}:${remainingTime.inSeconds % 60}');
       },
       onCountdownFinish: () {
         print("Countdown finished!");
@@ -193,6 +276,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   }
 }
 
+
+// Countdown Timer Class
 class CountdownTimer {
   final String key;
   final DateTime endTime;

@@ -1,9 +1,12 @@
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
+
   factory DatabaseHelper() => _instance;
+
   DatabaseHelper._internal();
 
   static Database? _database;
@@ -68,5 +71,18 @@ class DatabaseHelper {
   Future<void> clearOrders() async {
     final db = await database;
     await db.delete('orders');
+  }
+
+  Future<List<NewestOrder>> getActiveOrders() async {
+    final db = await database;
+    // Query to get active orders where statusRooms is 1 (for example)
+    final List<Map<String, dynamic>> maps = await db.query(
+      'orders',
+      where: 'status_rooms = ?',
+      whereArgs: [1], // Assuming status_rooms == 1 is for active orders
+    );
+    return List.generate(maps.length, (i) {
+      return NewestOrder.fromJson(maps[i]);
+    });
   }
 }
