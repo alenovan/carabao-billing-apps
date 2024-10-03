@@ -104,10 +104,14 @@ void backgroundTask() async {
           if (Platform.isAndroid) {
             await launchApp();
           }
-        } 
+        }
       });
     }
   }
+}
+
+Future<void> cancelNotification(int notificationId) async {
+  await flutterLocalNotificationsPlugin.cancel(notificationId);
 }
 
 Future<void> launchApp() async {
@@ -145,9 +149,6 @@ Future<void> showNotification(String title, String body) async {
       notificationId, title, body, platformChannelSpecifics);
 }
 
-Future<void> cancelNotification(int notificationId) async {
-  await flutterLocalNotificationsPlugin.cancel(notificationId);
-}
 
 Future<void> offLamp(String link) async {
   try {

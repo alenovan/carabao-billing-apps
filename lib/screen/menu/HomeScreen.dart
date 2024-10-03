@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:carabaobillingapps/main.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
@@ -77,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               });
 
               await _dbHelper.clearOrders();
+              await cancelNotification(0);
               for (var order in NewestOrders!) {
                 await _dbHelper.insertOrder(order);
               }
@@ -225,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             ip: data.ip!,
                             keys: data.secret!,
                             onUpdate: () {
-                              _OrderBloc?.add(GetOrder());
+                              // _OrderBloc?.add(GetOrder());
                             },
                           );
                         },
