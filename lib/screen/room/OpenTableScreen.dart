@@ -172,6 +172,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     ip: widget.ip,
                     key: widget.keys,
                     code: e,
+                    id_order: widget.id_order ?? "-1",
                     status: true,
                   );
                 });
@@ -179,6 +180,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                 switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
+                    id_order: widget.id_order ?? "-1",
                     code: widget.code,
                     status: true);
               }
@@ -197,6 +199,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     ip: widget.ip,
                     key: widget.keys,
                     code: e,
+                    id_order: widget.id_order ?? "-1",
                     status: false,
                   );
                 });
@@ -205,6 +208,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     ip: widget.ip,
                     key: widget.keys,
                     code: widget.code,
+                    id_order: widget.id_order ?? "-1",
                     status: false);
               }
               Future.delayed(Duration(seconds: 1), () {
@@ -242,8 +246,10 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
             if (s is MejaLoadedState) {
               setState(() {
                 loadingMeja = false;
-                data_meja =
-                    s.result!.data!.where((room) => (room.status == 0 &&  room.isMultipleChannel == 0 )).toList();
+                data_meja = s.result!.data!
+                    .where((room) =>
+                        (room.status == 0 && room.isMultipleChannel == 0))
+                    .toList();
               });
             }
           },

@@ -149,11 +149,10 @@ class _BillingScreenState extends State<BillingScreen> {
                   ""; // Assuming `id` is available in data
 
               if (endTime.isNotEmpty && orderId.isNotEmpty) {
-                if(Platform.isAndroid){
+                if (Platform.isAndroid) {
                   _startBackgroundTimer(endTime,
                       orderId); // Start the background service with timer
                 }
-
               }
               if (widget.isMuiltiple == 1) {
                 List<dynamic> multipleChannelList =
@@ -162,6 +161,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
+                    id_order: widget.id_order ?? "-1",
                     code: e,
                     status: true,
                   );
@@ -171,6 +171,7 @@ class _BillingScreenState extends State<BillingScreen> {
                     ip: widget.ip,
                     key: widget.keys,
                     code: widget.code,
+                    id_order: widget.id_order ?? "-1",
                     status: true);
               }
               Navigator.pushReplacement(
@@ -188,6 +189,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
+                    id_order: widget.id_order ?? "-1",
                     code: e,
                     status: false,
                   );
@@ -197,6 +199,7 @@ class _BillingScreenState extends State<BillingScreen> {
                     ip: widget.ip,
                     key: widget.keys,
                     code: widget.code,
+                    id_order: widget.id_order ?? "-1",
                     status: false);
               }
               NavigationUtils.navigateTo(

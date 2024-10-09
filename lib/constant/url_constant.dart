@@ -1,6 +1,6 @@
 class UrlConstant {
   static const base_url_live =
-      "https://test.crbillingsystem.com/public/api/";
+      "http://192.168.1.7:8000/api/";
   static const base_url_staging = "http://192.168.1.15:8001/api/";
   static const base_url = base_url_live;
   static const config = base_url + "config";
@@ -25,5 +25,6 @@ class UrlConstant {
   static const panelsupdate = base_url + "panels/update";
 
   static const history_orders = base_url + "orders/history-orders";
+  static const logs = base_url + "logs";
   static const detail_history = history_orders + "/";
 }

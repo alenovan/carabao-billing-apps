@@ -70,6 +70,7 @@ class _MenuListControlState extends State<MenuListControl> {
                             ip: widget.ip,
                             key: widget.keys,
                             code: e,
+                            id_order: "0",
                             status: true,
                           );
                         });
@@ -78,6 +79,7 @@ class _MenuListControlState extends State<MenuListControl> {
                             ip: widget.ip,
                             key: widget.keys,
                             code: widget.code,
+                            id_order: "0",
                             status: true);
                       }
                       await Future.delayed(Duration(seconds: 2));
@@ -113,11 +115,13 @@ class _MenuListControlState extends State<MenuListControl> {
                               ip: widget.ip,
                               key: widget.keys,
                               code: e,
+                              id_order: "0",
                               status: false,
                             );
                           });
                         } else {
                           switchLamp(
+                              id_order: "0",
                               ip: widget.ip,
                               key: widget.keys,
                               code: widget.code,
@@ -155,6 +159,7 @@ class _MenuListControlState extends State<MenuListControl> {
                             switchLamp(
                                 ip: widget.ip,
                                 key: widget.keys,
+                                id_order: "0",
                                 code: e,
                                 status: true);
                             await Future.delayed(Duration(seconds: 2));
@@ -162,6 +167,7 @@ class _MenuListControlState extends State<MenuListControl> {
                                 ip: widget.ip,
                                 key: widget.keys,
                                 code: e,
+                                id_order: "0",
                                 status: false);
                             await Future.delayed(Duration(seconds: 1));
                             popScreen(context);
@@ -171,12 +177,14 @@ class _MenuListControlState extends State<MenuListControl> {
                               ip: widget.ip,
                               key: widget.keys,
                               code: widget.code,
+                              id_order: "0",
                               status: true);
                           await Future.delayed(Duration(seconds: 2));
                           switchLamp(
                               ip: widget.ip,
                               key: widget.keys,
                               code: widget.code,
+                              id_order: "0",
                               status: false);
                           await Future.delayed(Duration(seconds: 1));
                           popScreen(context);

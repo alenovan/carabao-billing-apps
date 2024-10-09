@@ -175,15 +175,6 @@ class _MenuListCardState extends State<MenuListCard> {
     setState(() {
       _currentBackgroundColor = Colors.red;
     });
-    if (soundEnabled) {
-      FlutterRingtonePlayer().play(
-        android: AndroidSounds.notification,
-        ios: IosSounds.glass,
-        looping: true,
-        volume: 1.0,
-        asAlarm: true,
-      );
-    }
   }
 
   Widget _buildStatusText() {

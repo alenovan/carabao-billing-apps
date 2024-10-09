@@ -4,6 +4,7 @@ import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/screen/LoginScreen.dart';
 import 'package:carabaobillingapps/screen/setting/ClientInformation.dart';
+import 'package:carabaobillingapps/screen/setting/LogScreen.dart';
 import 'package:carabaobillingapps/screen/setting/PanelSetting.dart';
 import 'package:carabaobillingapps/service/bloc/configs/configs_bloc.dart';
 import 'package:carabaobillingapps/service/repository/ConfigRepository.dart';
@@ -266,6 +267,49 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                         ))),
                 InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogScreen()),
+                      );
+                    },
+                    child: Container(
+                        margin:
+                        EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.white,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 2.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(15.w),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Logs",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11.sp,
+                                    color: ColorConstant.titletext),
+                              ),
+                              Icon(
+                                Boxicons.bx_chevron_right,
+                                color: ColorConstant.subtext,
+                              )
+                            ],
+                          ),
+                        ))),
+                InkWell(
                     onTap: () async {
                       if (Platform.isAndroid) {
                         fetchTimer?.cancel();
@@ -306,6 +350,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             ],
                           ),
                         ))),
+
               ],
             )));
   }

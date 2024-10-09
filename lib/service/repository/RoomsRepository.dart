@@ -43,16 +43,15 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
     }
   }
 
-  Future openRooms(String link) async {
+  Future<http.Response?> openRooms(String link) async {
     // Check if lamp connection is active
     if (ConstantData.lamp_connection) {
       try {
         var response = await http
             .post(
-              Uri.parse(link),
-              headers: await tokenHeader(
-                  true), // Assuming tokenHeader is defined elsewhere
-            )
+          Uri.parse(link),
+          headers: await tokenHeader(true), // Assuming tokenHeader is defined elsewhere
+        )
             .timeout(const Duration(seconds: 5)); // Set the timeout duration
 
         if (response.statusCode == 200) {
@@ -60,16 +59,21 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
         } else {
           print("Failed to open rooms. Status code: ${response.statusCode}");
         }
+
+        return response; // Return the HTTP response
+
       } on TimeoutException catch (e) {
         print('The request to open rooms timed out: $e');
         // Handle timeout logic here (e.g., notify user, retry)
+        return null;
       } catch (error) {
         print('Error during openRooms request: $error');
         // Handle other errors (network, server, etc.)
+        return null;
       }
     }
 
-    return "Success";
+    return null;
   }
 
   @override

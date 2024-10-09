@@ -273,12 +273,14 @@ class _RoomScreenState extends State<RoomScreen> {
                                         ip: dataGet?.ip ?? "",
                                         key: dataGet?.secret ?? "",
                                         code: dataGet?.code ?? "",
+                                        id_order: "-2(from menu reset)",
                                         status: true);
                                     await Future.delayed(Duration(seconds: 2));
                                     switchLamp(
                                         ip: dataGet?.ip ?? "",
                                         key: dataGet?.secret ?? "",
                                         code: dataGet?.code ?? "",
+                                        id_order: "-2(from menu reset)",
                                         status: false);
                                     await Future.delayed(Duration(seconds: 1));
                                     popScreen(context);
