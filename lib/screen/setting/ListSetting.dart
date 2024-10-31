@@ -52,72 +52,50 @@ class _ListSettingState extends State<ListSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(child: Scaffold(
-      backgroundColor: ColorConstant.bg,
-      appBar: AppBar(
-        title: Text('List Table'),
-      ),
-      body: MultiBlocProvider(
-          providers: [
-            BlocProvider<MejaBloc>(
-              create: (BuildContext context) => _MejaBloc,
-            ),
-          ],
-          child: Container(
-            child: ListView(
-              children: [
-                Container(
-                  margin: EdgeInsets.all(20.w),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Ip',
-                      labelStyle: GoogleFonts.plusJakartaSans(
-                        fontSize: 12.sp,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(
-                          color: ColorConstant.borderinput,
-                        ),
-                      ),
-                      contentPadding:
-                      EdgeInsets.symmetric(vertical: 2.w, horizontal: 16.w),
-                    ),
-                    controller: searchController,
-                    onChanged: (e) {
-                      setState(() {
-                        ConstantData.ip_default = e;
-                        searchController.text = e;
-                      });
-                    },
-                    // Add controller and other TextFormField properties as needed
-                  ),
+    return WillPopScope(
+        child: Scaffold(
+          backgroundColor: ColorConstant.bg,
+          appBar: AppBar(
+            title: Text('List Table'),
+          ),
+          body: MultiBlocProvider(
+              providers: [
+                BlocProvider<MejaBloc>(
+                  create: (BuildContext context) => _MejaBloc,
                 ),
-                ListView.builder(
-                  itemCount: data!.data!.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return MenuListControl(
-                      name: data!.data![index].name!,
-                      code: data!.data![index].code!,
-                      ip: searchController.text,
-                      keys: ConstantData.key_config,
-                      isMuiltiple: data!.data![index].isMultipleChannel,
-                      multipleChannel: data!.data![index].multipleChannel ?? "",
-                    );
-                  },
-                )
               ],
-            ),
-          )),
-    ), onWillPop: ()async{
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BottomNavigationScreen(defaultMenuIndex: 2,)));
-      return false;
-    });
+              child: Container(
+                child: ListView(
+                  children: [
+                    ListView.builder(
+                      itemCount: data?.data?.length ?? 0,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return MenuListControl(
+                          name: data!.data![index].name!,
+                          code: data!.data![index].code!,
+                          ip: data!.data![index].ip ?? "",
+                          position: data!.data![index].position,
+                          keys: data!.data![index].secret ?? "",
+                          isMuiltiple: data!.data![index].isMultipleChannel,
+                          multipleChannel:
+                              data!.data![index].multipleChannel ?? "",
+                        );
+                      },
+                    )
+                  ],
+                ),
+              )),
+        ),
+        onWillPop: () async {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigationScreen(
+                        defaultMenuIndex: 2,
+                      )));
+          return false;
+        });
   }
 }

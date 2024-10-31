@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-addStringSf(param,value) async {
+addStringSf(param, value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString(param, value);
 }
@@ -11,7 +11,7 @@ getStringValuesSF(param) async {
   return await stringValue;
 }
 
-addModelsSF(param,List<String> value) async {
+addModelsSF(param, List<String> value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList(param, value);
 }
@@ -22,7 +22,7 @@ getModelsSF(param) async {
   return await stringValue;
 }
 
-addBoolSf(param,value) async {
+addBoolSf(param, value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setBool(param, value);
 }
@@ -33,3 +33,8 @@ getBoolSF(param) async {
   return await value;
 }
 
+getSF(param) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  dynamic value = prefs.get(param);
+  return await value;
+}

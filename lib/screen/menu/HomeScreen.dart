@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:async';
 
-import 'package:carabaobillingapps/main.dart';
+import 'package:carabaobillingapps/util/TimerService.dart';
 import 'package:carabaobillingapps/service/bloc/order/order_bloc.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseListOrdersModels.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
+import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
 import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,14 +42,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<Map<String, dynamic>> _orders = [];
   var firstOpen = true;
   DatabaseHelper _dbHelper = DatabaseHelper();
+  late StreamSubscription _orderSubscription;
 
   @override
   void initState() {
-    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
     _MejaBloc?.add(GetMeja());
     super.initState();
     _OrderBloc?.add(GetOrder());
     WidgetsBinding.instance?.addObserver(this);
+
+    _orderSubscription = TimerService.instance.orderEvents.listen((event) {
+      if (event.type == 'AUTO_CUT') {
+        _OrderBloc?.add(ActStopOrderOpenAutoBilling(
+            payload: RequestStopOrdersModels(orderId: event.order.id ?? -1)));
+      }
+    });
   }
 
   @override
@@ -77,11 +87,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 loading = false;
               });
 
+              // Update database
               await _dbHelper.clearOrders();
-              await cancelNotification(0);
               for (var order in NewestOrders!) {
                 await _dbHelper.insertOrder(order);
               }
+
+              // Refresh timers with latest orders
+              await TimerService.instance.refreshTimers(NewestOrders!);
             } else if (s is OrdersErrorState) {
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
             }

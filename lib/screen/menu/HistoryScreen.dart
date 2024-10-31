@@ -35,7 +35,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
     super.initState();
     _ConfigsBloc.add(GetConfig());
     _OrderBloc?.add(ActOrderHistory(
@@ -316,7 +316,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   ),
                                   if (data.statusData != null)
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Text(
                                           "${formatDuration(Duration(seconds: DateTime.parse(data!.endTime.toString()).difference(DateTime.parse(data!.startTime.toString())).inSeconds))}",

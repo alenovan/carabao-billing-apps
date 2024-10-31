@@ -12,6 +12,7 @@ class MenuListControl extends StatefulWidget {
   final String name;
   final String code;
   final String ip;
+  final String? position;
   final String keys;
   final int isMuiltiple;
   final String multipleChannel;
@@ -23,7 +24,8 @@ class MenuListControl extends StatefulWidget {
       required this.ip,
       required this.keys,
       required this.isMuiltiple,
-      required this.multipleChannel});
+      required this.multipleChannel,
+      this.position});
 
   @override
   State<MenuListControl> createState() => _MenuListControlState();
@@ -33,7 +35,7 @@ class _MenuListControlState extends State<MenuListControl> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.all(20.w),
+        margin: EdgeInsets.fromLTRB(20.w, 8, 20, 8),
         decoration: BoxDecoration(
           color: ColorConstant.white,
           borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -51,12 +53,19 @@ class _MenuListControlState extends State<MenuListControl> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.name,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11.sp, color: ColorConstant.titletext),
-              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(
+                  widget.name,
+                  textAlign: TextAlign.left,
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12.sp, color: ColorConstant.titletext),
+                ),
+                Text(
+                  '${widget.ip.replaceAll("http://", "").replaceAll("/", "")} | ${widget.position ?? "-"}',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 8.sp, color: ColorConstant.titletext),
+                ),
+              ]),
               Row(
                 children: [
                   GestureDetector(

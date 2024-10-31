@@ -12,7 +12,6 @@ import 'package:carabaobillingapps/service/models/order/ResponseOrdersModels.dar
 import 'package:carabaobillingapps/service/models/order/ResponseStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseVoidOrder.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http_interceptor.dart';
 
 import '../../constant/url_constant.dart';
@@ -21,6 +20,8 @@ import '../models/order/ResponseDetailHistory.dart';
 import '../models/order/ResponseOrdersBgModels.dart';
 import '../models/order/ResponseOrdersOpenBillingModels.dart';
 import 'LoggingInterceptor.dart';
+import 'package:http/http.dart';
+import '../../helper/api_helper.dart';
 
 abstract class OrderRepo {
   Future<ResponseListOrdersModels> getOrder();
@@ -52,10 +53,7 @@ abstract class OrderRepo {
 class OrderRepoRepositoryImpl implements OrderRepo {
   final Client _client;
 
-  OrderRepoRepositoryImpl(BuildContext context)
-      : _client = InterceptedClient.build(
-          interceptors: [LoggingInterceptor(context)],
-        );
+  OrderRepoRepositoryImpl() : _client = ApiHelper.build();
 
   @override
   Future<ResponseListOrdersModels> getOrder() async {
@@ -83,7 +81,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   @override
   Future<ResponseOrdersBgModels> getOrderBg() async {
     // TODO: implement getOrder
-    var response = await http.get(Uri.parse(UrlConstant.newest_orders_bg),
+    var response = await _client.get(Uri.parse(UrlConstant.newest_orders_bg),
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseOrdersBgModels responses =
@@ -106,8 +104,12 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       RequestOrdersModels payload) async {
     // TODO: implement updateOrder
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.order_open_billing),
+    var response = await _client.post(Uri.parse(UrlConstant.order_open_billing),
         body: body, headers: await tokenHeader(true));
+
+    print(body);
+    print(response.body);
+
     if (response.statusCode == 200) {
       ResponseOrdersOpenBillingModels responses =
           responseOrdersOpenBillingModelsFromJson(response.body);
@@ -129,7 +131,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       RequestStopOrdersModels payload) async {
     // TODO: implement stop_order
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.order_stop_billing),
+    var response = await _client.post(Uri.parse(UrlConstant.order_stop_billing),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseStopOrdersModels responses =
@@ -152,16 +154,17 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       RequestOrdersModels payload) async {
     // TODO: implement updateOrder
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.order_open_table),
+    var response = await _client.post(Uri.parse(UrlConstant.order_open_table),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseOrdersModels responses =
           responseOrdersModelsFromJson(response.body);
       return responses;
+    } else if (response.statusCode == 400) {
+      throw ("Room sudah di book");
     } else if (response.statusCode == 522 ||
         response.statusCode == 502 ||
         response.statusCode == 504 ||
-        response.statusCode == 400 ||
         response.statusCode == 500) {
       throw ("Silahkan Ulangi Kembali");
     } else {
@@ -175,7 +178,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       RequestStopOrdersModels payload) async {
     // TODO: implement stop_order
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.order_stop_table),
+    var response = await _client.post(Uri.parse(UrlConstant.order_stop_table),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseStopOrdersModels responses =
@@ -198,7 +201,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
       RequestOrderSearch payload) async {
     // TODO: implement OrderHistory
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.history_orders),
+    var response = await _client.post(Uri.parse(UrlConstant.history_orders),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseOrderHistoryModels responses =
@@ -220,7 +223,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   Future<ResponseChangeTable> changeTable(RequestChangeTable payload) async {
     // TODO: implement changeTable
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.change_table),
+    var response = await _client.post(Uri.parse(UrlConstant.change_table),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseChangeTable responses =
@@ -242,7 +245,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   Future<ResponseVoidOrder> voidTable(RequestVoidOrder payload) async {
     // TODO: implement voidTable
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.void_table),
+    var response = await _client.post(Uri.parse(UrlConstant.void_table),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseVoidOrder responses = responseVoidOrderFromJson(response.body);
@@ -262,7 +265,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   @override
   Future<ResponseDetailHistory> historyDetail(String id) async {
     // TODO: implement historyDetail
-    var response = await http.get(Uri.parse(UrlConstant.detail_history + id),
+    var response = await _client.get(Uri.parse(UrlConstant.detail_history + id),
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseDetailHistory responses =
@@ -282,9 +285,10 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   @override
   Future<ResponseListOrdersModels> getOrdersDetail(String id) async {
     // TODO: implement getOrdersDetail
-    var response = await http.get(
+    var response = await _client.get(
         Uri.parse(UrlConstant.newest_orders + "/" + id),
         headers: await tokenHeader(true));
+    print(response.body);
     if (response.statusCode == 200) {
       ResponseListOrdersModels responses =
           responseListOrdersModelsFromJson(response.body);

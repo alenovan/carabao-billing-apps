@@ -3,11 +3,12 @@ import 'dart:developer';
 
 import 'package:carabaobillingapps/service/models/configs/RequestConfigsModels.dart';
 import 'package:carabaobillingapps/service/models/configs/ResponseConfigsModels.dart';
-import 'package:http/http.dart' as http;
 
 import '../../constant/url_constant.dart';
 import '../../helper/global_helper.dart';
 import '../models/configs/ResponseClientInformation.dart';
+import 'package:http/http.dart';
+import '../../helper/api_helper.dart';
 
 abstract class ConfigRepo {
   Future<ResponseClientInformation> getConfig();
@@ -18,10 +19,14 @@ abstract class ConfigRepo {
 }
 
 class ConfigRepoRepositoryImpl implements ConfigRepo {
+  final Client _client;
+
+  ConfigRepoRepositoryImpl() : _client = ApiHelper.build();
+
   @override
   Future<ResponseClientInformation> getConfig() async {
     // TODO: implement getConfig
-    var response = await http.get(Uri.parse(UrlConstant.config),
+    var response = await _client.get(Uri.parse(UrlConstant.config),
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseClientInformation responses =
@@ -44,7 +49,7 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
       RequestConfigsModels payload) async {
     // TODO: implement updateConfig
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.config),
+    var response = await _client.post(Uri.parse(UrlConstant.config),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseConfigsModels responses =
@@ -65,7 +70,7 @@ class ConfigRepoRepositoryImpl implements ConfigRepo {
   @override
   Future logout() async {
     var body = jsonEncode({});
-    var response = await http.post(Uri.parse(UrlConstant.logout),
+    var response = await _client.post(Uri.parse(UrlConstant.logout),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       log(response.body);

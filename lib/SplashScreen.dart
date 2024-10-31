@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:carabaobillingapps/constant/data_constant.dart';
+import 'package:carabaobillingapps/constant/url_constant.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
 import 'package:carabaobillingapps/screen/LoginScreen.dart';
+import 'package:carabaobillingapps/screen/setting/ApiConfigScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart'; // Import for permission handling
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constant/image_constant.dart';
 import 'helper/shared_preference.dart';
@@ -20,12 +23,32 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
     _checkNotificationPermission();
+    _checkConfiguration();
+  }
+
+  Future<void> _checkConfiguration() async {
+    final prefs = await SharedPreferences.getInstance();
+    final endpoint = prefs.getString(ConstantData.api_endpoint);
+
+    if (endpoint == null) {
+      // First install or no endpoint configured
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ApiConfigScreen(isFirstInstall: true),
+        ),
+      );
+    } else {
+      // Configure endpoint and proceed with normal flow
+      UrlConstant.setBaseUrl(endpoint);
+      _checkNotificationPermission();
+    }
   }
 
   // Check if notifications are enabled or request permission

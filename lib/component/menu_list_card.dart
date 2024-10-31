@@ -2,20 +2,15 @@ import 'dart:async';
 
 import 'package:carabaobillingapps/constant/color_constant.dart';
 import 'package:carabaobillingapps/screen/room/RoomScreen.dart';
-import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
-import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
+import 'package:carabaobillingapps/util/TimerService.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart'; // Import for playing sound
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constant/data_constant.dart';
 import '../constant/image_constant.dart';
 import '../helper/BottomSheetFeedback.dart';
 import '../helper/shared_preference.dart';
-import '../service/bloc/order/order_bloc.dart';
 
 class MenuListCard extends StatefulWidget {
   final bool status;
@@ -32,7 +27,6 @@ class MenuListCard extends StatefulWidget {
   final Function() onCloseAutoCut;
 
   MenuListCard({
-    super.key,
     required this.status,
     required this.name,
     required this.end,
@@ -52,186 +46,139 @@ class MenuListCard extends StatefulWidget {
 }
 
 class _MenuListCardState extends State<MenuListCard> {
-  Duration _remainingTime = Duration.zero;
-  DateTime? _startTime;
-  Timer? _timer;
-  OrderBloc? _orderBloc;
-  late bool statusLocal;
+  Timer? _displayTimer;
+  String? _currentTimerId;
   bool isOrange = true;
   Color _currentBackgroundColor = ColorConstant.white;
-
-  Future<bool> getAutoCutSetting() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('auto_cut') ?? false;
-  }
-
-  Future<bool> getSoundSetting() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('sound') ?? true;
-  }
 
   @override
   void initState() {
     super.initState();
-    _orderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
-    statusLocal = widget.status;
+    _startTimerIfNeeded();
+  }
 
-    if (widget.type == "OPEN-BILLING" &&
-        widget.end != "No orders" &&
-        widget.status) {
-      _startOpenBillingTimer();
-    } else if (widget.type == "OPEN-TABLE" && widget.status) {
-      _startOpenTableTimer();
+  @override
+  void didUpdateWidget(MenuListCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if relevant properties changed
+    if (oldWidget.status != widget.status ||
+        oldWidget.idOrder != widget.idOrder ||
+        oldWidget.type != widget.type) {
+      _resetTimer();
     }
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _orderBloc?.close();
+    _cleanupTimer();
     super.dispose();
   }
 
-  Widget _consumerApi() {
-    return Column(
-      children: [
-        BlocConsumer<OrderBloc, OrderState>(
-          listener: (c, s) {
-            if (s is OrdersStopOpenBillingLoadedState) {
-              // Reset to default color and status
-              setState(() {
-                _currentBackgroundColor =
-                    ColorConstant.white; // Reset background color
-                statusLocal = false; // Update status to ready
-              });
-              widget.onCloseAutoCut();
-              // switchLamp(
-              //     ip: s.result.data!.panel!.ip!,
-              //     key: s.result.data!.panel!.secret!,
-              //     code: s.result.data!.code!,
-              //     status: false);
-              FlutterRingtonePlayer().stop();
-            }
-            // Handle other states as necessary
-          },
-          builder: (c, s) {
-            return Container();
-          },
-        ),
-      ],
-    );
+  void _cleanupTimer() {
+    _displayTimer?.cancel();
+    _displayTimer = null;
+    _currentTimerId = null;
   }
 
-  void _startOpenBillingTimer() async {
-    DateTime endTime = DateTime.parse(widget.end);
-    _remainingTime = endTime.difference(DateTime.now());
-    bool autoCut = await getAutoCutSetting();
-
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_remainingTime.inSeconds > 0) {
-        setState(() {
-          _remainingTime = _remainingTime - Duration(seconds: 1);
-        });
-      } else {
-        widget.onUpdate();
-        timer.cancel();
-
-        if (autoCut) {
-          _orderBloc?.add(ActStopOrderOpenAutoBilling(
-            payload:
-                RequestStopOrdersModels(orderId: int.parse(widget.idOrder!)),
-          ));
-        }
-      }
-
-      if (_remainingTime.inMinutes <= 1) {
-        _toggleBlinkingEffect();
-      }
-
-      if (_remainingTime.inSeconds <= 0) {
-        _handleEndOfBilling();
-      }
-    });
+  void _resetTimer() {
+    _cleanupTimer();
+    _startTimerIfNeeded();
   }
 
-  void _startOpenTableTimer() {
-    _startTime = DateTime.parse(widget.start);
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  void _startTimerIfNeeded() {
+    // Only start timer if status is true and we have an order ID
+    if (widget.status && widget.idOrder != null) {
+      // Generate unique timer ID combining order ID and type
+      final newTimerId = '${widget.idOrder}-${widget.type}';
+
+      // Only start new timer if ID changed
+      if (_currentTimerId != newTimerId) {
+        _cleanupTimer();
+        _currentTimerId = newTimerId;
+        startDisplayTimer();
+      }
+    } else {
+      _cleanupTimer();
+      // Reset background color when timer stops
       setState(() {
-        _remainingTime = DateTime.now().difference(_startTime!);
+        _currentBackgroundColor = ColorConstant.white;
       });
-    });
+    }
   }
 
-  void _toggleBlinkingEffect() {
-    setState(() {
-      isOrange = !isOrange;
-      _currentBackgroundColor = isOrange ? Colors.orange : Colors.white;
-    });
-  }
+  void startDisplayTimer() {
+    print("start display timer: " + (_currentTimerId ?? "no id"));
+    // Store the timer ID we're creating
+    final timerIdAtStart = _currentTimerId;
 
-  void _handleEndOfBilling() async {
-    bool soundEnabled = await getSoundSetting();
-    setState(() {
-      _currentBackgroundColor = Colors.red;
-    });
-  }
+    _displayTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      // First validate widget is still mounted and timer is current
+      if (!mounted || _currentTimerId != timerIdAtStart) {
+        timer.cancel();
+        _cleanupTimer(); // Ensure full cleanup
+        return;
+      }
 
-  Widget _buildStatusText() {
-    if (widget.type == "OPEN-BILLING") {
-      if (!widget.status) {
-        if (widget.start != "No orders" && widget.end != "No orders") {
-          // Calculate time difference
-          DateTime startTime = DateTime.parse(widget.start);
-          DateTime endTime = DateTime.parse(widget.end);
-          Duration difference = endTime.difference(startTime);
+      try {
+        // Validate widget state hasn't changed
+        if (!widget.status || widget.idOrder == null) {
+          timer.cancel();
+          _cleanupTimer(); // Ensure full cleanup
+          setState(() {
+            _currentBackgroundColor = ColorConstant.white; // Reset color
+          });
+          return;
+        }
 
-          return Text(
-            "OPEN-BILLING - ${_formatDuration(difference)}",
-            style: _subTextStyle(),
-          );
-        } else {
-          return Text("OPEN-BILLING", style: _subTextStyle());
+        // Validate timer service state
+        final timeInfo =
+            TimerService.instance.getRemainingTime(widget.idOrder!);
+        if (timeInfo == null) {
+          timer.cancel();
+          _cleanupTimer(); // Ensure full cleanup
+          setState(() {
+            _currentBackgroundColor = ColorConstant.white; // Reset color
+          });
+          return;
+        }
+
+        // Validate order type hasn't changed
+        final orderType = TimerService.instance.getOrderType(widget.idOrder!);
+        if (orderType != widget.type) {
+          timer.cancel();
+          _cleanupTimer(); // Ensure full cleanup
+          setState(() {
+            _currentBackgroundColor = ColorConstant.white; // Reset color
+          });
+          return;
+        }
+
+        // Only do setState if mounted and timer is still valid
+        if (mounted && _currentTimerId == timerIdAtStart) {
+          setState(() {
+            // Update background color
+            if (widget.type == "OPEN-BILLING") {
+              if (timeInfo.inMinutes <= 1 && timeInfo.inSeconds > 0) {
+                _currentBackgroundColor =
+                    isOrange ? Colors.orange : Colors.white;
+                isOrange = !isOrange;
+              } else {
+                _currentBackgroundColor = ColorConstant.white;
+              }
+            }
+          });
+        }
+      } catch (e) {
+        print('Error in display timer: $e');
+        timer.cancel();
+        _cleanupTimer(); // Ensure cleanup even if error occurs
+        if (mounted) {
+          setState(() {
+            _currentBackgroundColor = ColorConstant.white; // Reset color
+          });
         }
       }
-      if (_remainingTime.inSeconds <= 0) {
-        return Text(
-          "Habis Matikan Lampu",
-          style: _subTextStyle().copyWith(color: Colors.white),
-        );
-      }
-      if (_remainingTime != Duration.zero) {
-        return Text(
-          "${_formatDuration(_remainingTime)} Lagi Habis",
-          style: _subTextStyle(),
-        );
-      }
-    } else if (widget.type == "OPEN-TABLE") {
-      // Check if both start and end are not "No orders"
-      if (widget.start != "No orders" && widget.end != "No orders") {
-        // Calculate time difference
-        DateTime startTime = DateTime.parse(widget.start);
-        DateTime endTime = DateTime.parse(widget.end);
-        Duration difference = endTime.difference(startTime);
-
-        return Text(
-          "Open Table - ${_formatDuration(difference)}",
-          style: _subTextStyle(),
-        );
-      } else {
-        // If either start or end is "No orders"
-        return Text(
-          "Open Table - ${_formatDuration(_remainingTime)}",
-          style: _subTextStyle(),
-        );
-      }
-    }
-    return SizedBox();
-  }
-
-  TextStyle _subTextStyle() {
-    return GoogleFonts.plusJakartaSans(
-        fontSize: 10.sp, color: ColorConstant.subtext);
+    });
   }
 
   String _formatDuration(Duration duration) {
@@ -239,17 +186,65 @@ class _MenuListCardState extends State<MenuListCard> {
     return "${twoDigits(duration.inHours)}:${twoDigits(duration.inMinutes.remainder(60))}:${twoDigits(duration.inSeconds.remainder(60))}";
   }
 
+  Widget _buildStatusText() {
+    if (!widget.status || widget.idOrder == null) {
+      return Text(!widget.status ? "--/--" : widget.type,
+          style: _subTextStyle());
+    }
+
+    final timeInfo = TimerService.instance.getRemainingTime(widget.idOrder!);
+    if (timeInfo == null) {
+      return Text(widget.type, style: _subTextStyle());
+    }
+
+    if (widget.type == "OPEN-BILLING") {
+      if (timeInfo.inSeconds <= 0) {
+        return Text(
+          "Habis Matikan Lampu",
+          style: _subTextStyle().copyWith(color: Colors.red),
+        );
+      }
+      return Text(
+        "${_formatDuration(timeInfo)} Lagi Habis",
+        style: _subTextStyle(),
+      );
+    } else if (widget.type == "OPEN-TABLE") {
+      return Text(
+        "Open Table - ${_formatDuration(timeInfo)}",
+        style: _subTextStyle(),
+      );
+    }
+
+    return SizedBox();
+  }
+
+  TextStyle _subTextStyle() {
+    return GoogleFonts.plusJakartaSans(
+      fontSize: 10.sp,
+      color: ColorConstant.subtext,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<OrderBloc>(create: (_) => _orderBloc!),
-      ],
+    return Container(
+      margin: EdgeInsets.all(8.w),
+      decoration: BoxDecoration(
+        color: _currentBackgroundColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 2.0,
+              spreadRadius: 1.0,
+              offset: Offset(0, 2)),
+        ],
+      ),
+      padding: EdgeInsets.all(15.w),
       child: InkWell(
         onTap: () async {
-          var timerSetting = await getStringValuesSF(ConstantData.is_timer);
-          if (timerSetting == "1") {
-            FlutterRingtonePlayer().stop();
+          var timerSetting = await getSF(ConstantData.is_timer);
+          if (timerSetting == "1" || timerSetting == true) {
             Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -259,67 +254,43 @@ class _MenuListCardState extends State<MenuListCard> {
                 "Akun anda tidak di izinkan untuk menjalankan billing");
           }
         },
-        child: Container(
-          margin: EdgeInsets.all(8.w),
-          decoration: BoxDecoration(
-            color: _currentBackgroundColor,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 2.0,
-                  spreadRadius: 1.0,
-                  offset: Offset(0, 2)),
-            ],
-          ),
-          padding: EdgeInsets.all(15.w),
-          child: Stack(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildDetails(),
-                  _buildStatusBadge(),
-                ],
-              ),
-              _consumerApi()
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetails() {
-    return Row(
-      children: [
-        Image.asset(ImageConstant.xinjue, width: 50.w),
-        SizedBox(width: 10.w),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(widget.name,
-                style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14.sp, fontWeight: FontWeight.bold)),
-            SizedBox(height: 5),
-            _buildStatusText(),
+            Row(
+              children: [
+                Image.asset(ImageConstant.xinjue, width: 50.w),
+                SizedBox(width: 10.w),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.name,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 14.sp, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 5),
+                    _buildStatusText(),
+                  ],
+                ),
+              ],
+            ),
+            _buildStatusBadge(),
           ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildStatusBadge() {
     return Container(
-      width: statusLocal ? 75.w : 55.w,
+      width: widget.status ? 75.w : 55.w,
       height: 30.w,
       decoration: BoxDecoration(
-        color: statusLocal ? ColorConstant.error : ColorConstant.success,
+        color: widget.status ? ColorConstant.error : ColorConstant.success,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Center(
         child: Text(
-          statusLocal ? "In Use" : "Ready",
+          widget.status ? "In Use" : "Ready",
           style:
               GoogleFonts.plusJakartaSans(fontSize: 11.sp, color: Colors.white),
         ),

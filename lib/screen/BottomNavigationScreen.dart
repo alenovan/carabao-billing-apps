@@ -12,6 +12,7 @@ import '../service/models/order/ResponseListOrdersModels.dart';
 import 'menu/HistoryScreen.dart';
 import 'menu/HomeScreen.dart';
 import 'menu/SettingScreen.dart';
+import '../component/empty_table_order.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   final int? defaultMenuIndex;
@@ -92,7 +93,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () async {
         return false;
@@ -109,32 +109,34 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                 return Container(
                   padding: EdgeInsets.all(16.0),
                   height: MediaQuery.of(context).size.height * 0.5,
-                  child: ListView.builder(
-                    itemCount: _activeOrders.length,
-                    itemBuilder: (context, index) {
-                      var data = _activeOrders[index];
-                      return MenuListCard(
-                        status: data.statusRooms == 1,
-                        name: data.name!,
-                        idOrder: data.id.toString(),
-                        code: data.code!,
-                        start: data.newestOrderStartTime!,
-                        end: data.newestOrderEndTime!,
-                        idMeja: data.roomId.toString(),
-                        type: data.type.toString(),
-                        ip: data.ip!,
-                        keys: data.secret!,
-                        onUpdate: () async{
-                          await fetchActiveOrders();
-                        },
-                        onCloseAutoCut: () {
-                          setState(() {
-                            _isUpdated = false;
-                          });
-                        },
-                      );
-                    },
-                  ),
+                  child: _activeOrders.isEmpty
+                      ? const EmptyTableOrder()
+                      : ListView.builder(
+                          itemCount: _activeOrders.length,
+                          itemBuilder: (context, index) {
+                            var data = _activeOrders[index];
+                            return MenuListCard(
+                              status: data.statusRooms == 1,
+                              name: data.name!,
+                              idOrder: data.id.toString(),
+                              code: data.code!,
+                              start: data.newestOrderStartTime!,
+                              end: data.newestOrderEndTime!,
+                              idMeja: data.roomId.toString(),
+                              type: data.type.toString(),
+                              ip: data.ip!,
+                              keys: data.secret!,
+                              onUpdate: () async {
+                                await fetchActiveOrders();
+                              },
+                              onCloseAutoCut: () {
+                                setState(() {
+                                  _isUpdated = false;
+                                });
+                              },
+                            );
+                          },
+                        ),
                 );
               },
             );

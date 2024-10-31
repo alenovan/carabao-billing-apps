@@ -35,7 +35,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   @override
   void initState() {
-    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
     FlutterRingtonePlayer().stop();
     // TODO: implement initState
     super.initState();
@@ -53,6 +53,10 @@ class _RoomScreenState extends State<RoomScreen> {
               setState(() {
                 popScreen(context);
                 dataGet = s.result.data![0];
+                print(s.result.toJson().toString());
+                print(s.result.data?.length);
+                print(dataGet?.roomId ?? "data null");
+                print(dataGet?.statusOrder);
                 loading = false;
 
                 if (dataGet?.type == "OPEN-BILLING" &&

@@ -67,8 +67,9 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
     _MejaBloc.add(GetMeja());
+    print(widget.status);
     super.initState();
   }
 
@@ -77,7 +78,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Masukkan Detail Pelanggan'),
+          title: Text('Masukkan Detail Pelanggan (Open Table)'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

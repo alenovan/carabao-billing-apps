@@ -30,7 +30,7 @@ class _DetailHistoryState extends State<DetailHistory> {
 
   @override
   void initState() {
-    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
     _OrderBloc!.add(getDetailHistory(id: widget.id_order!));
     // TODO: implement initState
     super.initState();

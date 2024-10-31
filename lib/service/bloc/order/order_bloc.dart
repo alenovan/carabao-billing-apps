@@ -12,6 +12,7 @@ import 'package:carabaobillingapps/service/models/order/ResponseStopOrdersModels
 import 'package:carabaobillingapps/service/models/order/ResponseVoidOrder.dart';
 import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:carabaobillingapps/util/TimerService.dart';
 
 import '../../models/order/ResponseOrderHistoryModels.dart';
 import '../../models/order/ResponseOrdersBgModels.dart';
@@ -49,13 +50,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         emit(OrdersLoadingState());
         try {
           final result =
-          await repository.stop_order_open_billing(event.payload);
+              await repository.stop_order_open_billing(event.payload);
           emit(OrdersStopOpenBillingLoadedState(result: result));
         } catch (e) {
           emit(OrdersErrorState(message: e.toString()));
         }
       }
-
 
       if (event is ActOrderOpenTable) {
         emit(OrdersLoadingState());

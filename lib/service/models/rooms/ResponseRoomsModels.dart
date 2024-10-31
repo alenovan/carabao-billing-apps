@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-ResponseRoomsModels responseRoomsModelsFromJson(String str) => ResponseRoomsModels.fromJson(json.decode(str));
+ResponseRoomsModels responseRoomsModelsFromJson(String str) =>
+    ResponseRoomsModels.fromJson(json.decode(str));
 
-String responseRoomsModelsToJson(ResponseRoomsModels data) => json.encode(data.toJson());
+String responseRoomsModelsToJson(ResponseRoomsModels data) =>
+    json.encode(data.toJson());
 
 class ResponseRoomsModels {
   bool? status;
@@ -19,17 +21,22 @@ class ResponseRoomsModels {
     this.data,
   });
 
-  factory ResponseRoomsModels.fromJson(Map<String, dynamic> json) => ResponseRoomsModels(
-    status: json["status"],
-    message: json["message"],
-    data: json["data"] == null ? [] : List<Room>.from(json["data"]!.map((x) => Room.fromJson(x))),
-  );
+  factory ResponseRoomsModels.fromJson(Map<String, dynamic> json) =>
+      ResponseRoomsModels(
+        status: json["status"],
+        message: json["message"],
+        data: json["data"] == null
+            ? []
+            : List<Room>.from(json["data"]!.map((x) => Room.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
-  };
+        "status": status,
+        "message": message,
+        "data": data == null
+            ? []
+            : List<dynamic>.from(data!.map((x) => x.toJson())),
+      };
 }
 
 class Room {
@@ -43,6 +50,9 @@ class Room {
   int? idPanels;
   String? multipleChannel;
   dynamic isMultipleChannel;
+  String? ip;
+  String? position;
+  String? secret;
 
   Room({
     this.id,
@@ -55,31 +65,42 @@ class Room {
     this.idPanels,
     this.multipleChannel,
     this.isMultipleChannel,
+    this.ip,
+    this.position,
+    this.secret,
   });
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
-    id: json["id"],
-    name: json["name"],
-    code: json["code"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    status: json["status"],
-    roomsAvailable: json["rooms_available"],
-    idPanels: json["id_panels"],
-    multipleChannel: json["multiple_channel"],
-    isMultipleChannel: json["is_multiple_channel"],
-  );
+        id: json["id"],
+        name: json["name"],
+        code: json["code"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+        status: json["status"],
+        roomsAvailable: json["rooms_available"],
+        idPanels: json["id_panels"],
+        multipleChannel: json["multiple_channel"],
+        isMultipleChannel: json["is_multiple_channel"],
+        ip: json["ip"],
+        position: json["position"],
+        secret: json["secret"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "code": code,
-    "created_at": createdAt,
-    "updated_at": updatedAt?.toIso8601String(),
-    "status": status,
-    "rooms_available": roomsAvailable,
-    "id_panels": idPanels,
-    "multiple_channel": multipleChannel,
-    "is_multiple_channel": isMultipleChannel,
-  };
+        "id": id,
+        "name": name,
+        "code": code,
+        "created_at": createdAt,
+        "updated_at": updatedAt?.toIso8601String(),
+        "status": status,
+        "rooms_available": roomsAvailable,
+        "id_panels": idPanels,
+        "multiple_channel": multipleChannel,
+        "is_multiple_channel": isMultipleChannel,
+        "ip": ip,
+        "position": position,
+        "secret": secret,
+      };
 }

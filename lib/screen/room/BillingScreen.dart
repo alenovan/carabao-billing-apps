@@ -71,7 +71,7 @@ class _BillingScreenState extends State<BillingScreen> {
 
   @override
   void initState() {
-    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl(context));
+    _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
     _MejaBloc.add(GetMeja());
     super.initState();
   }
@@ -89,7 +89,7 @@ class _BillingScreenState extends State<BillingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Masukkan Detail Pelanggan'),
+          title: Text('Masukkan Detail Pelanggan (Open Billing)'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

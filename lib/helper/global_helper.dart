@@ -60,8 +60,8 @@ void switchLamp({
 
   try {
     // Dapatkan respons dari openRooms
-    final response = await RoomsRepoRepositoryImpl()
-        .openRooms(ip + code + (status ? "on" : "off") + "?key=" + key);
+    var url = ip + code + (status ? "on" : "off") + "?key=" + key;
+    final response = await RoomsRepoRepositoryImpl().openRooms(url);
 
     final endTime = DateTime.now(); // Record the end time
     final duration =

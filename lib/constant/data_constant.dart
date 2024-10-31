@@ -19,4 +19,5 @@ class ConstantData {
 
   static bool auto_cut = false;
   static bool sound = false;
+  static String api_endpoint = "api_endpoint";
 }

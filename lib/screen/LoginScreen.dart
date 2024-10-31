@@ -1,10 +1,14 @@
+import 'package:carabaobillingapps/constant/data_constant.dart';
+import 'package:carabaobillingapps/constant/url_constant.dart';
 import 'package:carabaobillingapps/screen/BottomNavigationScreen.dart';
+import 'package:carabaobillingapps/screen/setting/ApiConfigScreen.dart';
 import 'package:carabaobillingapps/service/bloc/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../component/loading_dialog.dart';
 import '../constant/color_constant.dart';
@@ -28,6 +32,30 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController passwordController = TextEditingController();
   var token_firebase = "";
 
+  Future<void> _checkApiConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final endpoint = prefs.getString(ConstantData.api_endpoint);
+
+    if (endpoint == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ApiConfigScreen(
+            isFirstInstall: true,
+            onConfigured: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            },
+          ),
+        ),
+      );
+    } else {
+      UrlConstant.setBaseUrl(endpoint);
+    }
+  }
+
   Widget _consumerApi() {
     return Column(
       children: [
@@ -44,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (s is AuthErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
+              print(s.message);
             }
           },
           builder: (c, s) {
@@ -59,8 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // TODO: implement initState
     super.initState();
     _checkNotificationPermission();
-
-
+    _checkApiConfig();
   }
 
   Future<void> _checkNotificationPermission() async {
@@ -70,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
       status = await Permission.notification.request();
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

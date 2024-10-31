@@ -10,6 +10,8 @@ import '../../constant/url_constant.dart';
 import '../../helper/global_helper.dart';
 import '../models/rooms/ResponsePanelModels.dart';
 import '../models/rooms/ResponseUpdatePanelModels.dart';
+import 'package:http/http.dart';
+import '../../helper/api_helper.dart';
 
 abstract class RoomsRepo {
   Future<ResponseRoomsModels> getRooms();
@@ -23,12 +25,17 @@ abstract class RoomsRepo {
 }
 
 class RoomsRepoRepositoryImpl implements RoomsRepo {
+  final Client _client;
+  RoomsRepoRepositoryImpl() : _client = ApiHelper.build();
+
   @override
   Future<ResponseRoomsModels> getRooms() async {
     // TODO: implement getRooms
-    var response = await http.get(Uri.parse(UrlConstant.rooms),
+    var response = await _client.get(Uri.parse(UrlConstant.rooms),
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
+      print(222);
+      print(response.body);
       ResponseRoomsModels responses =
           responseRoomsModelsFromJson(response.body);
       return responses;
@@ -46,12 +53,14 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
   Future<http.Response?> openRooms(String link) async {
     // Check if lamp connection is active
     if (ConstantData.lamp_connection) {
+      print(link);
       try {
         var response = await http
             .post(
-          Uri.parse(link),
-          headers: await tokenHeader(true), // Assuming tokenHeader is defined elsewhere
-        )
+              Uri.parse(link),
+              headers: await tokenHeader(
+                  true), // Assuming tokenHeader is defined elsewhere
+            )
             .timeout(const Duration(seconds: 5)); // Set the timeout duration
 
         if (response.statusCode == 200) {
@@ -61,7 +70,6 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
         }
 
         return response; // Return the HTTP response
-
       } on TimeoutException catch (e) {
         print('The request to open rooms timed out: $e');
         // Handle timeout logic here (e.g., notify user, retry)
@@ -79,7 +87,7 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
   @override
   Future<ResponsePanelModels> getPanel() async {
     // TODO: implement getPanel
-    var response = await http.get(Uri.parse(UrlConstant.panels),
+    var response = await _client.get(Uri.parse(UrlConstant.panels),
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponsePanelModels responses =
@@ -102,7 +110,7 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
       RequestPanelModels payload, String id) async {
     // TODO: implement updatePanel
     var body = jsonEncode(payload);
-    var response = await http.post(Uri.parse(UrlConstant.panelsupdate),
+    var response = await _client.post(Uri.parse(UrlConstant.panelsupdate),
         body: body, headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       ResponseUpdatePanelModels responses =
