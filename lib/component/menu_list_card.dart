@@ -187,12 +187,13 @@ class _MenuListCardState extends State<MenuListCard> {
   }
 
   Widget _buildStatusText() {
-    if (!widget.status || widget.idOrder == null) {
+    if (widget.status == 0 || widget.idOrder == null) {
       return Text(!widget.status ? "--/--" : widget.type,
           style: _subTextStyle());
     }
 
     final timeInfo = TimerService.instance.getRemainingTime(widget.idOrder!);
+    print(timeInfo);
     if (timeInfo == null) {
       return Text(widget.type, style: _subTextStyle());
     }
