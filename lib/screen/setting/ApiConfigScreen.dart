@@ -112,10 +112,10 @@ class _ApiConfigScreenState extends State<ApiConfigScreen> {
       appBar: widget.isFirstInstall
           ? null
           : AppBar(
-              title: Text('API Configuration'),
+              title: const Text('API Configuration'),
             ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.all(20.w),
@@ -155,7 +155,7 @@ class _ApiConfigScreenState extends State<ApiConfigScreen> {
                       controller: _endpointController,
                       decoration: InputDecoration(
                         hintText: 'https://api.example.com',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 15.w,
                           vertical: 15.h,
@@ -163,7 +163,7 @@ class _ApiConfigScreenState extends State<ApiConfigScreen> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _saveEndpoint,

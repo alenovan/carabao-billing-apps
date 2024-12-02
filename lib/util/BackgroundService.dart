@@ -35,12 +35,12 @@ class BackgroundService {
           android: AndroidInitializationSettings('ic_bg_service_small'),
         ),
       );
-    }
 
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+      await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
+    }
 
     // Configure the background service
     await service.configure(

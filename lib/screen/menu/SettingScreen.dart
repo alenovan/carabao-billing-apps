@@ -99,7 +99,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PinEntryScreen()),
+                              builder: (context) => const PinEntryScreen()),
                         );
                       },
                       child: Container(
@@ -107,13 +107,14 @@ class _SettingScreenState extends State<SettingScreen> {
                               left: 20.w, right: 20.w, top: 10.w),
                           decoration: BoxDecoration(
                             color: ColorConstant.white,
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 2.0,
                                 spreadRadius: 1.0,
-                                offset: Offset(0, 2),
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -130,7 +131,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                       fontSize: 11.sp,
                                       color: ColorConstant.titletext),
                                 ),
-                                Icon(
+                                const Icon(
                                   Boxicons.bx_chevron_right,
                                   color: ColorConstant.subtext,
                                 )
@@ -151,13 +152,14 @@ class _SettingScreenState extends State<SettingScreen> {
                               left: 20.w, right: 20.w, top: 10.w),
                           decoration: BoxDecoration(
                             color: ColorConstant.white,
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 2.0,
                                 spreadRadius: 1.0,
-                                offset: Offset(0, 2),
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -174,7 +176,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                       fontSize: 11.sp,
                                       color: ColorConstant.titletext),
                                 ),
-                                Icon(
+                                const Icon(
                                   Boxicons.bx_chevron_right,
                                   color: ColorConstant.subtext,
                                 )
@@ -194,13 +196,14 @@ class _SettingScreenState extends State<SettingScreen> {
                             EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                         decoration: BoxDecoration(
                           color: ColorConstant.white,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 2.0,
                               spreadRadius: 1.0,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -217,7 +220,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     fontSize: 11.sp,
                                     color: ColorConstant.titletext),
                               ),
-                              Icon(
+                              const Icon(
                                 Boxicons.bx_chevron_right,
                                 color: ColorConstant.subtext,
                               )
@@ -237,13 +240,14 @@ class _SettingScreenState extends State<SettingScreen> {
                             EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                         decoration: BoxDecoration(
                           color: ColorConstant.white,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 2.0,
                               spreadRadius: 1.0,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -260,7 +264,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     fontSize: 11.sp,
                                     color: ColorConstant.titletext),
                               ),
-                              Icon(
+                              const Icon(
                                 Boxicons.bx_chevron_right,
                                 color: ColorConstant.subtext,
                               )
@@ -280,13 +284,13 @@ class _SettingScreenState extends State<SettingScreen> {
                     margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                     decoration: BoxDecoration(
                       color: ColorConstant.white,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 2.0,
                           spreadRadius: 1.0,
-                          offset: Offset(0, 2),
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
@@ -302,7 +306,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             color: ColorConstant.titletext,
                           ),
                         ),
-                        Icon(
+                        const Icon(
                           Boxicons.bx_chevron_right,
                           color: ColorConstant.subtext,
                         )
@@ -322,13 +326,14 @@ class _SettingScreenState extends State<SettingScreen> {
                             EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                         decoration: BoxDecoration(
                           color: ColorConstant.white,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 2.0,
                               spreadRadius: 1.0,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -345,7 +350,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     fontSize: 11.sp,
                                     color: ColorConstant.titletext),
                               ),
-                              Icon(
+                              const Icon(
                                 Boxicons.bx_chevron_right,
                                 color: ColorConstant.subtext,
                               )
@@ -364,13 +369,14 @@ class _SettingScreenState extends State<SettingScreen> {
                         margin: EdgeInsets.all(20.w),
                         decoration: BoxDecoration(
                           color: ColorConstant.off,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
                               blurRadius: 2.0,
                               spreadRadius: 1.0,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),

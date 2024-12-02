@@ -46,7 +46,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void dispose() {
     // TODO: implement dispose
     _OrderBloc?.close();
-    _ConfigsBloc?.close();
+    _ConfigsBloc.close();
     super.dispose();
   }
 
@@ -126,7 +126,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             if (s is ConfigsLoadingState) {
             } else if (s is ConfigsListLoadedState) {
               setState(() {
-                detailInformation = s.result.data!.first!;
+                detailInformation = s.result.data!.first;
               });
             } else if (s is ConfigsErrorState) {}
           },
@@ -144,7 +144,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         child: Scaffold(
           backgroundColor: ColorConstant.bg,
           appBar: AppBar(
-            title: Text('History Order'),
+            title: const Text('History Order'),
           ),
           body: MultiBlocProvider(
               providers: [
@@ -152,7 +152,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   create: (BuildContext context) => _OrderBloc!,
                 ),
                 BlocProvider<ConfigsBloc>(
-                  create: (BuildContext context) => _ConfigsBloc!,
+                  create: (BuildContext context) => _ConfigsBloc,
                 ),
               ],
               child: Container(
@@ -163,13 +163,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       margin: EdgeInsets.all(20.w),
                       decoration: BoxDecoration(
                         color: ColorConstant.white,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 2.0,
                             spreadRadius: 1.0,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -186,7 +187,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: ColorConstant.borderinput,
                                 ),
                               ),
@@ -195,7 +196,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ),
                             controller: searchController,
                             onChanged: (e) {
-                              if (e.length <= 0) {
+                              if (e.isEmpty) {
                                 _OrderBloc?.add(ActOrderHistory(
                                     payload: RequestOrderSearch(
                                         search: e, pageSize: 1000, page: 1)));
@@ -224,7 +225,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               DateTime.parse(data.endTime.toString());
                           Duration difference = endTime.difference(
                               DateTime.parse(data.startTime.toString()));
-                          var _remainingTime =
+                          var remainingTime =
                               Duration(seconds: difference.inSeconds);
                           return GestureDetector(
                             onTap: () {
@@ -242,13 +243,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               decoration: BoxDecoration(
                                 color: ColorConstant.white,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
+                                    const BorderRadius.all(Radius.circular(15)),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
                                     blurRadius: 2.0,
                                     spreadRadius: 1.0,
-                                    offset: Offset(0, 2),
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
@@ -304,7 +305,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             height: 1.w,
                                           ),
                                           Text(
-                                            "${DateFormat('MMMM d, y', 'de_DE').format(data.startTime!)}",
+                                            DateFormat('MMMM d, y', 'de_DE')
+                                                .format(data.startTime!),
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.poppins(
                                                 color: ColorConstant.subtext,
@@ -320,7 +322,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          "${formatDuration(Duration(seconds: DateTime.parse(data!.endTime.toString()).difference(DateTime.parse(data!.startTime.toString())).inSeconds))}",
+                                          formatDuration(Duration(
+                                              seconds: DateTime.parse(
+                                                      data.endTime.toString())
+                                                  .difference(DateTime.parse(
+                                                      data.startTime
+                                                          .toString()))
+                                                  .inSeconds)),
                                           textAlign: TextAlign.center,
                                           style: GoogleFonts.poppins(
                                               color: ColorConstant.primary,
@@ -352,8 +360,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               color: _getBorderColor(
                                                   data.statusData),
                                             ),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(10)),
                                           ),
                                           height: 25.w,
                                           child: Center(

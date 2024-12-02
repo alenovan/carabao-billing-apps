@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
+import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -112,7 +113,7 @@ class TimerService {
     _endTimes[orderId] = endTime;
 
     final now = DateTime.now();
-    final lastMinuteWarning = endTime.subtract(Duration(minutes: 1));
+    final lastMinuteWarning = endTime.subtract(const Duration(minutes: 1));
 
     _log('''
 Scheduling billing timer:
@@ -148,13 +149,14 @@ Warning Time: $lastMinuteWarning
 
         const NotificationDetails platformChannelSpecifics =
             NotificationDetails(android: androidPlatformChannelSpecifics);
-
-        await _notificationsPlugin.show(
-          int.parse(orderId),
-          'Time Warning',
-          'Order ${order.name} has 1 minute remaining',
-          platformChannelSpecifics,
-        );
+        if (Platform.isIOS || Platform.isAndroid) {
+          await _notificationsPlugin.show(
+            int.parse(orderId),
+            'Time Warning',
+            'Order ${order.name} has 1 minute remaining',
+            platformChannelSpecifics,
+          );
+        }
 
         _scheduleExpiryTimer(order);
       });
@@ -198,51 +200,60 @@ Warning Time: $lastMinuteWarning
     final orderId = order.id.toString();
     _log('Handling expiry for Order #$orderId');
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      importance: Importance.high,
-    );
+    // Setup notification plugin
+    if (Platform.isIOS || Platform.isAndroid) {
+      await _notificationsPlugin.initialize(
+        const InitializationSettings(
+          iOS: DarwinInitializationSettings(),
+          android: AndroidInitializationSettings('ic_bg_service_small'),
+        ),
+      );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'high_importance_channel',
+        'High Importance Notifications',
+        importance: Importance.high,
+      );
 
-    await _notificationsPlugin.show(
-      order.id ?? 0,
-      'Order Expired',
-      'Order ${order.name} has expired',
-      platformChannelSpecifics,
-    );
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    if (order.isMultipleChannel == 1 && order.multipleChannel != null) {
-      _log('Processing multiple channel expiry for Order #$orderId');
-      List<dynamic> multipleChannelList = jsonDecode(order.multipleChannel!);
-      for (var channel in multipleChannelList) {
-        _log('Switching off lamp for channel $channel');
-        switchLamp(
-          ip: order.ip ?? "",
-          key: order.secret ?? "",
-          code: channel,
-          id_order: orderId,
-          status: false,
-        );
-      }
-    } else {
-      _log('Switching off single lamp for Order #$orderId');
-      switchLamp(
-        ip: order.ip ?? "",
-        key: order.secret ?? "",
-        code: order.code ?? "",
-        id_order: orderId,
-        status: false,
+      await _notificationsPlugin.show(
+        order.id ?? 0,
+        'Order Expired',
+        'Order ${order.name} has expired',
+        platformChannelSpecifics,
       );
     }
 
     final autoCut = await _getAutoCutSetting();
     if (autoCut) {
-      _log('Auto-cut enabled, triggering for Order #$orderId');
+      logToFile('Auto-cut enabled, triggering for Order #$orderId');
       _orderEventController.add(OrderEvent('AUTO_CUT', order));
+      if (order.isMultipleChannel == 1 && order.multipleChannel != null) {
+        logToFile('Processing multiple channel expiry for Order #$orderId');
+        List<dynamic> multipleChannelList = jsonDecode(order.multipleChannel!);
+        for (var channel in multipleChannelList) {
+          _log('Switching off lamp for channel $channel');
+          switchLamp(
+            ip: order.ip ?? "",
+            key: order.secret ?? "",
+            code: channel,
+            id_order: orderId,
+            status: false,
+          );
+        }
+      } else {
+        logToFile('Switching off single lamp for Order #$orderId');
+        switchLamp(
+          ip: order.ip ?? "",
+          key: order.secret ?? "",
+          code: order.code ?? "",
+          id_order: orderId,
+          status: false,
+        );
+      }
     }
 
     cleanupTimer(orderId);

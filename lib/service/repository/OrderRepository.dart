@@ -286,7 +286,7 @@ class OrderRepoRepositoryImpl implements OrderRepo {
   Future<ResponseListOrdersModels> getOrdersDetail(String id) async {
     // TODO: implement getOrdersDetail
     var response = await _client.get(
-        Uri.parse(UrlConstant.newest_orders + "/" + id),
+        Uri.parse("${UrlConstant.newest_orders}/$id"),
         headers: await tokenHeader(true));
     print(response.body);
     if (response.statusCode == 200) {

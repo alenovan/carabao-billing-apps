@@ -33,7 +33,7 @@ class _ClientInformationState extends State<ClientInformation> {
             } else if (s is ConfigsListLoadedState) {
               popScreen(context);
               setState(() {
-                detailInformation = s.result.data!.first!;
+                detailInformation = s.result.data!.first;
               });
             } else if (s is ConfigsErrorState) {
               popScreen(c);
@@ -65,7 +65,7 @@ class _ClientInformationState extends State<ClientInformation> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Client Information'),
+          title: const Text('Client Information'),
         ),
         body: MultiBlocProvider(
             providers: [
@@ -77,17 +77,17 @@ class _ClientInformationState extends State<ClientInformation> {
               children: [
                 _consumerApi(),
                 Container(
-                    margin:
-                        EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w,top: 20.w),
+                    margin: EdgeInsets.only(
+                        left: 20.w, right: 20.w, bottom: 10.w, top: 20.w),
                     decoration: BoxDecoration(
                       color: ColorConstant.white,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 2.0,
                           spreadRadius: 1.0,
-                          offset: Offset(0, 2),
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
@@ -106,12 +106,13 @@ class _ClientInformationState extends State<ClientInformation> {
                                   )),
                               Text(detailInformation?.clientName ?? "",
                                   style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.bold
-                                  )),
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.bold)),
                             ],
                           ),
-                          SizedBox(height: 10.w,),
+                          SizedBox(
+                            height: 10.w,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -128,7 +129,9 @@ class _ClientInformationState extends State<ClientInformation> {
                                   )),
                             ],
                           ),
-                          SizedBox(height: 10.w,),
+                          SizedBox(
+                            height: 10.w,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

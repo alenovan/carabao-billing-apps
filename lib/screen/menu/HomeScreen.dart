@@ -38,19 +38,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late bool loading = true;
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
-  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
-  List<Map<String, dynamic>> _orders = [];
+  final AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+  final List<Map<String, dynamic>> _orders = [];
   var firstOpen = true;
-  DatabaseHelper _dbHelper = DatabaseHelper();
+  final DatabaseHelper _dbHelper = DatabaseHelper();
   late StreamSubscription _orderSubscription;
 
   @override
   void initState() {
     _OrderBloc = OrderBloc(repository: OrderRepoRepositoryImpl());
-    _MejaBloc?.add(GetMeja());
+    _MejaBloc.add(GetMeja());
     super.initState();
     _OrderBloc?.add(GetOrder());
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     _orderSubscription = TimerService.instance.orderEvents.listen((event) {
       if (event.type == 'AUTO_CUT') {
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _OrderBloc?.close();
     super.dispose();
   }
@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Screen"),
+        title: const Text("Home Screen"),
       ),
       body: Container(
         child: MultiBlocProvider(
@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(""),
+                      const Text(""),
                       GestureDetector(
                         onTap: () {
                           _refreshList();
@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               ),
                               color: ColorConstant.primary,
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
+                                  const BorderRadius.all(Radius.circular(10))),
                           height: 30.w,
                           margin: EdgeInsets.only(right: 10.w),
                           padding: EdgeInsets.only(left: 20.w, right: 20.w),
@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       return Container(
                         margin: EdgeInsets.all(8.w),
                         height: 80.w,
-                        child: Shimmerx(),
+                        child: const Shimmerx(),
                       );
                     },
                   ),

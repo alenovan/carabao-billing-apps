@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
             onConfigured: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
           ),
@@ -136,13 +136,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 margin: EdgeInsets.all(20.w),
                 decoration: BoxDecoration(
                   color: ColorConstant.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
                       blurRadius: 2.0,
                       spreadRadius: 1.0,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: ColorConstant.borderinput,
                           ),
                         ),
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: usernameController,
                       // Add controller and other TextFormField properties as needed
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     TextFormField(
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: ColorConstant.borderinput,
                           ),
                         ),
@@ -192,16 +192,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: passwordController,
                       // Add controller and other TextFormField properties as needed
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     GestureDetector(
                       onTap: () {
-                        _AuthBloc
-                          ..add(ActLogin(
-                              payload: RequestLoginModels(
-                                  username: usernameController.text,
-                                  password: passwordController.text)));
+                        _AuthBloc.add(ActLogin(
+                            payload: RequestLoginModels(
+                                username: usernameController.text,
+                                password: passwordController.text)));
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -210,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             color: ColorConstant.primary,
                             borderRadius:
-                                BorderRadius.all(Radius.circular(50))),
+                                const BorderRadius.all(Radius.circular(50))),
                         height: 50.w,
                         padding: EdgeInsets.only(left: 20.w, right: 20.w),
                         child: Center(

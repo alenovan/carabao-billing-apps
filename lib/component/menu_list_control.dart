@@ -38,13 +38,13 @@ class _MenuListControlState extends State<MenuListControl> {
         margin: EdgeInsets.fromLTRB(20.w, 8, 20, 8),
         decoration: BoxDecoration(
           color: ColorConstant.white,
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: const BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 2.0,
               spreadRadius: 1.0,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -74,7 +74,7 @@ class _MenuListControlState extends State<MenuListControl> {
                       if (widget.isMuiltiple == 1) {
                         List<dynamic> multipleChannelList =
                             jsonDecode(widget.multipleChannel);
-                        multipleChannelList.forEach((e) {
+                        for (var e in multipleChannelList) {
                           switchLamp(
                             ip: widget.ip,
                             key: widget.keys,
@@ -82,7 +82,7 @@ class _MenuListControlState extends State<MenuListControl> {
                             id_order: "0",
                             status: true,
                           );
-                        });
+                        }
                       } else {
                         switchLamp(
                             ip: widget.ip,
@@ -91,12 +91,12 @@ class _MenuListControlState extends State<MenuListControl> {
                             id_order: "0",
                             status: true);
                       }
-                      await Future.delayed(Duration(seconds: 2));
+                      await Future.delayed(const Duration(seconds: 2));
                       popScreen(context);
                     },
                     child: Container(
                       width: 55.w,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: ColorConstant.on,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       height: 30.w,
@@ -119,7 +119,7 @@ class _MenuListControlState extends State<MenuListControl> {
                         if (widget.isMuiltiple == 1) {
                           List<dynamic> multipleChannelList =
                               jsonDecode(widget.multipleChannel);
-                          multipleChannelList.forEach((e) {
+                          for (var e in multipleChannelList) {
                             switchLamp(
                               ip: widget.ip,
                               key: widget.keys,
@@ -127,7 +127,7 @@ class _MenuListControlState extends State<MenuListControl> {
                               id_order: "0",
                               status: false,
                             );
-                          });
+                          }
                         } else {
                           switchLamp(
                               id_order: "0",
@@ -136,12 +136,12 @@ class _MenuListControlState extends State<MenuListControl> {
                               code: widget.code,
                               status: false);
                         }
-                        await Future.delayed(Duration(seconds: 2));
+                        await Future.delayed(const Duration(seconds: 2));
                         popScreen(context);
                       },
                       child: Container(
                         width: 55.w,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: ColorConstant.off,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
@@ -171,14 +171,14 @@ class _MenuListControlState extends State<MenuListControl> {
                                 id_order: "0",
                                 code: e,
                                 status: true);
-                            await Future.delayed(Duration(seconds: 2));
+                            await Future.delayed(const Duration(seconds: 2));
                             switchLamp(
                                 ip: widget.ip,
                                 key: widget.keys,
                                 code: e,
                                 id_order: "0",
                                 status: false);
-                            await Future.delayed(Duration(seconds: 1));
+                            await Future.delayed(const Duration(seconds: 1));
                             popScreen(context);
                           });
                         } else {
@@ -188,20 +188,20 @@ class _MenuListControlState extends State<MenuListControl> {
                               code: widget.code,
                               id_order: "0",
                               status: true);
-                          await Future.delayed(Duration(seconds: 2));
+                          await Future.delayed(const Duration(seconds: 2));
                           switchLamp(
                               ip: widget.ip,
                               key: widget.keys,
                               code: widget.code,
                               id_order: "0",
                               status: false);
-                          await Future.delayed(Duration(seconds: 1));
+                          await Future.delayed(const Duration(seconds: 1));
                           popScreen(context);
                         }
                       },
                       child: Container(
                         width: 55.w,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: ColorConstant.primary,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),

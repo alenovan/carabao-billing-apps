@@ -8,7 +8,7 @@ class LoadingDialog {
   final BuildContext context;
 
   LoadingDialog.show(this.context, message) {
-    this._show(message);
+    _show(message);
   }
 
   void hideKeyboard(context) {
@@ -45,7 +45,7 @@ class LoadingDialog {
                             height: 20,
                           ),
                           Text(
-                            "${message == null ? "loading" : message}",
+                            "${message ?? "loading"}",
                             style: GoogleFonts.plusJakartaSans(
                                 color: Colors.white,
                                 fontSize: 13.sp,

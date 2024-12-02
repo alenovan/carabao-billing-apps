@@ -89,8 +89,8 @@ class _SplashScreenState extends State<SplashScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enable Notifications'),
-          content: Text(
+          title: const Text('Enable Notifications'),
+          content: const Text(
               'This app requires notifications to be enabled in order to proceed. Please enable notifications in your settings.'),
           actions: [
             TextButton(
@@ -98,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Navigator.of(context).pop();
                 openAppSettings(); // This will open app settings
               },
-              child: Text('Open Settings'),
+              child: const Text('Open Settings'),
             ),
           ],
         );

@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -42,7 +44,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: ColorConstant.primary, // Custom color for AppBar
         title: Text(
           'Settings',
-          style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.w500,color: Colors.white),
+          style: GoogleFonts.roboto(
+              fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
         ),
         elevation: 0,
       ),
@@ -54,14 +57,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text(
               "General Settings",
               style: GoogleFonts.roboto(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: ColorConstant.primary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: ColorConstant.primary),
             ),
-            Divider(
+            const Divider(
               color: ColorConstant.primary,
               thickness: 1,
               height: 20,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildSwitchTile(
               title: "Auto Stop",
               subtitle: "Automatically stop orders when time runs out",
@@ -110,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Row(
           children: [
             Icon(icon, color: ColorConstant.primary, size: 30),
-            SizedBox(width: 15),
+            const SizedBox(width: 15),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: GoogleFonts.roboto(
                         fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: GoogleFonts.roboto(

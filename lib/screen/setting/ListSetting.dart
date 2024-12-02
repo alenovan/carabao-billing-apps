@@ -56,7 +56,7 @@ class _ListSettingState extends State<ListSetting> {
         child: Scaffold(
           backgroundColor: ColorConstant.bg,
           appBar: AppBar(
-            title: Text('List Table'),
+            title: const Text('List Table'),
           ),
           body: MultiBlocProvider(
               providers: [
@@ -92,7 +92,7 @@ class _ListSettingState extends State<ListSetting> {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => BottomNavigationScreen(
+                  builder: (context) => const BottomNavigationScreen(
                         defaultMenuIndex: 2,
                       )));
           return false;

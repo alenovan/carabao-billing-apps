@@ -8,7 +8,7 @@ addStringSf(param, value) async {
 getStringValuesSF(param) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? stringValue = prefs.getString(param);
-  return await stringValue;
+  return stringValue;
 }
 
 addModelsSF(param, List<String> value) async {
@@ -19,7 +19,7 @@ addModelsSF(param, List<String> value) async {
 getModelsSF(param) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   List<String>? stringValue = prefs.getStringList(param);
-  return await stringValue;
+  return stringValue;
 }
 
 addBoolSf(param, value) async {
@@ -30,7 +30,7 @@ addBoolSf(param, value) async {
 getBoolSF(param) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? value = prefs.getBool(param);
-  return await value;
+  return value;
 }
 
 getSF(param) async {

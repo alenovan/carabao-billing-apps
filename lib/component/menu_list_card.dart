@@ -26,7 +26,8 @@ class MenuListCard extends StatefulWidget {
   final Function() onUpdate;
   final Function() onCloseAutoCut;
 
-  MenuListCard({
+  const MenuListCard({
+    super.key,
     required this.status,
     required this.name,
     required this.end,
@@ -107,56 +108,49 @@ class _MenuListCardState extends State<MenuListCard> {
   }
 
   void startDisplayTimer() {
-    print("start display timer: " + (_currentTimerId ?? "no id"));
-    // Store the timer ID we're creating
+    print("start display timer: ${_currentTimerId ?? "no id"}");
     final timerIdAtStart = _currentTimerId;
 
-    _displayTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      // First validate widget is still mounted and timer is current
+    _displayTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       if (!mounted || _currentTimerId != timerIdAtStart) {
         timer.cancel();
-        _cleanupTimer(); // Ensure full cleanup
+        _cleanupTimer();
         return;
       }
 
       try {
-        // Validate widget state hasn't changed
         if (!widget.status || widget.idOrder == null) {
           timer.cancel();
-          _cleanupTimer(); // Ensure full cleanup
+          _cleanupTimer();
           setState(() {
             _currentBackgroundColor = ColorConstant.white; // Reset color
           });
           return;
         }
 
-        // Validate timer service state
         final timeInfo =
             TimerService.instance.getRemainingTime(widget.idOrder!);
         if (timeInfo == null) {
           timer.cancel();
-          _cleanupTimer(); // Ensure full cleanup
+          _cleanupTimer();
           setState(() {
-            _currentBackgroundColor = ColorConstant.white; // Reset color
+            _currentBackgroundColor = ColorConstant.white;
           });
           return;
         }
 
-        // Validate order type hasn't changed
         final orderType = TimerService.instance.getOrderType(widget.idOrder!);
         if (orderType != widget.type) {
           timer.cancel();
-          _cleanupTimer(); // Ensure full cleanup
+          _cleanupTimer();
           setState(() {
-            _currentBackgroundColor = ColorConstant.white; // Reset color
+            _currentBackgroundColor = ColorConstant.white;
           });
           return;
         }
 
-        // Only do setState if mounted and timer is still valid
         if (mounted && _currentTimerId == timerIdAtStart) {
           setState(() {
-            // Update background color
             if (widget.type == "OPEN-BILLING") {
               if (timeInfo.inMinutes <= 1 && timeInfo.inSeconds > 0) {
                 _currentBackgroundColor =
@@ -171,10 +165,10 @@ class _MenuListCardState extends State<MenuListCard> {
       } catch (e) {
         print('Error in display timer: $e');
         timer.cancel();
-        _cleanupTimer(); // Ensure cleanup even if error occurs
+        _cleanupTimer();
         if (mounted) {
           setState(() {
-            _currentBackgroundColor = ColorConstant.white; // Reset color
+            _currentBackgroundColor = ColorConstant.white;
           });
         }
       }
@@ -187,7 +181,7 @@ class _MenuListCardState extends State<MenuListCard> {
   }
 
   Widget _buildStatusText() {
-    if (!widget.status || widget.idOrder == null) {
+    if (!widget.status == 0 || widget.idOrder == null) {
       return Text(!widget.status ? "--/--" : widget.type,
           style: _subTextStyle());
     }
@@ -215,7 +209,7 @@ class _MenuListCardState extends State<MenuListCard> {
       );
     }
 
-    return SizedBox();
+    return const SizedBox();
   }
 
   TextStyle _subTextStyle() {
@@ -237,7 +231,7 @@ class _MenuListCardState extends State<MenuListCard> {
               color: Colors.black.withOpacity(0.1),
               blurRadius: 2.0,
               spreadRadius: 1.0,
-              offset: Offset(0, 2)),
+              offset: const Offset(0, 2)),
         ],
       ),
       padding: EdgeInsets.all(15.w),
@@ -267,7 +261,7 @@ class _MenuListCardState extends State<MenuListCard> {
                     Text(widget.name,
                         style: GoogleFonts.plusJakartaSans(
                             fontSize: 14.sp, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     _buildStatusText(),
                   ],
                 ),

@@ -59,7 +59,7 @@ class _BillingScreenState extends State<BillingScreen> {
   final _MejaBloc = MejaBloc(repository: RoomsRepoRepositoryImpl());
   late List<Room>? data_meja = [];
   SharedPreferences? _prefs;
-  List<Map<String, dynamic>> _orders = [];
+  final List<Map<String, dynamic>> _orders = [];
   bool loadingMeja = true;
 
   void _startBackgroundTimer(String endTime, String orderId) {
@@ -80,7 +80,7 @@ class _BillingScreenState extends State<BillingScreen> {
   void dispose() {
     // TODO: implement dispose
     _OrderBloc?.close();
-    _MejaBloc?.close();
+    _MejaBloc.close();
     super.dispose();
   }
 
@@ -89,18 +89,19 @@ class _BillingScreenState extends State<BillingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Masukkan Detail Pelanggan (Open Billing)'),
+          title: const Text('Masukkan Detail Pelanggan (Open Billing)'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(hintText: 'Nama Pemesan'),
+                decoration: const InputDecoration(hintText: 'Nama Pemesan'),
               ),
-              SizedBox(height: 8.0), // Add some space between the text fields
+              const SizedBox(
+                  height: 8.0), // Add some space between the text fields
               TextField(
                 controller: _phoneController,
-                decoration: InputDecoration(hintText: 'Nomor Whatsapp'),
+                decoration: const InputDecoration(hintText: 'Nomor Whatsapp'),
                 keyboardType: TextInputType.phone,
               ),
             ],
@@ -110,7 +111,7 @@ class _BillingScreenState extends State<BillingScreen> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Batalkan'),
+              child: const Text('Batalkan'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -124,7 +125,7 @@ class _BillingScreenState extends State<BillingScreen> {
                         version: ConstantData.version_apps,
                         duration: selected_time_nunber.toString())));
               },
-              child: Text('Simpan'),
+              child: const Text('Simpan'),
             ),
           ],
         );
@@ -157,7 +158,7 @@ class _BillingScreenState extends State<BillingScreen> {
               if (widget.isMuiltiple == 1) {
                 List<dynamic> multipleChannelList =
                     jsonDecode(widget.multipleChannel);
-                multipleChannelList.forEach((e) {
+                for (var e in multipleChannelList) {
                   switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
@@ -165,7 +166,7 @@ class _BillingScreenState extends State<BillingScreen> {
                     code: e,
                     status: true,
                   );
-                });
+                }
               } else {
                 switchLamp(
                     ip: widget.ip,
@@ -177,7 +178,7 @@ class _BillingScreenState extends State<BillingScreen> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => BottomNavigationScreen()));
+                      builder: (context) => const BottomNavigationScreen()));
             } else if (s is OrdersStopLoadedState) {
               popScreen(context);
               BottomSheetFeedback.showSuccess(
@@ -185,7 +186,7 @@ class _BillingScreenState extends State<BillingScreen> {
               if (widget.isMuiltiple == 1) {
                 List<dynamic> multipleChannelList =
                     jsonDecode(widget.multipleChannel);
-                multipleChannelList.forEach((e) {
+                for (var e in multipleChannelList) {
                   switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
@@ -193,7 +194,7 @@ class _BillingScreenState extends State<BillingScreen> {
                     code: e,
                     status: false,
                   );
-                });
+                }
               } else {
                 switchLamp(
                     ip: widget.ip,
@@ -217,7 +218,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   context, "Selamat", s.result.message!);
               if (ConstantData.lamp_connection) {
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
-                await Future.delayed(Duration(seconds: 2));
+                await Future.delayed(const Duration(seconds: 2));
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
               }
 
@@ -237,7 +238,7 @@ class _BillingScreenState extends State<BillingScreen> {
             if (s is MejaLoadedState) {
               setState(() {
                 loadingMeja = false;
-                data_meja = s.result!.data!
+                data_meja = s.result.data!
                     .where((room) =>
                         (room.status == 0 && room.isMultipleChannel == 0))
                     .toList();
@@ -257,7 +258,7 @@ class _BillingScreenState extends State<BillingScreen> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: 600.w, // Adjust the height as needed
           child: ListView.builder(
             itemCount: 12,
@@ -287,7 +288,7 @@ class _BillingScreenState extends State<BillingScreen> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: 800.h, // Use height unit for responsive height
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,13 +332,13 @@ class _BillingScreenState extends State<BillingScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: ColorConstant.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
                       blurRadius: 2.0,
                       spreadRadius: 1.0,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -347,11 +348,11 @@ class _BillingScreenState extends State<BillingScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Boxicons.bx_alarm,
                           color: ColorConstant.alarm,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 15,
                         ),
                         Column(
@@ -367,7 +368,7 @@ class _BillingScreenState extends State<BillingScreen> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              "${selected_time}",
+                              selected_time,
                               textAlign: TextAlign.center,
                               style: GoogleFonts.plusJakartaSans(
                                   fontSize: 15.sp,
@@ -377,7 +378,7 @@ class _BillingScreenState extends State<BillingScreen> {
                         )
                       ],
                     ),
-                    Icon(
+                    const Icon(
                       Boxicons.bx_chevron_down,
                       color: ColorConstant.primary,
                     ),
@@ -397,7 +398,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   color: ColorConstant.primary,
                 ),
                 color: ColorConstant.primary,
-                borderRadius: BorderRadius.all(Radius.circular(50))),
+                borderRadius: const BorderRadius.all(Radius.circular(50))),
             height: 50.w,
             margin: EdgeInsets.all(20.w),
             padding: EdgeInsets.only(left: 20.w, right: 20.w),
@@ -430,7 +431,7 @@ class _BillingScreenState extends State<BillingScreen> {
                   color: ColorConstant.off,
                 ),
                 color: ColorConstant.off,
-                borderRadius: BorderRadius.all(Radius.circular(50))),
+                borderRadius: const BorderRadius.all(Radius.circular(50))),
             height: 50.w,
             margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
             padding: EdgeInsets.only(left: 20.w, right: 20.w),
@@ -449,7 +450,7 @@ class _BillingScreenState extends State<BillingScreen> {
         loadingMeja
             ? Container(
                 margin: EdgeInsets.only(top: 10.w),
-                child: CircularProgressIndicator(),
+                child: const CircularProgressIndicator(),
               )
             : widget.isMuiltiple == 1
                 ? Container()
@@ -463,7 +464,8 @@ class _BillingScreenState extends State<BillingScreen> {
                             color: ColorConstant.primary,
                           ),
                           color: ColorConstant.primary,
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(50))),
                       height: 50.w,
                       margin:
                           EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
@@ -484,6 +486,7 @@ class _BillingScreenState extends State<BillingScreen> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: MultiBlocProvider(
@@ -492,7 +495,7 @@ class _BillingScreenState extends State<BillingScreen> {
               create: (BuildContext context) => _OrderBloc!,
             ),
             BlocProvider<MejaBloc>(
-              create: (BuildContext context) => _MejaBloc!,
+              create: (BuildContext context) => _MejaBloc,
             ),
           ],
           child: Column(

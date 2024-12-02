@@ -60,7 +60,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
   void dispose() {
     // TODO: implement dispose
     _OrderBloc?.close();
-    _MejaBloc?.close();
+    _MejaBloc.close();
     super.dispose();
   }
 
@@ -78,18 +78,19 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Masukkan Detail Pelanggan (Open Table)'),
+          title: const Text('Masukkan Detail Pelanggan (Open Table)'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(hintText: 'Nama Pemesan'),
+                decoration: const InputDecoration(hintText: 'Nama Pemesan'),
               ),
-              SizedBox(height: 8.0), // Add some space between the text fields
+              const SizedBox(
+                  height: 8.0), // Add some space between the text fields
               TextField(
                 controller: _phoneController,
-                decoration: InputDecoration(hintText: 'Nomor Whatsapp'),
+                decoration: const InputDecoration(hintText: 'Nomor Whatsapp'),
                 keyboardType: TextInputType.phone,
               ),
             ],
@@ -99,7 +100,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Batalkan'),
+              child: const Text('Batalkan'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -112,7 +113,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                         idRooms: widget.id_meja,
                         name: enteredName)));
               },
-              child: Text('Simpan'),
+              child: const Text('Simpan'),
             ),
           ],
         );
@@ -124,7 +125,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: 800.h, // Use height unit for responsive height
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +169,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               if (widget.isMuiltiple == 1) {
                 List<dynamic> multipleChannelList =
                     jsonDecode(widget.multipleChannel);
-                multipleChannelList.forEach((e) {
+                for (var e in multipleChannelList) {
                   switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
@@ -176,7 +177,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     id_order: widget.id_order ?? "-1",
                     status: true,
                   );
-                });
+                }
               } else {
                 switchLamp(
                     ip: widget.ip,
@@ -195,7 +196,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               if (widget.isMuiltiple == 1) {
                 List<dynamic> multipleChannelList =
                     jsonDecode(widget.multipleChannel);
-                multipleChannelList.forEach((e) {
+                for (var e in multipleChannelList) {
                   switchLamp(
                     ip: widget.ip,
                     key: widget.keys,
@@ -203,7 +204,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     id_order: widget.id_order ?? "-1",
                     status: false,
                   );
-                });
+                }
               } else {
                 switchLamp(
                     ip: widget.ip,
@@ -212,7 +213,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                     id_order: widget.id_order ?? "-1",
                     status: false);
               }
-              Future.delayed(Duration(seconds: 1), () {
+              Future.delayed(const Duration(seconds: 1), () {
                 NavigationUtils.navigateTo(
                     context, const BottomNavigationScreen(), false);
               });
@@ -228,7 +229,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                   context, "Selamat", s.result.message!);
               if (ConstantData.lamp_connection) {
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.oldRooms!);
-                await Future.delayed(Duration(seconds: 2));
+                await Future.delayed(const Duration(seconds: 2));
                 RoomsRepoRepositoryImpl().openRooms(s.result.data!.newRooms!);
               }
               NavigationUtils.navigateTo(
@@ -247,7 +248,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
             if (s is MejaLoadedState) {
               setState(() {
                 loadingMeja = false;
-                data_meja = s.result!.data!
+                data_meja = s.result.data!
                     .where((room) =>
                         (room.status == 0 && room.isMultipleChannel == 0))
                     .toList();
@@ -271,7 +272,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
               create: (BuildContext context) => _OrderBloc!,
             ),
             BlocProvider<MejaBloc>(
-              create: (BuildContext context) => _MejaBloc!,
+              create: (BuildContext context) => _MejaBloc,
             ),
           ],
           child: Column(
@@ -291,7 +292,8 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                           color: ColorConstant.on,
                         ),
                         color: ColorConstant.on,
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(50))),
                     height: 50.w,
                     margin: EdgeInsets.only(left: 20.w, right: 20.w),
                     padding: EdgeInsets.only(left: 20.w, right: 20.w),
@@ -320,7 +322,8 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                           color: ColorConstant.off,
                         ),
                         color: ColorConstant.off,
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(50))),
                     height: 50.w,
                     margin: EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                     padding: EdgeInsets.only(left: 20.w, right: 20.w),
@@ -340,7 +343,7 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                 loadingMeja
                     ? Container(
                         margin: EdgeInsets.only(top: 10.w),
-                        child: CircularProgressIndicator(),
+                        child: const CircularProgressIndicator(),
                       )
                     : widget.isMuiltiple == 1
                         ? Container()
@@ -354,8 +357,8 @@ class _OpenTableScreenState extends State<OpenTableScreen> {
                                     color: ColorConstant.primary,
                                   ),
                                   color: ColorConstant.primary,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50))),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(50))),
                               height: 50.w,
                               margin: EdgeInsets.only(
                                   left: 20.w, right: 20.w, top: 10.w),

@@ -32,6 +32,7 @@ Future<void> main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
   await initializeDateFormatting('id_ID', null);
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
@@ -69,7 +70,7 @@ Future<void> main() async {
   // Start the optimized timer service
   TimerService.instance.startTimer();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 @pragma('vm:entry-point')

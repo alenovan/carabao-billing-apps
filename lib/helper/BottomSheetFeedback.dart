@@ -8,7 +8,7 @@ class BottomSheetFeedback {
 
   static Future showError(
       BuildContext context, String title, String description) async {
-    double _screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
     hideKeyboard(context);
     await showModalBottomSheet(
         shape: const RoundedRectangleBorder(
@@ -22,7 +22,7 @@ class BottomSheetFeedback {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: _screenWidth * (15 / 100),
+                  width: screenWidth * (15 / 100),
                   height: 7,
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.15),
@@ -66,7 +66,7 @@ class BottomSheetFeedback {
 
   static Future showSuccess(
       BuildContext context, String title, String description) async {
-    double _screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
     hideKeyboard(context);
     await showModalBottomSheet(
         shape: const RoundedRectangleBorder(
@@ -80,7 +80,7 @@ class BottomSheetFeedback {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: _screenWidth * (15 / 100),
+                  width: screenWidth * (15 / 100),
                   height: 7,
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.15),
@@ -124,7 +124,7 @@ class BottomSheetFeedback {
 
   static Future showInfo(
       BuildContext context, String title, String description) async {
-    double _screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
     hideKeyboard(context);
     await showModalBottomSheet(
         shape: const RoundedRectangleBorder(
@@ -138,7 +138,7 @@ class BottomSheetFeedback {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: _screenWidth * (15 / 100),
+                  width: screenWidth * (15 / 100),
                   height: 7,
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.15),
@@ -178,5 +178,4 @@ class BottomSheetFeedback {
         });
     return;
   }
-
 }

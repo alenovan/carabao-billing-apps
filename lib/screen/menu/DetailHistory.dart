@@ -48,22 +48,22 @@ class _DetailHistoryState extends State<DetailHistory> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Update Transaction'),
+          title: const Text('Update Transaction'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: notes,
-                decoration: InputDecoration(hintText: 'Enter Reason'),
+                decoration: const InputDecoration(hintText: 'Enter Reason'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 value: _selectedStatus,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Select Status',
                 ),
-                items: [
+                items: const [
                   DropdownMenuItem(value: 'Done', child: Text('Done')),
                   DropdownMenuItem(value: 'void', child: Text('Void')),
                   DropdownMenuItem(value: 'no-order', child: Text('No Order')),
@@ -81,7 +81,7 @@ class _DetailHistoryState extends State<DetailHistory> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Batalkan'),
+              child: const Text('Batalkan'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -93,7 +93,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                         notes: notess,
                         statusData: _selectedStatus)));
               },
-              child: Text('Simpan'),
+              child: const Text('Simpan'),
             ),
           ],
         );
@@ -111,7 +111,7 @@ class _DetailHistoryState extends State<DetailHistory> {
             } else if (s is OrdersDetailHistoryLoadedState) {
               popScreen(context);
               setState(() {
-                dataDetail = s.result!.data![0]!;
+                dataDetail = s.result.data![0];
               });
             } else if (s is OrdersDetailHistoryErrorState) {
               popScreen(c);
@@ -143,7 +143,7 @@ class _DetailHistoryState extends State<DetailHistory> {
     return Scaffold(
       backgroundColor: ColorConstant.bg,
       appBar: AppBar(
-        title: Text('Detail History'),
+        title: const Text('Detail History'),
       ),
       body: MultiBlocProvider(
           providers: [
@@ -162,13 +162,14 @@ class _DetailHistoryState extends State<DetailHistory> {
                           left: 20.w, right: 20.w, bottom: 10.w, top: 20.w),
                       decoration: BoxDecoration(
                         color: ColorConstant.white,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 2.0,
                             spreadRadius: 1.0,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -202,13 +203,14 @@ class _DetailHistoryState extends State<DetailHistory> {
                           EdgeInsets.only(left: 20.w, right: 20.w, top: 10.w),
                       decoration: BoxDecoration(
                         color: ColorConstant.white,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 2.0,
                             spreadRadius: 1.0,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -258,7 +260,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                           dataDetail!.endTime.toString())
                                       .difference(DateTime.parse(
                                           dataDetail!.startTime.toString()))
-                                      .inSeconds)!),
+                                      .inSeconds)),
                             ),
                           SizedBox(
                             height: 10.w,
@@ -281,7 +283,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                             ),
                             color: ColorConstant.primary,
                             borderRadius:
-                                BorderRadius.all(Radius.circular(50))),
+                                const BorderRadius.all(Radius.circular(50))),
                         height: 50.w,
                         margin: EdgeInsets.all(20.w),
                         padding: EdgeInsets.only(left: 20.w, right: 20.w),

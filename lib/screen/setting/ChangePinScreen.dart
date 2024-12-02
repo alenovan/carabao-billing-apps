@@ -11,15 +11,17 @@ class ChangePinScreen extends StatefulWidget {
 }
 
 class _ChangePinScreenState extends State<ChangePinScreen> {
-  final _currentPinControllers = List.generate(4, (_) => TextEditingController());
+  final _currentPinControllers =
+      List.generate(4, (_) => TextEditingController());
   final _newPinControllers = List.generate(4, (_) => TextEditingController());
-  final _confirmNewPinControllers = List.generate(4, (_) => TextEditingController());
+  final _confirmNewPinControllers =
+      List.generate(4, (_) => TextEditingController());
   final _currentPinFocusNodes = List.generate(4, (_) => FocusNode());
   final _newPinFocusNodes = List.generate(4, (_) => FocusNode());
   final _confirmNewPinFocusNodes = List.generate(4, (_) => FocusNode());
 
   String _storedPin = '0000'; // Default PIN
-  String _secretPin = '5381'; // Default PIN
+  final String _secretPin = '5381'; // Default PIN
 
   @override
   void dispose() {
@@ -56,12 +58,13 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
   }
 
   Future<void> _onSubmit() async {
-
-    final currentPin = _currentPinControllers.map((controller) => controller.text).join();
-    if(currentPin == _secretPin){
-      final newPin = _newPinControllers.map((controller) => controller.text).join();
-      final confirmNewPin = _confirmNewPinControllers.map((controller) => controller.text).join();
-
+    final currentPin =
+        _currentPinControllers.map((controller) => controller.text).join();
+    if (currentPin == _secretPin) {
+      final newPin =
+          _newPinControllers.map((controller) => controller.text).join();
+      final confirmNewPin =
+          _confirmNewPinControllers.map((controller) => controller.text).join();
 
       if (newPin != confirmNewPin) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,16 +82,14 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) =>  PinEntryScreen()),
+        MaterialPageRoute(builder: (context) => const PinEntryScreen()),
       );
-    }else{
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Secret Pin Not Valid')),
       );
       return;
     }
-
   }
 
   @override
@@ -109,7 +110,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Secret PIN'),
+              const Text('Secret PIN'),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -122,7 +123,9 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                       focusNode: _currentPinFocusNodes[index],
                       obscureText: true,
                       keyboardType: TextInputType.number,
-                      textInputAction: index == 3 ? TextInputAction.done : TextInputAction.next,
+                      textInputAction: index == 3
+                          ? TextInputAction.done
+                          : TextInputAction.next,
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       decoration: InputDecoration(
@@ -134,20 +137,24 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
+                          borderSide:
+                              const BorderSide(color: Colors.grey, width: 1),
                         ),
                       ),
                       onChanged: (value) {
                         if (value.isNotEmpty) {
                           if (index < 3) {
-                            FocusScope.of(context).requestFocus(_currentPinFocusNodes[index + 1]);
+                            FocusScope.of(context)
+                                .requestFocus(_currentPinFocusNodes[index + 1]);
                           }
                         } else if (index > 0) {
-                          FocusScope.of(context).requestFocus(_currentPinFocusNodes[index - 1]);
+                          FocusScope.of(context)
+                              .requestFocus(_currentPinFocusNodes[index - 1]);
                         }
                       },
                     ),
@@ -155,7 +162,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                 }),
               ),
               const SizedBox(height: 20),
-              Text('New PIN'),
+              const Text('New PIN'),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +175,9 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                       focusNode: _newPinFocusNodes[index],
                       obscureText: true,
                       keyboardType: TextInputType.number,
-                      textInputAction: index == 3 ? TextInputAction.next : TextInputAction.next,
+                      textInputAction: index == 3
+                          ? TextInputAction.next
+                          : TextInputAction.next,
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       decoration: InputDecoration(
@@ -180,20 +189,24 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
+                          borderSide:
+                              const BorderSide(color: Colors.grey, width: 1),
                         ),
                       ),
                       onChanged: (value) {
                         if (value.isNotEmpty) {
                           if (index < 3) {
-                            FocusScope.of(context).requestFocus(_newPinFocusNodes[index + 1]);
+                            FocusScope.of(context)
+                                .requestFocus(_newPinFocusNodes[index + 1]);
                           }
                         } else if (index > 0) {
-                          FocusScope.of(context).requestFocus(_newPinFocusNodes[index - 1]);
+                          FocusScope.of(context)
+                              .requestFocus(_newPinFocusNodes[index - 1]);
                         }
                       },
                     ),
@@ -201,7 +214,7 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                 }),
               ),
               const SizedBox(height: 20),
-              Text('Confirm New PIN'),
+              const Text('Confirm New PIN'),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -214,7 +227,9 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                       focusNode: _confirmNewPinFocusNodes[index],
                       obscureText: true,
                       keyboardType: TextInputType.number,
-                      textInputAction: index == 3 ? TextInputAction.done : TextInputAction.next,
+                      textInputAction: index == 3
+                          ? TextInputAction.done
+                          : TextInputAction.next,
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       decoration: InputDecoration(
@@ -226,20 +241,24 @@ class _ChangePinScreenState extends State<ChangePinScreen> {
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
+                          borderSide:
+                              const BorderSide(color: Colors.grey, width: 1),
                         ),
                       ),
                       onChanged: (value) {
                         if (value.isNotEmpty) {
                           if (index < 3) {
-                            FocusScope.of(context).requestFocus(_confirmNewPinFocusNodes[index + 1]);
+                            FocusScope.of(context).requestFocus(
+                                _confirmNewPinFocusNodes[index + 1]);
                           }
                         } else if (index > 0) {
-                          FocusScope.of(context).requestFocus(_confirmNewPinFocusNodes[index - 1]);
+                          FocusScope.of(context).requestFocus(
+                              _confirmNewPinFocusNodes[index - 1]);
                         }
                       },
                     ),

@@ -9,6 +9,8 @@ import '../../util/DatabaseHelper.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class ViewOrdersScreenBG extends StatefulWidget {
+  const ViewOrdersScreenBG({super.key});
+
   @override
   _ViewOrdersScreenState createState() => _ViewOrdersScreenState();
 }
@@ -21,7 +23,7 @@ class _ViewOrdersScreenState extends State<ViewOrdersScreenBG> {
   void initState() {
     super.initState();
     futureOrders = DatabaseHelper().getOrders();
-    timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+    timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
       setState(() {
         futureOrders = DatabaseHelper().getOrders();
       });
@@ -38,17 +40,17 @@ class _ViewOrdersScreenState extends State<ViewOrdersScreenBG> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Background Tasks'),
+        title: const Text('Background Tasks'),
       ),
       body: Container(
         margin: EdgeInsets.all(20.w),
         child: FutureBuilder<List<NewestOrder>>(
           future: futureOrders,
           builder: (context, snapshot) {
-             if (snapshot.hasError) {
+            if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No orders found.'));
+              return const Center(child: Text('No orders found.'));
             } else {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
@@ -58,13 +60,13 @@ class _ViewOrdersScreenState extends State<ViewOrdersScreenBG> {
                     margin: EdgeInsets.only(bottom: 10.w),
                     decoration: BoxDecoration(
                       color: ColorConstant.white,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 2.0,
                           spreadRadius: 1.0,
-                          offset: Offset(0, 2),
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
@@ -77,7 +79,8 @@ class _ViewOrdersScreenState extends State<ViewOrdersScreenBG> {
                           Text('Room ID: ${order.roomId}'),
                           Text('Status Order: ${order.statusOrder}'),
                           Text('Type: ${order.type}'),
-                          Text('Order Start Time: ${order.newestOrderStartTime}'),
+                          Text(
+                              'Order Start Time: ${order.newestOrderStartTime}'),
                           Text('Order End Time: ${order.newestOrderEndTime}'),
                         ],
                       ),

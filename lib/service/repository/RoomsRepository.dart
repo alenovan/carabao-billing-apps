@@ -50,6 +50,7 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
     }
   }
 
+  @override
   Future<http.Response?> openRooms(String link) async {
     // Check if lamp connection is active
     if (ConstantData.lamp_connection) {

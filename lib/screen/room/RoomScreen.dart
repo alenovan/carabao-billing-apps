@@ -28,9 +28,9 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
   int _currentIndex = 0;
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
   OrderBloc? _OrderBloc;
-  late NewestOrder? dataGet = null;
+  late NewestOrder? dataGet;
   var loading = true;
 
   @override
@@ -95,14 +95,14 @@ class _RoomScreenState extends State<RoomScreen> {
         child: Scaffold(
             appBar: AppBar(
               title: loading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : Text(dataGet?.name ?? ""),
             ),
             body: Stack(
               children: [
                 _consumerApi(),
                 loading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : Column(
                         children: [
                           Container(
@@ -129,7 +129,7 @@ class _RoomScreenState extends State<RoomScreen> {
                                           color: _currentIndex == 0
                                               ? ColorConstant.primary
                                               : Colors.transparent,
-                                          borderRadius: BorderRadius.all(
+                                          borderRadius: const BorderRadius.all(
                                               Radius.circular(50))),
                                       height: 50.w,
                                       width: 100.w,
@@ -169,8 +169,9 @@ class _RoomScreenState extends State<RoomScreen> {
                                             color: _currentIndex == 1
                                                 ? ColorConstant.primary
                                                 : Colors.transparent,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50))),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(50))),
                                         height: 50.w,
                                         padding: EdgeInsets.only(
                                             left: 20.w, right: 20.w),
@@ -243,7 +244,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         color: ColorConstant.white,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -279,14 +280,16 @@ class _RoomScreenState extends State<RoomScreen> {
                                         code: dataGet?.code ?? "",
                                         id_order: "-2(from menu reset)",
                                         status: true);
-                                    await Future.delayed(Duration(seconds: 2));
+                                    await Future.delayed(
+                                        const Duration(seconds: 2));
                                     switchLamp(
                                         ip: dataGet?.ip ?? "",
                                         key: dataGet?.secret ?? "",
                                         code: dataGet?.code ?? "",
                                         id_order: "-2(from menu reset)",
                                         status: false);
-                                    await Future.delayed(Duration(seconds: 1));
+                                    await Future.delayed(
+                                        const Duration(seconds: 1));
                                     popScreen(context);
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -343,7 +346,7 @@ class _RoomScreenState extends State<RoomScreen> {
   void _navigateToPage(int index) {
     _pageController.animateToPage(
       index,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }

@@ -13,12 +13,14 @@ class PinCreationScreen extends StatefulWidget {
 class _PinCreationScreenState extends State<PinCreationScreen> {
   final _pinControllers = List.generate(4, (_) => TextEditingController());
   final _focusNodes = List.generate(4, (_) => FocusNode());
-  final _confirmPinControllers = List.generate(4, (_) => TextEditingController());
+  final _confirmPinControllers =
+      List.generate(4, (_) => TextEditingController());
   final _confirmFocusNodes = List.generate(4, (_) => FocusNode());
 
   Future<void> _onSubmit() async {
     final newPin = _pinControllers.map((controller) => controller.text).join();
-    final confirmPin = _confirmPinControllers.map((controller) => controller.text).join();
+    final confirmPin =
+        _confirmPinControllers.map((controller) => controller.text).join();
 
     if (newPin == confirmPin) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -26,8 +28,7 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) =>  PinEntryScreen()),
+        MaterialPageRoute(builder: (context) => const PinEntryScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +66,7 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Create New PIN'),
+              const Text('Create New PIN'),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +78,9 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
                       focusNode: _focusNodes[index],
                       obscureText: true,
                       keyboardType: TextInputType.number,
-                      textInputAction: index == 3 ? TextInputAction.done : TextInputAction.next,
+                      textInputAction: index == 3
+                          ? TextInputAction.done
+                          : TextInputAction.next,
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       decoration: InputDecoration(
@@ -89,20 +92,24 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
+                          borderSide:
+                              const BorderSide(color: Colors.grey, width: 1),
                         ),
                       ),
                       onChanged: (value) {
                         if (value.isNotEmpty) {
                           if (index < 3) {
-                            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+                            FocusScope.of(context)
+                                .requestFocus(_focusNodes[index + 1]);
                           }
                         } else if (index > 0) {
-                          FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+                          FocusScope.of(context)
+                              .requestFocus(_focusNodes[index - 1]);
                         }
                       },
                     ),
@@ -110,7 +117,7 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
                 }),
               ),
               const SizedBox(height: 20),
-              Text('Confirm New PIN'),
+              const Text('Confirm New PIN'),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -122,7 +129,9 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
                       focusNode: _confirmFocusNodes[index],
                       obscureText: true,
                       keyboardType: TextInputType.number,
-                      textInputAction: index == 3 ? TextInputAction.done : TextInputAction.next,
+                      textInputAction: index == 3
+                          ? TextInputAction.done
+                          : TextInputAction.next,
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       decoration: InputDecoration(
@@ -134,20 +143,24 @@ class _PinCreationScreenState extends State<PinCreationScreen> {
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
+                          borderSide:
+                              const BorderSide(color: Colors.grey, width: 1),
                         ),
                       ),
                       onChanged: (value) {
                         if (value.isNotEmpty) {
                           if (index < 3) {
-                            FocusScope.of(context).requestFocus(_confirmFocusNodes[index + 1]);
+                            FocusScope.of(context)
+                                .requestFocus(_confirmFocusNodes[index + 1]);
                           }
                         } else if (index > 0) {
-                          FocusScope.of(context).requestFocus(_confirmFocusNodes[index - 1]);
+                          FocusScope.of(context)
+                              .requestFocus(_confirmFocusNodes[index - 1]);
                         }
                       },
                     ),

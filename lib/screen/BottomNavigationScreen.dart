@@ -66,7 +66,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   // Start the blinking effect
   void _startBlinking() {
     _blinkTimer?.cancel(); // Cancel any previous timer
-    _blinkTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         // Toggle between red and primary color
         _fabColor = (_fabColor == ColorConstant.primary)
@@ -107,7 +107,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
               context: context,
               builder: (BuildContext context) {
                 return Container(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   height: MediaQuery.of(context).size.height * 0.5,
                   child: _activeOrders.isEmpty
                       ? const EmptyTableOrder()
@@ -141,12 +141,12 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
               },
             );
           },
+          // Use the dynamically blinking color
+          backgroundColor: _fabColor,
           child: Icon(
             Boxicons.bxs_flame,
             color: Colors.white,
           ),
-          // Use the dynamically blinking color
-          backgroundColor: _fabColor,
         ),
         body: PageView(
           controller: _pageController,
@@ -156,7 +156,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             });
             fetchActiveOrders();
           },
-          children: [
+          children: const [
             HomeScreen(),
             HistoryScreen(),
             SettingScreen(),
@@ -177,13 +177,13 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             color: Colors.black.withOpacity(0.1),
             blurRadius: 8.0,
             spreadRadius: 2.0,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Container(
         height: 56.0,
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -199,7 +199,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                 height: 45.w,
               ),
             ),
-            VerticalDivider(
+            const VerticalDivider(
               color: ColorConstant.dividermenu,
               thickness: 1.0,
               width: 20.0,
@@ -216,7 +216,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                 height: 45.w,
               ),
             ),
-            VerticalDivider(
+            const VerticalDivider(
               color: ColorConstant.dividermenu,
               thickness: 1.0,
               width: 20.0,
@@ -250,7 +250,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   // Countdown timer setup and handling
   void _setupCountdownTimer() {
-    DateTime endTime = DateTime.now().add(Duration(minutes: 5));
+    DateTime endTime = DateTime.now().add(const Duration(minutes: 5));
 
     countdownTimer = CountdownTimer(
       key: "timer1",
@@ -277,14 +277,14 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Countdown Finished'),
-          content: Text('The countdown timer has finished.'),
+          title: const Text('Countdown Finished'),
+          content: const Text('The countdown timer has finished.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

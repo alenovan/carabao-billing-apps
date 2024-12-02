@@ -47,7 +47,8 @@ class _PanelSettingState extends State<PanelSetting> {
               });
             } else if (s is PanelUpdateLoadedState) {
               popScreen(context);
-              BottomSheetFeedback.showSuccess(context, "Selamat", s.result.message ?? "");
+              BottomSheetFeedback.showSuccess(
+                  context, "Selamat", s.result.message ?? "");
             } else if (s is MejaErrorState) {
               popScreen(c);
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
@@ -66,7 +67,7 @@ class _PanelSettingState extends State<PanelSetting> {
     return Scaffold(
       backgroundColor: ColorConstant.bg,
       appBar: AppBar(
-        title: Text('IP Setting'),
+        title: const Text('IP Setting'),
       ),
       body: MultiBlocProvider(
           providers: [
@@ -84,13 +85,14 @@ class _PanelSettingState extends State<PanelSetting> {
                       margin: EdgeInsets.all(20.w),
                       decoration: BoxDecoration(
                         color: ColorConstant.white,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 2.0,
                             spreadRadius: 1.0,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -107,12 +109,12 @@ class _PanelSettingState extends State<PanelSetting> {
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: ColorConstant.borderinput,
                                 ),
                               ),
-                              contentPadding:
-                              EdgeInsets.symmetric(vertical: 12.w, horizontal: 16.w),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12.w, horizontal: 16.w),
                             ),
                             controller: ipdController,
                             // Add controller and other TextFormField properties as needed
@@ -122,10 +124,10 @@ class _PanelSettingState extends State<PanelSetting> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _MejaBloc.add(updatePanel(payload: RequestPanelModels(
-                          ip: ipdController.text,
-                          panelId: 1
-                        ), id: "1"));
+                        _MejaBloc.add(updatePanel(
+                            payload: RequestPanelModels(
+                                ip: ipdController.text, panelId: 1),
+                            id: "1"));
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -133,7 +135,8 @@ class _PanelSettingState extends State<PanelSetting> {
                               color: ColorConstant.primary,
                             ),
                             color: ColorConstant.primary,
-                            borderRadius: BorderRadius.all(Radius.circular(50))),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(50))),
                         height: 50.w,
                         margin: EdgeInsets.all(20.w),
                         padding: EdgeInsets.only(left: 20.w, right: 20.w),
