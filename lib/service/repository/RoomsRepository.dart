@@ -5,13 +5,13 @@ import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/service/models/rooms/RequestPanelModels.dart';
 import 'package:carabaobillingapps/service/models/rooms/ResponseRoomsModels.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import '../../constant/url_constant.dart';
+import '../../helper/api_helper.dart';
 import '../../helper/global_helper.dart';
 import '../models/rooms/ResponsePanelModels.dart';
 import '../models/rooms/ResponseUpdatePanelModels.dart';
-import 'package:http/http.dart';
-import '../../helper/api_helper.dart';
 
 abstract class RoomsRepo {
   Future<ResponseRoomsModels> getRooms();
@@ -35,7 +35,6 @@ class RoomsRepoRepositoryImpl implements RoomsRepo {
         headers: await tokenHeader(true));
     if (response.statusCode == 200) {
       print(222);
-      print(response.body);
       ResponseRoomsModels responses =
           responseRoomsModelsFromJson(response.body);
       return responses;

@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:carabaobillingapps/constant/url_constant.dart';
 import 'package:carabaobillingapps/helper/shared_preference.dart';
 import 'package:carabaobillingapps/util/DatabaseHelper.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import '../constant/data_constant.dart';
@@ -76,8 +73,7 @@ void switchLamp({
     final response = await RoomsRepoRepositoryImpl().openRooms(url);
 
     final endTime = DateTime.now(); // Record the end time
-    final duration =
-        endTime.difference(startTime).inMilliseconds; // Calculate the duration
+    final duration = endTime.difference(startTime).inMilliseconds; // Calculate the duration
 
     // Cek apakah respons null (misalnya jika timeout)
     if (response == null) {
@@ -94,16 +90,14 @@ Execution Time: ${duration}ms
 -------------------------
 ''';
       logToFile(errorMessage);
-      return;
-    }
+    } else {
+      // Ambil status code dari respons
+      final statusCode = response.statusCode;
 
-    // Ambil status code dari respons
-    final statusCode = response.statusCode;
+      // Ambil body dari respons sebagai string (optional)
+      final statusMessage = response.body;
 
-    // Ambil body dari respons sebagai string (optional)
-    final statusMessage = response.body;
-
-    final logMessage = '''
+      final logMessage = '''
 Lamp Switch Log:
 -------------------------
 IP: $ip
@@ -115,11 +109,11 @@ id_order: $id_order
 Execution Time: ${duration}ms
 -------------------------
 ''';
-    logToFile(logMessage);
+      logToFile(logMessage);
+    }
   } catch (e) {
     final endTime = DateTime.now(); // Record the end time in case of error
-    final duration =
-        endTime.difference(startTime).inMilliseconds; // Calculate the duration
+    final duration = endTime.difference(startTime).inMilliseconds; // Calculate the duration
 
     final errorMessage = '''
 Lamp Switch Error:
@@ -133,6 +127,9 @@ Execution Time: ${duration}ms
 -------------------------
 ''';
     logToFile(errorMessage);
+  } finally {
+    // This block will always execute, regardless of whether an error occurred
+    print('SwitchLamp function completed execution.');
   }
 }
 

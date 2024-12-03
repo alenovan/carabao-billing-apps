@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
+import 'package:carabaobillingapps/service/models/order/RequestStopOrdersModels.dart';
+import 'package:carabaobillingapps/service/repository/OrderRepository.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../helper/global_helper.dart';
 import '../service/models/order/ResponseListOrdersModels.dart';
 import '../util/DatabaseHelper.dart';
-import '../helper/global_helper.dart';
 
 class OrderEvent {
   final String type;
@@ -32,6 +35,7 @@ class TimerService {
 
   void _log(String message, {String? error}) {
     final timestamp = DateTime.now().toString().split('.')[0];
+    print(message);
   }
 
   TimerService._internal() {
@@ -243,6 +247,13 @@ Warning Time: $lastMinuteWarning
             id_order: orderId,
             status: false,
           );
+          try {
+            OrderRepoRepositoryImpl().stop_order_open_billing(
+                RequestStopOrdersModels(orderId: int.parse(order.id.toString()))
+            );
+          } catch (e) {
+            logToFile('Error stopping order for Order #$orderId: $e');
+          }
         }
       } else {
         logToFile('Switching off single lamp for Order #$orderId');
@@ -253,6 +264,13 @@ Warning Time: $lastMinuteWarning
           id_order: orderId,
           status: false,
         );
+        try {
+          OrderRepoRepositoryImpl().stop_order_open_billing(
+              RequestStopOrdersModels(orderId: int.parse(order.id.toString()))
+          );
+        } catch (e) {
+          logToFile('Error stopping order for Order #$orderId: $e');
+        }
       }
     }
 
@@ -451,4 +469,6 @@ Warning Time: $lastMinuteWarning
     _orderEventController.close();
     stopAllTimers();
   }
+
+
 }

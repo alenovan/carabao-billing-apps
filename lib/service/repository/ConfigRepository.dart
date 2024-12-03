@@ -3,12 +3,12 @@ import 'dart:developer';
 
 import 'package:carabaobillingapps/service/models/configs/RequestConfigsModels.dart';
 import 'package:carabaobillingapps/service/models/configs/ResponseConfigsModels.dart';
+import 'package:http/http.dart';
 
 import '../../constant/url_constant.dart';
+import '../../helper/api_helper.dart';
 import '../../helper/global_helper.dart';
 import '../models/configs/ResponseClientInformation.dart';
-import 'package:http/http.dart';
-import '../../helper/api_helper.dart';
 
 abstract class ConfigRepo {
   Future<ResponseClientInformation> getConfig();

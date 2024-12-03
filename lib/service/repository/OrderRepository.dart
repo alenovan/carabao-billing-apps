@@ -11,17 +11,15 @@ import 'package:carabaobillingapps/service/models/order/ResponseOrderHistoryMode
 import 'package:carabaobillingapps/service/models/order/ResponseOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseStopOrdersModels.dart';
 import 'package:carabaobillingapps/service/models/order/ResponseVoidOrder.dart';
-import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
 import '../../constant/url_constant.dart';
+import '../../helper/api_helper.dart';
 import '../../helper/global_helper.dart';
 import '../models/order/ResponseDetailHistory.dart';
 import '../models/order/ResponseOrdersBgModels.dart';
 import '../models/order/ResponseOrdersOpenBillingModels.dart';
-import 'LoggingInterceptor.dart';
-import 'package:http/http.dart';
-import '../../helper/api_helper.dart';
 
 abstract class OrderRepo {
   Future<ResponseListOrdersModels> getOrder();
@@ -107,8 +105,6 @@ class OrderRepoRepositoryImpl implements OrderRepo {
     var response = await _client.post(Uri.parse(UrlConstant.order_open_billing),
         body: body, headers: await tokenHeader(true));
 
-    print(body);
-    print(response.body);
 
     if (response.statusCode == 200) {
       ResponseOrdersOpenBillingModels responses =
@@ -288,7 +284,6 @@ class OrderRepoRepositoryImpl implements OrderRepo {
     var response = await _client.get(
         Uri.parse("${UrlConstant.newest_orders}/$id"),
         headers: await tokenHeader(true));
-    print(response.body);
     if (response.statusCode == 200) {
       ResponseListOrdersModels responses =
           responseListOrdersModelsFromJson(response.body);

@@ -1,11 +1,13 @@
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:flutter/foundation.dart';
+
 import '../constant/data_constant.dart';
 import '../helper/shared_preference.dart';
-import '../screen/LoginScreen.dart';
 import '../main.dart';
+import '../screen/LoginScreen.dart';
 
 class ApiHelper {
   /// Builds an HTTP client with interceptors

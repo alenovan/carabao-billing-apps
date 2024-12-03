@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:boxicons/boxicons.dart';
 import 'package:carabaobillingapps/constant/data_constant.dart';
 import 'package:carabaobillingapps/screen/LoginScreen.dart';
@@ -19,7 +17,6 @@ import '../../constant/color_constant.dart';
 import '../../constant/image_constant.dart';
 import '../../helper/BottomSheetFeedback.dart';
 import '../../helper/global_helper.dart';
-import '../../main.dart';
 import '../setting/PinEntryScreen.dart';
 import '../setting/SettingsScreen.dart';
 
