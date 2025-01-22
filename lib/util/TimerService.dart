@@ -272,6 +272,10 @@ Warning Time: $lastMinuteWarning
           logToFile('Error stopping order for Order #$orderId: $e');
         }
       }
+    }else{
+      OrderRepoRepositoryImpl().stop_order_open_billing(
+          RequestStopOrdersModels(orderId: int.parse(order.id.toString()))
+      );
     }
 
     cleanupTimer(orderId);

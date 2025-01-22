@@ -197,6 +197,7 @@ class _MenuListCardState extends State<MenuListCard> {
           "Habis Matikan Lampu",
           style: _subTextStyle().copyWith(color: Colors.red),
         );
+
       }
       return Text(
         "${_formatDuration(timeInfo)} Lagi Habis",

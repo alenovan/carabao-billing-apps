@@ -138,7 +138,7 @@ class _BillingScreenState extends State<BillingScreen> {
       children: [
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) async {
-            if (s is OrdersLoadingState) {
+            if (s is OrdersStopLoadingState) {
               LoadingDialog.show(c, "Mohon tunggu");
             } else if (s is OrdersLoadedOpenBillingState) {
               popScreen(context);

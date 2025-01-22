@@ -35,7 +35,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         }
       }
       if (event is ActStopOrderOpenBilling) {
-        emit(OrdersLoadingState());
+        emit(OrdersStopLoadingState());
         try {
           final result =
               await repository.stop_order_open_billing(event.payload);

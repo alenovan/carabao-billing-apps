@@ -77,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       children: [
         BlocConsumer<OrderBloc, OrderState>(
           listener: (c, s) async {
+            print("alenovan"+s.toString());
             if (s is OrdersLoadingState) {
               setState(() {
                 loading = true;
@@ -96,7 +97,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               // Refresh timers with latest orders
               await TimerService.instance.refreshTimers(NewestOrders!);
             } else if (s is OrdersErrorState) {
+              setState(() {
+                loading = false;
+              });
               BottomSheetFeedback.showError(context, "Mohon Maaf", s.message);
+            } else if (s is OrdersStopOpenBillingLoadedState) {
+              _refreshList();
             }
           },
           builder: (c, s) {
@@ -240,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             ip: data.ip!,
                             keys: data.secret!,
                             onUpdate: () {
-                              // _OrderBloc?.add(GetOrder());
+                              _OrderBloc?.add(GetOrder());
                             },
                             onCloseAutoCut: () {
                               _OrderBloc?.add(GetOrder());

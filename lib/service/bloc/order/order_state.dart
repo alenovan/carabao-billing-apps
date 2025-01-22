@@ -16,6 +16,14 @@ class OrdersLoadingState extends OrderState {
   List<Object> get props => throw UnimplementedError();
 }
 
+class OrdersStopLoadingState extends OrderState {
+  @override
+  // TODO: implement props
+  List<Object> get props => throw UnimplementedError();
+}
+
+
+
 class OrdersLoadedState extends OrderState {
   ResponseOrdersModels result;
 
